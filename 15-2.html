@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15-2 JavaScript 程序结构 - 徐奔</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 30px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #1a56db;
+            margin-bottom: 6px;
+        }
+        .author {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #1a56db;
+            border-left: 5px solid #1a56db;
+            padding-left: 12px;
+            margin-bottom: 16px;
+        }
+        .desc {
+            background: #eff6ff;
+            border-left: 4px solid #60a5fa;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1e40af;
+            line-height: 1.8;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 16px;
+        }
+        .run-btn {
+            background: #1a56db;
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .run-btn:hover { background: #1e40af; }
+        .run-btn.green { background: #059669; }
+        .run-btn.green:hover { background: #047857; }
+        .run-btn.orange { background: #ea580c; }
+        .run-btn.orange:hover { background: #c2410c; }
+        .run-btn.purple { background: #7c3aed; }
+        .run-btn.purple:hover { background: #6d28d9; }
+        .output {
+            margin-top: 14px;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            color: #92400e;
+            min-height: 30px;
+            white-space: pre-wrap;
+        }
+        .js-keyword { color: #c084fc; }
+        .js-string { color: #86efac; }
+        .js-comment { color: #64748b; }
+        .js-number { color: #fbbf24; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .grid .item {
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .grid .item.normal { background: #e0e7ff; color: #4338ca; }
+        .grid .item.empty { background: #fecaca; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JavaScript 程序结构</h1>
+        <p class="author">徐奔 · 顺序结构 · 条件结构 · 循环结构</p>
+
+        <!-- ========== 一、顺序结构 ========== -->
+        <div class="section">
+            <h2>一、顺序结构</h2>
+            <div class="desc">顺序结构是最简单的程序结构，从上到下一条条依次执行。就像读课文一样。</div>
+            <div class="code-block"><span class="js-comment">// 计算圆的面积（顺序执行）</span>
+<span class="js-keyword">let</span> r = <span class="js-number">5</span>;
+<span class="js-keyword">let</span> pi = <span class="js-number">3.14159</span>;
+<span class="js-keyword">let</span> area = pi * r * r;
+<span class="js-keyword">let</span> perimeter = <span class="js-number">2</span> * pi * r;
+console.log(<span class="js-string">"半径:"</span> + r);
+console.log(<span class="js-string">"面积:"</span> + area);
+console.log(<span class="js-string">"周长:"</span> + perimeter);</div>
+            <button class="run-btn" onclick="demo1()">运行顺序结构</button>
+            <div class="output" id="out1">点击按钮看结果...</div>
+        </div>
+
+        <!-- ========== 二、条件结构 ========== -->
+        <div class="section">
+            <h2>二、条件结构</h2>
+            <div class="desc">条件结构根据条件判断，选择不同的分支执行。<b>if / else if / else</b> 或 <b>switch</b>。</div>
+
+            <h3 style="margin-bottom:10px;color:#475569">2.1 if-else 判断成绩等级</h3>
+            <div class="code-block"><span class="js-keyword">let</span> score = <span class="js-number">85</span>;
+<span class="js-keyword">if</span> (score >= <span class="js-number">90</span>) {
+    console.log(<span class="js-string">"优秀 A"</span>);
+} <span class="js-keyword">else if</span> (score >= <span class="js-number">80</span>) {
+    console.log(<span class="js-string">"良好 B"</span>);
+} <span class="js-keyword">else if</span> (score >= <span class="js-number">60</span>) {
+    console.log(<span class="js-string">"及格 C"</span>);
+} <span class="js-keyword">else</span> {
+    console.log(<span class="js-string">"不及格 D"</span>);
+}</div>
+            <button class="run-btn green" onclick="demo2()">运行条件结构</button>
+            <div class="output" id="out2">点击按钮看结果...</div>
+
+            <h3 style="margin:20px 0 10px;color:#475569">2.2 switch 判断星期</h3>
+            <div class="code-block"><span class="js-keyword">let</span> day = <span class="js-number">3</span>;
+<span class="js-keyword">switch</span> (day) {
+    <span class="js-keyword">case</span> <span class="js-number">1</span>: console.log(<span class="js-string">"星期一"</span>); <span class="js-keyword">break</span>;
+    <span class="js-keyword">case</span> <span class="js-number">2</span>: console.log(<span class="js-string">"星期二"</span>); <span class="js-keyword">break</span>;
+    <span class="js-keyword">case</span> <span class="js-number">3</span>: console.log(<span class="js-string">"星期三"</span>); <span class="js-keyword">break</span>;
+    <span class="js-keyword">default</span>: console.log(<span class="js-string">"其他"</span>);
+}</div>
+        </div>
+
+        <!-- ========== 三、循环结构 ========== -->
+        <div class="section">
+            <h2>三、循环结构</h2>
+            <div class="desc">循环结构让一段代码重复执行。<b>for</b>、<b>while</b>、<b>do-while</b> 三种常用循环。</div>
+
+            <h3 style="margin-bottom:10px;color:#475569">3.1 for 循环 —— 输出 1~10</h3>
+            <div class="code-block"><span class="js-keyword">for</span> (<span class="js-keyword">let</span> i = <span class="js-number">1</span>; i <= <span class="js-number">10</span>; i++) {
+    console.log(i);
+}</div>
+            <button class="run-btn orange" onclick="demo3()">运行 for 循环</button>
+            <div class="output" id="out3">点击按钮看结果...</div>
+
+            <h3 style="margin:20px 0 10px;color:#475569">3.2 while 循环 —— 计算 1~100 累加和</h3>
+            <div class="code-block"><span class="js-keyword">let</span> sum = <span class="js-number">0</span>;
+<span class="js-keyword">let</span> n = <span class="js-number">1</span>;
+<span class="js-keyword">while</span> (n <= <span class="js-number">100</span>) {
+    sum += n;
+    n++;
+}
+console.log(<span class="js-string">"1+2+...+100 ="</span> + sum);  <span class="js-comment">// 结果: 5050</span></div>
+            <button class="run-btn purple" onclick="demo4()">运行 while 循环</button>
+            <div class="output" id="out4">点击按钮看结果...</div>
+
+            <h3 style="margin:20px 0 10px;color:#475569">3.3 循环 + 条件 —— 逢七过（1~30）</h3>
+            <div class="code-block"><span class="js-keyword">for</span> (<span class="js-keyword">let</span> i = <span class="js-number">1</span>; i <= <span class="js-number">30</span>; i++) {
+    <span class="js-keyword">if</span> (i % <span class="js-number">7</span> === <span class="js-number">0</span> || String(i).indexOf(<span class="js-string">"7"</span>) !== -<span class="js-number">1</span>) {
+        console.log(<span class="js-string">"跳过"</span>);
+    } <span class="js-keyword">else</span> {
+        console.log(i);
+    }
+}</div>
+            <button class="run-btn" onclick="demo5()">运行逢七过</button>
+            <div class="output" id="out5">点击按钮看结果...</div>
+            <div class="grid" id="grid5"></div>
+        </div>
+    </div>
+
+    <script>
+        function demo1() {
+            let r = 5;
+            let pi = 3.14159;
+            let area = pi * r * r;
+            let perimeter = 2 * pi * r;
+            let out = `半径: ${r}\n面积: ${area.toFixed(2)}\n周长: ${perimeter.toFixed(2)}`;
+            document.getElementById('out1').textContent = out;
+        }
+
+        function demo2() {
+            let score = 85;
+            let grade;
+            if (score >= 90) {
+                grade = '优秀 A';
+            } else if (score >= 80) {
+                grade = '良好 B';
+            } else if (score >= 60) {
+                grade = '及格 C';
+            } else {
+                grade = '不及格 D';
+            }
+            document.getElementById('out2').textContent = `分数: ${score}\n等级: ${grade}`;
+        }
+
+        function demo3() {
+            let arr = [];
+            for (let i = 1; i <= 10; i++) {
+                arr.push(i);
+            }
+            document.getElementById('out3').textContent = arr.join('  ');
+        }
+
+        function demo4() {
+            let sum = 0;
+            let n = 1;
+            while (n <= 100) {
+                sum += n;
+                n++;
+            }
+            document.getElementById('out4').textContent = `1 + 2 + 3 + ... + 100 = ${sum}`;
+        }
+
+        function demo5() {
+            let grid = document.getElementById('grid5');
+            grid.innerHTML = '';
+            let lines = [];
+            for (let i = 1; i <= 30; i++) {
+                let skip = (i % 7 === 0 || String(i).indexOf('7') !== -1);
+                let div = document.createElement('div');
+                div.className = 'item ' + (skip ? 'empty' : 'normal');
+                div.textContent = skip ? '过' : i;
+                grid.appendChild(div);
+                lines.push(skip ? '跳过' : i);
+            }
+            document.getElementById('out5').textContent = lines.join('  ');
+        }
+    </script>
+</body>
+</html>
