@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>徐奔 · 高级网页设计课堂实践</title>
+    <style>
+        /* 全局重置与字体 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f4f8;
+            padding: 2rem 1.5rem;
+            color: #1e2b3c;
+            line-height: 1.5;
+        }
+        /* 主容器 */
+        .practice-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        /* 标题区域 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.8rem;
+            position: relative;
+        }
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #0a2942;
+            letter-spacing: 1px;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+            border-bottom: 4px solid #0a2942;
+        }
+        .page-header .subhead {
+            font-size: 1.1rem;
+            color: #2c3e4e;
+            margin-top: 0.75rem;
+            background: rgba(10, 41, 66, 0.08);
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+        /* 超链接网格 */
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.6rem;
+            margin: 2rem 0 1.5rem;
+        }
+        /* 卡片式链接 */
+        .link-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 1.6rem 1.5rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            border: 1px solid #dce7f0;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+        .link-card::after {
+            content: "→";
+            position: absolute;
+            bottom: 1.2rem;
+            right: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 300;
+            color: #0a2942;
+            opacity: 0.3;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .link-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 28px rgba(10, 41, 66, 0.12);
+            background: #ffffff;
+            border-color: #b8d1e5;
+        }
+        .link-card:hover::after {
+            opacity: 0.9;
+            transform: translateX(4px);
+        }
+        .link-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0a2942;
+            margin-bottom: 0.6rem;
+            letter-spacing: -0.01em;
+            word-break: break-word;
+        }
+        .link-card p {
+            font-size: 0.95rem;
+            color: #4b6376;
+            margin-bottom: 0.5rem;
+            flex: 1;
+        }
+        .link-card .meta {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #0a2942;
+            background: #e1edf7;
+            padding: 0.2rem 0.9rem;
+            border-radius: 30px;
+            align-self: flex-start;
+            margin-top: 0.8rem;
+            letter-spacing: 0.3px;
+        }
+        .link-card .file-icon {
+            font-size: 0.85rem;
+            color: #2b6c9e;
+            background: #ecf3fa;
+            border-radius: 8px;
+            padding: 0.15rem 0.6rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        /* 分割线 */
+        .divider {
+            margin: 2.5rem 0 1rem;
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, #cbdae6, transparent);
+        }
+        /* 页脚 */
+        .footer-note {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6e8a9e;
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #cbdae6;
+        }
+        .footer-note strong {
+            color: #0a2942;
+            font-weight: 600;
+        }
+        .info {
+            color: blue;
+            font-weight: bold;
+        }
+        .point {
+            background-color: blue;
+            color: white;
+            padding: 0 4px;
+        }
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            body {
+                padding: 1.2rem 1rem;
+            }
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            .link-grid {
+                grid-template-columns: 1fr;
+                gap: 1.2rem;
+            }
+            .link-card {
+                padding: 1.2rem;
+            }
+            .link-card h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="practice-wrapper">
+        <!-- 页面标题 -->
+        <header class="page-header">
+            <h1>徐奔 · 《高级网页设计》</h1>
+            <div class="subhead">课堂实践 · 目录导航</div>
+        </header>
+        <div style="background:#ffffff; border-radius:14px; padding:0.8rem 1.5rem; margin-bottom:1.8rem; font-size:0.9rem; color:#2e577a; border:1px dashed #b8cde0; display:flex; flex-wrap:wrap; align-items:center; gap:0.8rem;">
+            <span>✨ 课堂示例回顾：</span>
+            <span class="info" style="color:blue; font-weight:bold;">.info</span>
+            <span class="point" style="background:blue; color:white; padding:0 6px; border-radius:4px;">.point</span>
+            <span style="color:#2c3e4e;">群组与后代选择器</span>
+            <span style="margin-left:auto; font-size:0.85rem; background:#e1edf7; padding:0.2rem 1rem; border-radius:30px;">学号:1011 徐奔</span>
+        </div>
+        <!-- 超链接网格 -->
+        <div class="link-grid">
+            <a class="link-card" href="1011徐奔.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>1011徐奔 · 群组与后代选择器</h3>
+                <p>学号:1011 徐奔 · 班级:计算机24010<br>包含 #box 样式、CSS群组和后代选择器实例。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="css盒模型练习.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>CSS 盒模型与边距</h3>
+                <p>盒模型内外边距、边框、背景综合练习，徐奔课堂案例。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="浮动与定位.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>浮动与定位实战</h3>
+                <p>float、position 及清除浮动，高级网页设计课堂作业。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="flex弹性布局.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>Flex 弹性布局</h3>
+                <p>现代布局方式，容器与项目属性练习，响应式卡片。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="grid网格.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>Grid 网格布局</h3>
+                <p>二维布局系统，定义行与列，实现复杂排版。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="过渡与变形.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>过渡与变形</h3>
+                <p>transition / transform 实现平滑动画与2D/3D变换。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="媒体查询练习.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>媒体查询与响应式</h3>
+                <p>根据屏幕尺寸调整样式，移动优先的实践案例。</p>
+                <span class="meta">查看页面</span>
+            </a>
+            <a class="link-card" href="伪类与伪元素.html">
+                <span class="file-icon">📄 HTML</span>
+                <h3>伪类与伪元素</h3>
+                <p>:hover、:first-child、::before 等高级选择器应用。</p>
+                <span class="meta">查看页面</span>
+            </a>
+        </div>
+        <hr class="divider">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: #eaf1f9; padding: 1rem 1.8rem; border-radius: 40px; margin-top: 1.5rem;">
+            <span style="font-weight: 500; color: #0a2942;">📁 本页面：<strong>index.html</strong> · 徐奔的《高级网页设计》课堂实践</span>
+            <span style="background: #ffffff; padding: 0.2rem 1rem; border-radius: 30px; font-size: 0.9rem; color: #0a2942; font-weight: 500;">原生 HTML + CSS</span>
+        </div>
+        <div class="footer-note">
+            <strong>徐奔 · 计算机24010</strong> · 学号 1011 · 高级网页设计课堂实践导航
+        </div>
+    </div>
+</body>
+</html>
