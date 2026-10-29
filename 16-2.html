@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16-2 JavaScript 对象与字符串图解 - 徐奔</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 30px 20px;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 { text-align: center; color: #1a56db; margin-bottom: 6px; }
+        .author { text-align: center; color: #888; margin-bottom: 30px; }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #1a56db;
+            border-left: 5px solid #1a56db;
+            padding-left: 12px;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        h3 { margin: 20px 0 10px; color: #475569; font-size: 16px; }
+        .desc {
+            background: #eff6ff;
+            border-left: 4px solid #60a5fa;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1e40af;
+            line-height: 1.8;
+            border-radius: 0 6px 6px 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 16px;
+        }
+        .js-keyword { color: #c084fc; }
+        .js-string { color: #86efac; }
+        .js-comment { color: #64748b; }
+        .js-number { color: #fbbf24; }
+        .js-fn { color: #7dd3fc; }
+        .js-prop { color: #fca5a5; }
+
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+        .run-btn {
+            background: #1a56db;
+            color: #fff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-family: "Consolas", monospace;
+        }
+        .run-btn:hover { filter: brightness(0.9); }
+        .run-btn:active { transform: scale(0.96); }
+        .run-btn.green { background: #059669; }
+        .run-btn.orange { background: #ea580c; }
+        .run-btn.purple { background: #7c3aed; }
+        .run-btn.gray { background: #64748b; }
+
+        /* ---------- 对象可视化 ---------- */
+        .obj-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .prop {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-family: "Consolas", monospace;
+            font-size: 15px;
+            animation: fade .3s ease-out;
+        }
+        .prop .k { color: #7c3aed; font-weight: bold; }
+        .prop .colon { color: #94a3b8; }
+        .prop .v { color: #0f172a; }
+        .prop.add { background: #dcfce7; border-color: #22c55e; }
+        .prop.del { background: #fee2e2; border-color: #ef4444; }
+        .prop.del .k, .prop.del .v { text-decoration: line-through; color: #b91c1c; }
+        .prop.key { background: #fef3c7; border-color: #f59e0b; }
+        @keyframes fade { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ---------- 字符串字符格子 ---------- */
+        .char-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            min-height: 76px;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .char-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .char {
+            width: 40px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 2px solid #a5b4fc;
+            border-radius: 6px;
+            font-family: "Consolas", monospace;
+            font-size: 18px;
+            font-weight: bold;
+            animation: pop .3s ease-out;
+        }
+        .char.space { background: #f1f5f9; border-style: dashed; border-color: #cbd5e1; color: #cbd5e1; }
+        .char.mark { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .char.cut { background: #fee2e2; border-color: #ef4444; color: #b91c1c; }
+        .idx { font-size: 12px; color: #94a3b8; font-family: "Consolas", monospace; }
+        @keyframes pop { from { transform: scale(.6); opacity: .3; } to { transform: scale(1); opacity: 1; } }
+
+        .msg {
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            color: #0f172a;
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            word-break: break-all;
+            line-height: 1.7;
+        }
+        .output {
+            margin-top: 6px;
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.9;
+            min-height: 30px;
+            white-space: pre-wrap;
+        }
+        .viz-label {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-family: "Consolas", monospace;
+        }
+        .result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+        .result-item {
+            display: flex;
+            gap: 12px;
+            background: #f8fafc;
+            border-left: 4px solid #6366f1;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 14px;
+            font-size: 14px;
+            align-items: flex-start;
+        }
+        .result-item .rk {
+            color: #4338ca;
+            font-weight: bold;
+            min-width: 170px;
+            font-family: "Consolas", monospace;
+            flex-shrink: 0;
+        }
+        .result-item .rv { color: #0f172a; font-family: "Consolas", monospace; word-break: break-all; }
+
+        input.text-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-family: "Consolas", monospace;
+            font-size: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        input.text-input:focus { border-color: #1a56db; }
+
+        table.mt { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
+        table.mt th, table.mt td { border: 1px solid #e2e8f0; padding: 9px 12px; text-align: left; }
+        table.mt th { background: #eff6ff; color: #1e40af; font-weight: bold; }
+        table.mt td:first-child { font-family: "Consolas", monospace; color: #7c3aed; font-weight: bold; white-space: nowrap; }
+        table.mt td:last-child { color: #64748b; }
+        table.mt tr:nth-child(even) { background: #f8fafc; }
+        .tip { font-size: 13px; color: #64748b; margin-top: 10px; line-height: 1.8; }
+
+        .card {
+            background: linear-gradient(135deg, #1a56db, #7c3aed);
+            color: #fff;
+            border-radius: 14px;
+            padding: 22px;
+            margin-top: 14px;
+            box-shadow: 0 8px 22px rgba(26,86,219,.28);
+        }
+        .card .cname { font-size: 24px; font-weight: bold; margin-bottom: 6px; letter-spacing: 1px; }
+        .card .cline { font-size: 14px; opacity: .9; margin-bottom: 4px; font-family: "Consolas", monospace; }
+        .card .ctags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .card .ctag {
+            background: rgba(255,255,255,.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-family: "Consolas", monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JavaScript 对象与字符串图解</h1>
+        <p class="author">徐奔 · 键值对 · 属性操作 · 字符格子 · 常用方法</p>
+
+        <div class="section">
+            <h2>一、对象：把一堆数据装进一张“名片”</h2>
+            <div class="desc">
+                对象是<b>键值对（key: value）的集合</b>。数组用数字下标找元素，对象用<b>名字</b>找值。
+                下面每一行就是一条属性：紫色是键，右边是值。
+            </div>
+            <div class="code-block"><span class="js-keyword">let</span> student = {
+    name: <span class="js-string">'小明'</span>,
+    age: <span class="js-number">18</span>,
+    isStudent: <span class="js-keyword">true</span>
+};</div>
+            <div class="obj-box" id="obj1"></div>
+            <div class="msg" id="msg1"></div>
+            <div class="btn-row">
+                <button class="run-btn green" onclick="objOp('add')">新增 grade</button>
+                <button class="run-btn orange" onclick="objOp('update')">修改 age</button>
+                <button class="run-btn purple" onclick="objOp('del')">删除 isStudent</button>
+                <button class="run-btn gray" onclick="objOp('reset')">重置</button>
+            </div>
+            <div class="output" id="out1">点击按钮，观察对象里属性的增加、修改与删除。</div>
+        </div>
+
+        <div class="section">
+            <h2>二、访问属性：点号 与 方括号</h2>
+            <div class="desc">
+                <b>obj.name</b> 写法简单，用于固定的属性名；<b>obj['name']</b> 方括号里可以放<b>变量</b>，
+                也能访问带空格、带横线的属性名。
+            </div>
+            <div class="code-block"><span class="js-keyword">const</span> user = {
+    name: <span class="js-string">'小明'</span>,
+    age: <span class="js-number">18</span>,
+    <span class="js-string">'my-score'</span>: <span class="js-number">95</span>          <span class="js-comment">// 带横线，只能用方括号访问</span>
+};
+
+user.<span class="js-prop">name</span>                <span class="js-comment">// '小明'</span>
+user[<span class="js-string">'name'</span>]            <span class="js-comment">// '小明'</span>
+<span class="js-keyword">const</span> key = <span class="js-string">'age'</span>;
+user[key]              <span class="js-comment">// 18   方括号里放变量</span>
+user[<span class="js-string">'my-score'</span>]       <span class="js-comment">// 95   只能用方括号</span></div>
+            <button class="run-btn green" onclick="run2()">运行全部访问方式</button>
+            <div class="obj-box" id="obj2"></div>
+            <div class="result-list" id="out2"></div>
+        </div>
+
+        <div class="section">
+            <h2>三、对象里的函数：方法 与 this</h2>
+            <div class="desc">
+                当属性的值是一个<b>函数</b>时，它就叫做对象的<b>方法</b>。方法里的 <b>this</b> 指向“调用它的那个对象”，
+                所以 <b>this.name</b> 能拿到同一个对象里的 name。
+            </div>
+            <div class="code-block"><span class="js-keyword">const</span> person = {
+    name: <span class="js-string">'小明'</span>,
+    age: <span class="js-number">18</span>,
+    <span class="js-fn">intro</span>() {
+        <span class="js-keyword">return</span> <span class="js-string">'我叫'</span> + <span class="js-keyword">this</span>.name + <span class="js-string">'，今年'</span> + <span class="js-keyword">this</span>.age + <span class="js-string">'岁'</span>;
+    }
+};
+
+person.<span class="js-fn">intro</span>();   <span class="js-comment">// '我叫小明，今年18岁'</span></div>
+            <div class="btn-row">
+                <button class="run-btn green" onclick="run3('ok')">person.intro()</button>
+                <button class="run-btn orange" onclick="run3('this')">this 指向谁？</button>
+            </div>
+            <div class="output" id="out3">点击按钮运行方法。</div>
+        </div>
+
+        <div class="section">
+            <h2>四、遍历对象：keys / values / entries / for-in</h2>
+            <div class="desc">
+                对象没有 length，也不能用普通 for 循环遍历。
+                <b>Object.keys()</b> 拿所有键，<b>Object.values()</b> 拿所有值，<b>Object.entries()</b> 拿 [键, 值] 数组，
+                <b>for...in</b> 直接循环键名。
+            </div>
+            <div class="code-block"><span class="js-keyword">const</span> book = { title: <span class="js-string">'三体'</span>, author: <span class="js-string">'刘慈欣'</span>, price: <span class="js-number">39</span> };
+
+Object.<span class="js-fn">keys</span>(book);      <span class="js-comment">// ['title','author','price']</span>
+Object.<span class="js-fn">values</span>(book);    <span class="js-comment">// ['三体','刘慈欣',39]</span>
+Object.<span class="js-fn">entries</span>(book);   <span class="js-comment">// [['title','三体'], ...]</span>
+
+<span class="js-keyword">for</span> (<span class="js-keyword">let</span> k <span class="js-keyword">in</span> book) {
+    console.log(k + <span class="js-string">' = '</span> + book[k]);
+}</div>
+            <div class="obj-box" id="obj4"></div>
+            <button class="run-btn green" onclick="run4()">运行三种遍历</button>
+            <div class="result-list" id="out4"></div>
+        </div>
+
+        <div class="section">
+            <h2>五、字符串：一串“定格”的字符</h2>
+            <div class="desc">
+                字符串可以像数组一样用<b>下标</b>取字符，也有 <b>length</b>。
+                但注意：<b>字符串不可变</b>，任何方法都只是<b>生成一个新字符串</b>，原来的不会被改。
+            </div>
+            <div class="code-block"><span class="js-keyword">const</span> str = <span class="js-string">'Hello'</span>;
+
+str.length        <span class="js-comment">// 5</span>
+str[0]            <span class="js-comment">// 'H'   下标从 0 开始</span>
+str[4]            <span class="js-comment">// 'o'</span>
+str[10]           <span class="js-comment">// undefined  越界不会报错</span>
+
+<span class="js-comment">// 想改一个字符？只能重新生成一个字符串</span>
+str[0] = <span class="js-string">'J'</span>;                        <span class="js-comment">// ✗ 无效，不会报错但也没效果</span>
+<span class="js-keyword">const</span> newStr = <span class="js-string">'J'</span> + str.<span class="js-fn">slice</span>(<span class="js-number">1</span>);   <span class="js-comment">// ✓ 'Jello'</span></div>
+            <span class="viz-label">str = 'Hello' —— 每个方块是一个字符，下面是下标</span>
+            <div class="char-box" id="str5"></div>
+            <div class="btn-row">
+                <button class="run-btn green" onclick="run5('len')">str.length</button>
+                <button class="run-btn" onclick="run5('first')">str[0]</button>
+                <button class="run-btn purple" onclick="run5('last')">str[str.length-1]</button>
+                <button class="run-btn orange" onclick="run5('change')">str[0]='J' 能改吗？</button>
+            </div>
+            <div class="output" id="out5">点击按钮，看字符串的每一个字符。</div>
+        </div>
+
+        <div class="section">
+            <h2>六、字符串常用方法（可以自己改内容）</h2>
+            <div class="desc">
+                下面每个按钮都会对输入框里的字符串执行一个方法，绿色方块表示<b>被操作的那一段</b>，
+                红色方块表示<b>被切掉的部分</b>。
+            </div>
+            <input class="text-input" id="src6" value="  Hello JavaScript  " oninput="run6('reset')">
+            <span class="viz-label" id="label6a">原字符串（␣ 表示空格）</span>
+            <div class="char-box" id="str6a"></div>
+            <span class="viz-label" id="label6b">结果</span>
+            <div class="char-box" id="str6b"></div>
+            <div class="btn-row">
+                <button class="run-btn green" onclick="run6('upper')">toUpperCase()</button>
+                <button class="run-btn green" onclick="run6('lower')">toLowerCase()</button>
+                <button class="run-btn orange" onclick="run6('trim')">trim()</button>
+                <button class="run-btn purple" onclick="run6('slice')">slice(2, 7)</button>
+                <button class="run-btn purple" onclick="run6('replace')">replace()</button>
+                <button class="run-btn" onclick="run6('split')">split(' ')</button>
+                <button class="run-btn" onclick="run6('includes')">includes('Java')</button>
+                <button class="run-btn gray" onclick="run6('reset')">重置</button>
+            </div>
+            <div class="output" id="out6">输入框里的内容可以直接修改。</div>
+
+            <h3>字符串方法速查表</h3>
+            <table class="mt">
+                <tr><th>方法</th><th>作用</th><th>示例</th></tr>
+                <tr><td>length</td><td>长度（属性，不加括号）</td><td>'abc'.length → 3</td></tr>
+                <tr><td>toUpperCase()</td><td>全部转大写</td><td>'ab'.toUpperCase() → 'AB'</td></tr>
+                <tr><td>trim()</td><td>去掉首尾空格</td><td>' a '.trim() → 'a'</td></tr>
+                <tr><td>slice(a, b)</td><td>截取 [a, b) 区间，不改原串</td><td>'hello'.slice(1,3) → 'el'</td></tr>
+                <tr><td>indexOf(x)</td><td>找位置，找不到返回 -1</td><td>'hello'.indexOf('l') → 2</td></tr>
+                <tr><td>includes(x)</td><td>是否包含，返回布尔值</td><td>'hello'.includes('ell') → true</td></tr>
+                <tr><td>startsWith / endsWith</td><td>是否以…开头 / 结尾</td><td>'hello'.startsWith('he') → true</td></tr>
+                <tr><td>replace(a, b)</td><td>替换（默认只换第一个）</td><td>'aaa'.replace('a','b') → 'baa'</td></tr>
+                <tr><td>replaceAll(a, b)</td><td>替换全部</td><td>'aaa'.replaceAll('a','b') → 'bbb'</td></tr>
+                <tr><td>split(x)</td><td>按分隔符切成数组</td><td>'a,b'.split(',') → ['a','b']</td></tr>
+                <tr><td>repeat(n)</td><td>重复 n 次</td><td>'ab'.repeat(2) → 'abab'</td></tr>
+                <tr><td>padStart(n, c)</td><td>前面补字符到 n 位</td><td>'7'.padStart(3,'0') → '007'</td></tr>
+            </table>
+            <p class="tip">注意：以上方法<b>都不会改变原字符串</b>，必须用变量接收返回值：<b>let s2 = s.trim();</b></p>
+        </div>
+
+        <div class="section">
+            <h2>七、模板字符串：用反引号拼字符串</h2>
+            <div class="desc">
+                用 <b>`</b>（反引号）包裹，<b>${}</b> 里可以直接写变量或表达式，还能直接换行。比用 + 号拼接清爽得多。
+            </div>
+            <div class="code-block"><span class="js-keyword">const</span> name = <span class="js-string">'小明'</span>;
+<span class="js-keyword">const</span> age = <span class="js-number">18</span>;
+
+<span class="js-comment">// 旧写法：一堆加号和引号</span>
+<span class="js-string">'我叫'</span> + name + <span class="js-string">'，明年'</span> + (age + <span class="js-number">1</span>) + <span class="js-string">'岁'</span>;
+
+<span class="js-comment">// 模板字符串：想写什么写什么</span></div>
+            <button class="run-btn green" onclick="run7()">对比两种写法</button>
+            <div class="output" id="out7">点击按钮看结果。</div>
+        </div>
+
+        <div class="section">
+            <h2>八、综合实战：用对象 + 模板字符串生成名片</h2>
+            <div class="desc">对象负责存数据，模板字符串负责把数据“排版”成 HTML，这就是前端最基础的渲染方式。</div>
+            <div class="code-block"><span class="js-keyword">const</span> me = {
+    name: <span class="js-string">'徐奔'</span>,
+    city: <span class="js-string">'南京'</span>,
+    skills: [<span class="js-string">'HTML'</span>, <span class="js-string">'CSS'</span>, <span class="js-string">'JavaScript'</span>],
+    <span class="js-fn">tags</span>() {
+        <span class="js-keyword">return</span> <span class="js-keyword">this</span>.skills.<span class="js-fn">map</span>(s =&gt; s).<span class="js-fn">join</span>(<span class="js-string">' / '</span>);
+    }
+};</div>
+            <button class="run-btn green" onclick="run8()">生成名片</button>
+            <div id="out8"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ================= 通用渲染 ================= */
+        function renderObject(box, obj, opts) {
+            opts = opts || {};
+            var add = opts.add || '';
+            var del = opts.del || '';
+            var key = opts.key || '';
+            box.innerHTML = '';
+            var keys = Object.keys(obj);
+            if (keys.length === 0) {
+                box.innerHTML = '<span style="color:#94a3b8;font-size:14px">（空对象）</span>';
+                return;
+            }
+            keys.forEach(function (k) {
+                var row = document.createElement('div');
+                row.className = 'prop';
+                if (k === add) row.classList.add('add');
+                if (k === key) row.classList.add('key');
+                var v = obj[k];
+                var show = typeof v === 'function' ? 'function () { ... }'
+                    : typeof v === 'string' ? "'" + v + "'"
+                        : String(v);
+                row.innerHTML = '<span class="k">' + k + '</span>' +
+                    '<span class="colon">:</span>' +
+                    '<span class="v">' + show + '</span>';
+                box.appendChild(row);
+            });
+            if (del) {
+                var rowDel = document.createElement('div');
+                rowDel.className = 'prop del';
+                rowDel.innerHTML = '<span class="k">' + del + '</span><span class="colon">:</span><span class="v">（已删除）</span>';
+                box.appendChild(rowDel);
+            }
+        }
+
+        function renderChars(box, str, opts) {
+            opts = opts || {};
+            var mark = opts.mark || [];
+            var cut = opts.cut || [];
+            box.innerHTML = '';
+            if (str === '') {
+                box.innerHTML = '<span style="color:#94a3b8;font-size:14px;line-height:46px">（空字符串）</span>';
+                return;
+            }
+            for (var i = 0; i < str.length; i++) {
+                var ch = str.charAt(i);
+                var wrap = document.createElement('div');
+                wrap.className = 'char-wrap';
+
+                var cell = document.createElement('div');
+                cell.className = 'char';
+                if (ch === ' ') cell.classList.add('space');
+                if (mark.indexOf(i) !== -1) cell.classList.add('mark');
+                if (cut.indexOf(i) !== -1) cell.classList.add('cut');
+                cell.textContent = ch === ' ' ? '␣' : ch;
+
+                var idx = document.createElement('div');
+                idx.className = 'idx';
+                idx.textContent = i;
+
+                wrap.appendChild(cell);
+                wrap.appendChild(idx);
+                box.appendChild(wrap);
+            }
+        }
+
+        function renderRows(box, rows) {
+            box.innerHTML = '';
+            rows.forEach(function (r) {
+                var div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = '<span class="rk">' + r.k + '</span><span class="rv">' + r.v + '</span>';
+                box.appendChild(div);
+            });
+        }
+
+        function range(from, to) {
+            var a = [];
+            for (var i = from; i < to; i++) a.push(i);
+            return a;
+        }
+
+        /* ================= 一、对象增删改 ================= */
+        var student = { name: '小明', age: 18, isStudent: true };
+
+        function objReset() {
+            student = { name: '小明', age: 18, isStudent: true };
+            renderObject(document.getElementById('obj1'), student);
+            document.getElementById('msg1').textContent =
+                'student = { name, age, isStudent }　共 ' + Object.keys(student).length + ' 个属性';
+            document.getElementById('out1').textContent = '点击按钮，观察对象里属性的增加、修改与删除。';
+        }
+
+        function objOp(type) {
+            var msg = document.getElementById('msg1');
+            var out = document.getElementById('out1');
+
+            if (type === 'reset') { objReset(); return; }
+
+            if (type === 'add') {
+                student.grade = '高一';
+                renderObject(document.getElementById('obj1'), student, { add: 'grade' });
+                msg.textContent = "student.grade = '高一'　→　对象新增了一个属性";
+                out.textContent = "新增写法：student.grade = '高一'\n\n" +
+                    "也可以写成 student['grade'] = '高一'\n" +
+                    "现在 Object.keys(student) = [" + Object.keys(student).join(', ') + "]";
+            } else if (type === 'update') {
+                student.age = 19;
+                renderObject(document.getElementById('obj1'), student, { key: 'age' });
+                msg.textContent = 'student.age = 19　→　同名属性会被覆盖';
+                out.textContent = "修改写法：student.age = 19\n\n" +
+                    "给已存在的键重新赋值，就是“修改”，不会多出一条。\n" +
+                    "现在 student.age = " + student.age;
+            } else if (type === 'del') {
+                delete student.isStudent;
+                renderObject(document.getElementById('obj1'), student, { del: 'isStudent' });
+                msg.textContent = 'delete student.isStudent　→　属性被移除';
+                out.textContent = "删除写法：delete student.isStudent\n\n" +
+                    "删除后 isStudent 变成 undefined，用 Object.keys 也查不到它了。\n" +
+                    "现在 Object.keys(student) = [" + Object.keys(student).join(', ') + "]";
+            }
+        }
+
+        /* ================= 二、属性访问 ================= */
+        var user = { name: '小明', age: 18, 'my-score': 95 };
+
+        function run2() {
+            renderObject(document.getElementById('obj2'), user);
+            var key = 'age';
+            var rows = [
+                { k: 'user.name', v: "'" + user.name + "'　<span style='color:#94a3b8'>// 点号，最常用</span>" },
+                { k: "user['name']", v: "'" + user['name'] + "'　<span style='color:#94a3b8'>// 方括号加字符串</span>" },
+                { k: 'user[key]（key="age"）', v: user[key] + "　<span style='color:#94a3b8'>// 方括号里放变量</span>" },
+                { k: "user['my-score']", v: user['my-score'] + "　<span style='color:#94a3b8'>// 带横线只能这样访问</span>" }
+            ];
+            renderRows(document.getElementById('out2'), rows);
+        }
+
+        /* ================= 三、方法与 this ================= */
+        var person = {
+            name: '小明',
+            age: 18,
+            intro: function () {
+                return '我叫' + this.name + '，今年' + this.age + '岁';
+            }
+        };
+
+        function run3(type) {
+            var out = document.getElementById('out3');
+            if (type === 'ok') {
+                out.textContent = 'person.intro()\n→ ' + person.intro() + '\n\n' +
+                    '方法里的 this 就是我们调用时前面的那个对象，也就是 person。\n' +
+                    'this.name 取到 "小明"，this.age 取到 18。';
+            } else {
+                var arrowThisName = '';
+                try {
+                    arrowThisName = (function () { return this; }).call(window).name || '';
+                } catch (e) {
+                    arrowThisName = '';
+                }
+                out.textContent = '如果用箭头函数写方法：\n' +
+                    'var arrow = { name: "小明", intro: function(){} 改成 () => "我叫" + this.name };\n' +
+                    'arrow.intro() → "我叫' + arrowThisName + '"\n\n' +
+                    '为什么拿不到 name？\n' +
+                    '因为箭头函数没有自己的 this，它会向外层作用域找，\n' +
+                    '在普通脚本里外层就是 window，而 window.name 是空字符串。\n\n' +
+                    '结论：对象里的方法用普通函数（或方法简写），别用箭头函数。';
+            }
+        }
+
+        /* ================= 四、遍历对象 ================= */
+        var book = { title: '三体', author: '刘慈欣', price: 39 };
+
+        function run4() {
+            renderObject(document.getElementById('obj4'), book);
+            var forIn = [];
+            for (var k in book) {
+                forIn.push(k + ' = ' + book[k]);
+            }
+            var rows = [
+                {
+                    k: 'Object.keys(book)',
+                    v: '[' + Object.keys(book).map(function (x) { return '"' + x + '"'; }).join(', ') + ']'
+                },
+                {
+                    k: 'Object.values(book)',
+                    v: '[' + Object.values(book).map(function (x) {
+                        return typeof x === 'string' ? '"' + x + '"' : x;
+                    }).join(', ') + ']'
+                },
+                {
+                    k: 'Object.entries(book)',
+                    v: Object.entries(book).map(function (e) {
+                        return '["' + e[0] + '", ' + (typeof e[1] === 'string' ? '"' + e[1] + '"' : e[1]) + ']';
+                    }).join(', ')
+                },
+                { k: 'for (var k in book)', v: forIn.join('<br>') }
+            ];
+            renderRows(document.getElementById('out4'), rows);
+        }
+
+        /* ================= 五、字符串基础 ================= */
+        var str5 = 'Hello';
+
+        function run5(type) {
+            var box = document.getElementById('str5');
+            var out = document.getElementById('out5');
+
+            if (type === 'len') {
+                renderChars(box, str5, { mark: range(0, str5.length) });
+                out.textContent = 'str.length → ' + str5.length + '\n\n' +
+                    'length 是属性，不是方法，所以不写括号：str.length\n' +
+                    '下标从 0 开始，最后一个字符的下标是 length - 1 = ' + (str5.length - 1) + '。';
+            } else if (type === 'first') {
+                renderChars(box, str5, { mark: [0] });
+                out.textContent = "str[0] → '" + str5.charAt(0) + "'\n\n绿色方块就是被取出来的那一个字符。";
+            } else if (type === 'last') {
+                renderChars(box, str5, { mark: [str5.length - 1] });
+                out.textContent = 'str[str.length - 1] → ' + "'" + str5.charAt(str5.length - 1) + "'\n\n" +
+                    '取最后一个字符的固定套路：str[str.length - 1]';
+            } else {
+                var before = str5;
+                var changed = false;
+                try {
+                    str5[0] = 'J';
+                    changed = (str5 !== before);
+                } catch (e) {
+                    changed = false;
+                }
+                renderChars(box, str5);
+                out.textContent = "str[0] = 'J' 执行后，str 仍然是 '" + str5 + "'。\n\n" +
+                    (changed ? '（当前环境允许修改）' : '字符串是只读的，这种赋值不会生效，也拿不到新值。') + '\n' +
+                    "想改内容只能生成新字符串：'J' + str.slice(1) → '" + ('J' + str5.slice(1)) + "'";
+            }
+        }
+
+        /* ================= 六、字符串方法 ================= */
+        function run6(type) {
+            var s = document.getElementById('src6').value;
+            var out = document.getElementById('out6');
+            var labelA = document.getElementById('label6a');
+            var labelB = document.getElementById('label6b');
+            var boxA = document.getElementById('str6a');
+            var boxB = document.getElementById('str6b');
+
+            labelA.textContent = '原字符串（␣ 表示空格，长度 ' + s.length + '）';
+            renderChars(boxA, s);
+
+            if (type === 'reset') {
+                renderChars(boxB, '');
+                labelB.textContent = '结果';
+                out.textContent = '输入框里的内容可以直接修改，改完点上面的按钮即可。';
+                return;
+            }
+
+            var result = '';
+            var text = '';
+            var mark = [];
+            var cut = [];
+
+            if (type === 'upper') {
+                result = s.toUpperCase();
+                mark = range(0, result.length);
+                text = "s.toUpperCase()\n→ '" + result + "'\n\n把所有字母变成大写，数字和空格不变。";
+            } else if (type === 'lower') {
+                result = s.toLowerCase();
+                mark = range(0, result.length);
+                text = "s.toLowerCase()\n→ '" + result + "'\n\n把所有字母变成小写。";
+            } else if (type === 'trim') {
+                result = s.trim();
+                var start = s.length - s.replace(/^\s+/, '').length;
+                cut = range(0, start).concat(range(start + result.length, s.length));
+                renderChars(boxA, s, { cut: cut });
+                mark = range(0, result.length);
+                text = "s.trim()\n→ '" + result + "'\n\n红色方块是首尾被去掉的空白字符，中间的空格不会被处理。";
+            } else if (type === 'slice') {
+                result = s.slice(2, 7);
+                renderChars(boxA, s, { mark: range(2, 7) });
+                mark = range(0, result.length);
+                text = "s.slice(2, 7)\n→ '" + result + "'\n\n" +
+                    '从下标 2 开始，取到下标 7 之前（不含 7），一共 ' + result.length + ' 个字符。\n' +
+                    'slice 不会改变原字符串。';
+            } else if (type === 'replace') {
+                result = s.replace('JavaScript', 'JS');
+                mark = range(0, result.length);
+                text = "s.replace('JavaScript', 'JS')\n→ '" + result + "'\n\n" +
+                    'replace 默认只替换第一个匹配项。\n' +
+                    "要全部替换用 replaceAll('JavaScript', 'JS')。";
+            } else if (type === 'split') {
+                var arr = s.split(' ');
+                renderChars(boxB, '');
+                labelB.textContent = '结果是一个数组 →';
+                boxB.innerHTML = '';
+                arr.forEach(function (item, i) {
+                    var wrap = document.createElement('div');
+                    wrap.className = 'char-wrap';
+                    var cell = document.createElement('div');
+                    cell.className = 'char';
+                    cell.style.width = 'auto';
+                    cell.style.padding = '0 12px';
+                    cell.style.fontSize = '14px';
+                    cell.textContent = item === '' ? "''" : item;
+                    var idx = document.createElement('div');
+                    idx.className = 'idx';
+                    idx.textContent = i;
+                    wrap.appendChild(cell);
+                    wrap.appendChild(idx);
+                    boxB.appendChild(wrap);
+                });
+                out.textContent = "s.split(' ')\n→ " + JSON.stringify(arr) + '\n\n' +
+                    '按空格切成一个数组，数组长度是 ' + arr.length + '（首尾的空格也会切出空字符串）。\n' +
+                    '想过滤掉空项可以再套一层：arr.filter(x => x)';
+                return;
+            } else if (type === 'includes') {
+                var has = s.indexOf('Java') !== -1;
+                var at = s.indexOf('Java');
+                if (at !== -1) renderChars(boxA, s, { mark: range(at, at + 4) });
+                labelB.textContent = '结果（布尔值，不是字符串）';
+                boxB.innerHTML = '<span style="font-family:Consolas;font-size:18px;font-weight:bold;color:' +
+                    (has ? '#15803d' : '#b91c1c') + '">' + has + '</span>';
+                out.textContent = "s.includes('Java')\n→ " + has + '\n\n' +
+                    (has ? '包含，它从下标 ' + at + ' 开始（绿色部分）。' : '不包含。') + '\n' +
+                    'includes 返回布尔值 true / false，常用来做判断。';
+                return;
+            }
+
+            renderChars(boxB, result, { mark: mark });
+            labelB.textContent = '结果（新字符串，长度 ' + result.length + '）';
+            out.textContent = text;
+        }
+
+        /* ================= 七、模板字符串 ================= */
+        function run7() {
+            var name = '小明';
+            var age = 18;
+            var oldWay = '我叫' + name + '，明年' + (age + 1) + '岁';
+            var newWay = '我叫' + name + '，明年' + (age + 1) + '岁';
+            document.getElementById('out7').textContent =
+                "旧写法：'我叫' + name + '，明年' + (age + 1) + '岁'\n" +
+                '→ ' + oldWay + '\n\n' +
+                '新写法：`我叫${name}，明年${age + 1}岁`\n' +
+                '→ ' + newWay + '\n\n' +
+                '两种写法结果完全一样，但模板字符串不用数引号、不用拆加号，\n' +
+                '还能直接回车换行、直接在 ${} 里做运算。';
+        }
+
+        /* ================= 八、综合 ================= */
+        var me = {
+            name: '徐奔',
+            city: '南京',
+            skills: ['HTML', 'CSS', 'JavaScript'],
+            tags: function () {
+                return this.skills.map(function (s) {
+                    return '<span class="ctag">' + s + '</span>';
+                }).join('');
+            }
+        };
+
+        function run8() {
+            var html = '<div class="card">' +
+                '<div class="cname">' + me.name + '</div>' +
+                '<div class="cline">城市：' + me.city + '</div>' +
+                '<div class="cline">技能：' + me.skills.join(' / ') + '</div>' +
+                '<div class="ctags">' + me.tags() + '</div>' +
+                '</div>';
+            document.getElementById('out8').innerHTML = html;
+        }
+
+        /* ---------- 初始化 ---------- */
+        objReset();
+        run2();
+        renderObject(document.getElementById('obj4'), book);
+        renderChars(document.getElementById('str5'), str5);
+        run6('reset');
+    </script>
+</body>
+</html>
