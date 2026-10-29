@@ -77,7 +77,7 @@
         }
         .rank-item:last-child { border-bottom: none; }
         .rank-item:hover { background: #f3f9ff; }
-        .rank-item:hover .title { color: #1a6fc4; }
+        .rank-item:hover .title { color: #1a6fc4; text-decoration: underline; }
         .rank-item.active { background: #eaf4ff; }
         .rank-item.active::after {
             content: "";
@@ -110,7 +110,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             transition: color .15s;
+            text-decoration: none;
+            cursor: pointer;
+            display: block;
         }
+        .title:active { color: #0f4f96; }
         .count {
             flex-shrink: 0;
             color: #e5504a;
@@ -157,7 +161,7 @@
         <ul class="rank-list" id="rankList"></ul>
     </div>
 
-    <p class="page-tip">16-4 新闻排行榜组件 · <b>徐奔</b> · 点击条目可查看</p>
+    <p class="page-tip">16-4 新闻排行榜组件 · <b>徐奔</b> · 点击标题可在新窗口搜索相关新闻</p>
 
     <div class="toast" id="toast"></div>
 
@@ -205,15 +209,26 @@
                 var li = document.createElement('li');
                 li.className = 'rank-item';
                 li.style.animationDelay = (i * 0.025) + 's';
-                li.title = item.t;
 
                 var num = document.createElement('span');
                 num.className = 'num';
                 num.textContent = i + 1;
 
-                var title = document.createElement('span');
+                // 标题做成链接：点击后在新标签页搜索相关新闻
+                var title = document.createElement('a');
                 title.className = 'title';
+                title.href = 'https://www.baidu.com/s?tn=news&word=' + encodeURIComponent(item.t);
+                title.target = '_blank';
+                title.rel = 'noopener noreferrer';
+                title.title = '点击搜索相关新闻：' + item.t;
                 title.textContent = item.t;
+                title.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var items = rankList.querySelectorAll('.rank-item');
+                    for (var k = 0; k < items.length; k++) items[k].classList.remove('active');
+                    li.classList.add('active');
+                    showToast('正在搜索相关新闻：' + item.t);
+                });
 
                 var count = document.createElement('span');
                 count.className = 'count';
