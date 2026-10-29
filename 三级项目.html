@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三级项目 - NBA 频道 - 徐奔</title>
+    <!-- 图标库：Font Awesome 6（所有图标均从这里挑选） -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --nav: #0a1a5e;
+            --nav-2: #16309b;
+            --blue: #2b5cff;
+            --bg: #eef2f8;
+            --card: #ffffff;
+            --text: #1b2333;
+            --sub: #8c95a8;
+            --line: #e9eef7;
+            --orange: #ff7a2f;
+            --red: #ff3b30;
+            --gold: #ffb400;
+        }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .wrap { width: 1160px; max-width: 100%; margin: 0 auto; padding: 0 16px; }
+
+        /* ==================== 顶部主导航 ==================== */
+        .topbar {
+            height: 54px;
+            background: linear-gradient(90deg, #0a1a5e 0%, #16309b 48%, #0a1a5e 100%);
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(10, 26, 94, .28);
+        }
+        .topbar .wrap { display: flex; align-items: center; height: 100%; }
+
+        .logo { display: flex; align-items: center; gap: 8px; margin-right: 22px; flex-shrink: 0; }
+        .logo-ball {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: conic-gradient(from 210deg, #ff3b30, #ffb400, #2b5cff, #ff3b30);
+            box-shadow: 0 0 6px rgba(255,255,255,.35);
+            position: relative;
+        }
+        .logo-ball::after {
+            content: "";
+            position: absolute; inset: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.85);
+        }
+        .logo-txt { font-size: 17px; font-weight: bold; letter-spacing: 1px; }
+
+        .main-nav { display: flex; align-items: stretch; height: 100%; flex: 1; }
+        .main-nav a {
+            position: relative;
+            display: flex; align-items: center;
+            padding: 0 13px;
+            font-size: 14px;
+            color: rgba(255,255,255,.82);
+            transition: color .18s;
+            white-space: nowrap;
+        }
+        .main-nav a:hover { color: #fff; }
+        .main-nav a.active { color: #fff; font-weight: bold; }
+        .main-nav a.active::after {
+            content: "";
+            position: absolute; left: 13px; right: 13px; bottom: 0;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .top-actions { display: flex; align-items: center; gap: 16px; font-size: 12.5px; }
+        .top-actions .act {
+            display: flex; align-items: center; gap: 5px;
+            color: rgba(255,255,255,.8);
+            transition: color .18s;
+            white-space: nowrap;
+        }
+        .top-actions .act:hover { color: #fff; }
+        .top-actions .act i { font-size: 13px; }
+
+        .btn-login {
+            display: flex; align-items: center; gap: 5px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,.45);
+            color: #fff;
+            padding: 5px 14px;
+            border-radius: 15px;
+            font-size: 12.5px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background .18s;
+        }
+        .btn-login:hover { background: rgba(255,255,255,.14); }
+        .btn-shot {
+            display: flex; align-items: center; gap: 5px;
+            background: linear-gradient(135deg, #4b82ff, #1a42c4);
+            border: none;
+            color: #fff;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 12.5px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 2px 10px rgba(43, 92, 255, .5);
+            transition: filter .18s;
+        }
+        .btn-shot:hover { filter: brightness(1.12); }
+
+        /* ==================== 二级栏目 ==================== */
+        .subnav {
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 54px;
+            z-index: 90;
+        }
+        .subnav ul {
+            display: flex;
+            justify-content: center;
+            gap: 44px;
+            height: 46px;
+        }
+        .subnav a {
+            position: relative;
+            display: flex; align-items: center;
+            height: 100%;
+            font-size: 15px;
+            color: #4b5468;
+            transition: color .18s;
+        }
+        .subnav a:hover { color: var(--blue); }
+        .subnav a.active { color: var(--text); font-weight: bold; }
+        .subnav a.active::after {
+            content: "";
+            position: absolute; left: 0; right: 0; bottom: 0;
+            height: 3px;
+            background: var(--blue);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* ==================== 通用标题 ==================== */
+        main { padding: 20px 0 36px; }
+        .sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
+        .sec-head .flag { display: flex; gap: 2px; }
+        .sec-head .flag i {
+            width: 4px; height: 17px;
+            border-radius: 1px;
+            display: block;
+        }
+        .sec-head .flag i:first-child { background: #ff4d3a; }
+        .sec-head .flag i:last-child { background: var(--blue); }
+        .sec-head h2 { font-size: 18px; font-weight: bold; letter-spacing: .5px; }
+        .sec-head .count { font-size: 12px; color: var(--sub); margin-left: 2px; }
+        .sec-head .more {
+            margin-left: auto;
+            font-size: 12.5px;
+            color: var(--sub);
+            display: flex; align-items: center; gap: 4px;
+            cursor: pointer;
+            transition: color .18s;
+        }
+        .sec-head .more:hover { color: var(--blue); }
+
+        /* ==================== 热门比赛 ==================== */
+        .match-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 2px 2px 8px;
+        }
+        .match-row::-webkit-scrollbar { height: 6px; }
+        .match-row::-webkit-scrollbar-thumb { background: #cfd8e6; border-radius: 3px; }
+        .match-row::-webkit-scrollbar-track { background: transparent; }
+
+        .match-card {
+            flex: 0 0 202px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 9px 11px 11px;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+            display: flex;
+            flex-direction: column;
+            min-height: 112px;
+        }
+        .match-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(20, 40, 90, .13);
+            border-color: #cdd9f5;
+        }
+
+        .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+        .tag {
+            font-size: 10.5px;
+            line-height: 1;
+            padding: 3px 5px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+        .tag.nba { background: #fff2ee; color: #ff5a3c; }
+        .tag.show { background: #eef4ff; color: var(--blue); }
+        .tag.classic { background: #fff8e6; color: #c08700; }
+        .tag.zb {
+            border: 1px solid #ffd9c7;
+            background: #fffbf7;
+            color: var(--orange);
+        }
+        .tag.live { color: var(--red); display: flex; align-items: center; gap: 3px; }
+        .tag.live i { font-size: 7px; animation: blink 1.1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+        .mc-time { font-size: 10.5px; color: var(--sub); margin-left: auto; white-space: nowrap; }
+
+        .mc-main { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .team { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 54px; }
+        .team-badge { width: 34px; height: 34px; display: block; }
+        .team-name { font-size: 11.5px; color: #4b5468; white-space: nowrap; }
+        .score {
+            font-family: "DIN Alternate", "Impact", "Consolas", sans-serif;
+            font-size: 19px;
+            font-weight: bold;
+            letter-spacing: .5px;
+            color: #17223c;
+        }
+        .program {
+            font-size: 12.5px;
+            line-height: 1.55;
+            color: #2e3a52;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .program-sub { font-size: 11px; color: var(--sub); margin-top: 6px; }
+
+        .all-card {
+            flex: 0 0 60px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            color: var(--sub);
+            font-size: 11.5px;
+            transition: color .18s, border-color .18s;
+        }
+        .all-card i { font-size: 15px; }
+        .all-card:hover { color: var(--blue); border-color: #cdd9f5; }
+
+        /* ==================== 视频区 ==================== */
+        .video-area {
+            display: grid;
+            grid-template-columns: 208px 1fr 208px;
+            gap: 2px;
+            margin-top: 18px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(16, 32, 80, .2);
+        }
+
+        .side-card {
+            position: relative;
+            height: 330px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #0b1020;
+        }
+        .side-card .thumb { position: absolute; inset: 0; transition: transform .45s; }
+        .side-card:hover .thumb { transform: scale(1.06); }
+        .side-card .thumb.a {
+            background:
+                radial-gradient(circle at 46% 34%, rgba(120, 150, 255, .28), transparent 55%),
+                linear-gradient(165deg, #1a2b6b 0%, #0a1130 58%, #170f2c 100%);
+        }
+        .side-card .thumb.b {
+            background:
+                radial-gradient(circle at 54% 38%, rgba(255, 110, 70, .26), transparent 58%),
+                linear-gradient(165deg, #3c1526 0%, #140a1e 62%, #080d24 100%);
+        }
+        .side-card .thumb::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.05) 30%, rgba(0,0,0,.05) 42%, rgba(0,0,0,.86) 100%);
+        }
+        /* 抽象球员剪影，模拟人物照片 */
+        .silhouette {
+            position: absolute;
+            left: 50%; top: 22%;
+            transform: translateX(-50%);
+            width: 86px; height: 150px;
+            background: radial-gradient(ellipse at 50% 18%, rgba(255,255,255,.22) 0 16px, transparent 17px),
+                        radial-gradient(ellipse at 50% 62%, rgba(255,255,255,.14) 0 40px, transparent 41px);
+            filter: blur(1px);
+            z-index: 1;
+        }
+        .side-card .top-flag {
+            position: absolute; top: 0; left: 0;
+            z-index: 3;
+            background: linear-gradient(90deg, #ff8a2b, #ff4d3a);
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 3px 9px;
+            border-radius: 0 0 6px 0;
+        }
+        .side-card .play-mini {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .38);
+            border: 1px solid rgba(255,255,255,.72);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 13px;
+            transition: background .2s, transform .2s;
+        }
+        .side-card:hover .play-mini {
+            background: rgba(43, 92, 255, .9);
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+        .side-card .info {
+            position: absolute; left: 0; right: 0; bottom: 0;
+            z-index: 3;
+            padding: 12px 12px 14px;
+            color: #fff;
+        }
+        .side-card .info .lg {
+            font-size: 10.5px;
+            color: var(--gold);
+            letter-spacing: .5px;
+            margin-bottom: 3px;
+        }
+        .side-card .info .tt {
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.45;
+        }
+
+        /* ---------- 播放器 ---------- */
+        .player { position: relative; height: 330px; background: #0a0f24; overflow: hidden; }
+        .court { position: absolute; inset: 0; }
+        .court svg { width: 100%; height: 100%; display: block; }
+        .shade {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 52% 48%, rgba(0,0,0,.04) 0%, rgba(0,0,0,.5) 92%);
+        }
+        .live-flag {
+            position: absolute; top: 10px; left: 12px;
+            z-index: 3;
+            background: linear-gradient(90deg, #ff5a3c, #ff2f2f);
+            color: #fff;
+            font-size: 10.5px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            letter-spacing: .5px;
+        }
+        .wm {
+            position: absolute; top: 10px; right: 12px;
+            z-index: 3;
+            font-size: 10.5px;
+            color: rgba(255,255,255,.72);
+            background: rgba(0,0,0,.3);
+            padding: 3px 8px;
+            border-radius: 10px;
+            letter-spacing: .5px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .big-play {
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.14);
+            border: 2px solid rgba(255,255,255,.8);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            backdrop-filter: blur(2px);
+            transition: background .2s, transform .2s, opacity .2s;
+        }
+        .big-play:hover {
+            background: rgba(43, 92, 255, .88);
+            transform: translate(-50%, -50%) scale(1.06);
+        }
+        .big-play.playing { opacity: 0; pointer-events: none; }
+
+        .player-title {
+            position: absolute;
+            left: 14px; bottom: 54px;
+            z-index: 3;
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            text-shadow: 0 1px 6px rgba(0,0,0,.75);
+        }
+
+        .controls {
+            position: absolute; left: 0; right: 0; bottom: 0;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px 11px;
+            color: #fff;
+            font-size: 11.5px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,.82) 100%);
+        }
+        .ctrl {
+            cursor: pointer;
+            opacity: .92;
+            transition: opacity .15s;
+            display: flex; align-items: center; justify-content: center;
+            min-width: 16px;
+        }
+        .ctrl:hover { opacity: 1; }
+        .ctrl i { font-size: 12.5px; }
+        .time { font-family: "Consolas", monospace; opacity: .92; white-space: nowrap; letter-spacing: .5px; }
+        .progress {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,.3);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+            margin: 0 2px;
+        }
+        .progress .bar {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 34%;
+            background: linear-gradient(90deg, #4d7cff, #9dbcff);
+            border-radius: 2px;
+        }
+        .progress .dot {
+            position: absolute;
+            left: 34%; top: 50%;
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            background: #fff;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 5px rgba(0,0,0,.5);
+        }
+        .play-from { font-size: 10.5px; color: rgba(255,255,255,.75); white-space: nowrap; }
+
+        /* ==================== 推荐区 ==================== */
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .rec-card {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .rec-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(20, 40, 90, .13); }
+        .rec-cover {
+            height: 108px;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+        }
+        .rec-cover .play-ico {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.72);
+            background: rgba(0,0,0,.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            transition: background .2s;
+        }
+        .rec-card:hover .play-ico { background: rgba(43, 92, 255, .9); }
+        .rec-cover .dur {
+            position: absolute; right: 7px; bottom: 7px;
+            font-size: 10.5px;
+            background: rgba(0,0,0,.55);
+            padding: 1px 5px;
+            border-radius: 2px;
+        }
+        .rec-cover.c1 { background: linear-gradient(135deg, #1b2a66, #0d1538); }
+        .rec-cover.c2 { background: linear-gradient(135deg, #3a1630, #170c26); }
+        .rec-cover.c3 { background: linear-gradient(135deg, #123a55, #071a26); }
+        .rec-cover.c4 { background: linear-gradient(135deg, #4a2a10, #1c1006); }
+        .rec-info { padding: 9px 11px 12px; }
+        .rec-info h4 {
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.5;
+            height: 39px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .rec-info .meta { font-size: 11px; color: var(--sub); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+
+        footer {
+            margin-top: 30px;
+            background: #0a1a5e;
+            color: rgba(255,255,255,.5);
+            font-size: 12px;
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        /* ==================== 响应式 ==================== */
+        @media (max-width: 1120px) {
+            .wrap { width: 100%; }
+        }
+        @media (max-width: 900px) {
+            .video-area { grid-template-columns: 1fr; }
+            .side-card { display: none; }
+            .rec-grid { grid-template-columns: repeat(2, 1fr); }
+            .main-nav { overflow-x: auto; }
+            .main-nav::-webkit-scrollbar { display: none; }
+            .top-actions .act { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== 顶部导航 ==================== -->
+    <header class="topbar">
+        <div class="wrap">
+            <a href="#" class="logo">
+                <span class="logo-ball"></span>
+                <span class="logo-txt">腾讯体育</span>
+            </a>
+
+            <nav class="main-nav" id="mainNav">
+                <a href="#">首页</a>
+                <a href="#">赛程</a>
+                <a href="#" class="active">NBA</a>
+                <a href="#">CBA</a>
+                <a href="#">欧冠</a>
+                <a href="#">中超</a>
+                <a href="#">德甲</a>
+                <a href="#">英超</a>
+                <a href="#">西甲</a>
+                <a href="#">意甲</a>
+            </nav>
+
+            <div class="top-actions">
+                <a href="#" class="act"><i class="fa-solid fa-table-cells-large"></i>快捷访问</a>
+                <a href="#" class="act"><i class="fa-solid fa-download"></i>下载客户端</a>
+                <a href="#" class="act"><i class="fa-solid fa-bag-shopping"></i>商城</a>
+                <button class="btn-login"><i class="fa-regular fa-circle-user"></i>登录</button>
+                <button class="btn-shot"><i class="fa-solid fa-basketball"></i>投篮</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== 二级栏目 ==================== -->
+    <nav class="subnav">
+        <div class="wrap">
+            <ul id="subNav">
+                <li><a href="#" class="active">赛程</a></li>
+                <li><a href="#">排行</a></li>
+                <li><a href="#">季后赛</a></li>
+                <li><a href="#">数据</a></li>
+                <li><a href="#">球员</a></li>
+                <li><a href="#">球队</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="wrap">
+        <!-- ==================== 热门比赛 ==================== -->
+        <section>
+            <div class="sec-head">
+                <span class="flag"><i></i><i></i></span>
+                <h2>热门比赛</h2>
+                <span class="count">今日共 17 场</span>
+                <span class="more" onclick="alert('跳转到完整赛程页')">全部 <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+            </div>
+
+            <div class="match-row">
+                <!-- 卡片 1：已结束的比赛 -->
+                <div class="match-card">
+                    <div class="mc-head">
+                        <span class="tag nba">NBA常规赛</span>
+                        <span class="tag zb">图文直播</span>
+                        <span class="mc-time">今天 09:30</span>
+                    </div>
+                    <div class="mc-main">
+                        <div class="team">
+                            <svg class="team-badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="19" fill="#1d428a"/>
+                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#ffc72c" stroke-width="1.6"/>
+                                <path d="M12 26 Q20 12 28 26" fill="none" stroke="#ffc72c" stroke-width="1.6"/>
+                                <line x1="20" y1="13" x2="20" y2="27" stroke="#ffc72c" stroke-width="1.6"/>
+                            </svg>
+                            <span class="team-name">勇士</span>
+                        </div>
+                        <div class="score">96 - 120</div>
+                        <div class="team">
+                            <svg class="team-badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="19" fill="#c8102e"/>
+                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#1d428a" stroke-width="2"/>
+                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="Arial">C</text>
+                            </svg>
+                            <span class="team-name">快船</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 2：直播节目 -->
+                <div class="match-card">
+                    <div class="mc-head">
+                        <span class="tag show">篮球直播节目</span>
+                        <span class="tag zb">图文直播</span>
+                        <span class="mc-time">今天 10:10</span>
+                    </div>
+                    <div class="program">《早安Tip-Off》第9期：爱德华兹倒下，开局一周的伤病潮盘点</div>
+                    <div class="program-sub">主播 · 解说阵容</div>
+                </div>
+
+                <!-- 卡片 3：进行中的比赛 -->
+                <div class="match-card">
+                    <div class="mc-head">
+                        <span class="tag nba">NBA常规赛</span>
+                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
+                        <span class="mc-time">今天 10:30</span>
+                    </div>
+                    <div class="mc-main">
+                        <div class="team">
+                            <svg class="team-badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="19" fill="#552583"/>
+                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#fdb927" stroke-width="1.8"/>
+                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fdb927" font-family="Arial">L</text>
+                            </svg>
+                            <span class="team-name">湖人</span>
+                        </div>
+                        <div class="score">103 - 87</div>
+                        <div class="team">
+                            <svg class="team-badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="19" fill="#c8102e"/>
+                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#1d428a" stroke-width="2"/>
+                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="Arial">C</text>
+                            </svg>
+                            <span class="team-name">快船</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卡片 4 -->
+                <div class="match-card">
+                    <div class="mc-head">
+                        <span class="tag classic">NBA经典赛</span>
+                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
+                        <span class="mc-time">今天 14:00</span>
+                    </div>
+                    <div class="program">NBA常规赛精彩回顾：76人 vs 步行者</div>
+                    <div class="program-sub">经典赛事 · 全场回放</div>
+                </div>
+
+                <!-- 卡片 5 -->
+                <div class="match-card">
+                    <div class="mc-head">
+                        <span class="tag classic">NBA经典赛</span>
+                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
+                        <span class="mc-time">今天 16:00</span>
+                    </div>
+                    <div class="program">NBA常规赛精彩回顾：火箭 vs 雄鹿</div>
+                    <div class="program-sub">经典赛事 · 全场回放</div>
+                </div>
+
+                <div class="all-card">
+                    <i class="fa-solid fa-ellipsis"></i>
+                    <span>全部</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 视频区 ==================== -->
+        <section class="video-area">
+            <!-- 左侧视频卡 -->
+            <div class="side-card" onclick="switchVideo('NBA常规赛 勇士vs森林狼', 'a')">
+                <div class="thumb a"></div>
+                <div class="silhouette"></div>
+                <span class="top-flag">TOP</span>
+                <div class="play-mini"><i class="fa-solid fa-play"></i></div>
+                <div class="info">
+                    <div class="lg">NBA常规赛</div>
+                    <div class="tt">勇士 vs 森林狼</div>
+                </div>
+            </div>
+
+            <!-- 播放器 -->
+            <div class="player">
+                <div class="court">
+                    <svg viewBox="0 0 640 330" preserveAspectRatio="xMidYMid slice">
+                        <defs>
+                            <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#dda76d"/>
+                                <stop offset="50%" stop-color="#cb8d4f"/>
+                                <stop offset="100%" stop-color="#a96c33"/>
+                            </linearGradient>
+                            <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#22367f"/>
+                                <stop offset="100%" stop-color="#0c1850"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="640" height="330" fill="url(#wood)"/>
+                        <!-- 地板拼接纹理 -->
+                        <g stroke="rgba(0,0,0,.07)" stroke-width="1">
+                            <line x1="0" y1="36" x2="640" y2="36"/>
+                            <line x1="0" y1="84" x2="640" y2="84"/>
+                            <line x1="0" y1="130" x2="640" y2="130"/>
+                            <line x1="0" y1="204" x2="640" y2="204"/>
+                            <line x1="0" y1="256" x2="640" y2="256"/>
+                            <line x1="0" y1="300" x2="640" y2="300"/>
+                        </g>
+                        <!-- 三分弧线 -->
+                        <path d="M 96 -40 A 250 250 0 0 0 96 370" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="3"/>
+                        <path d="M 544 -40 A 250 250 0 0 1 544 370" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="3"/>
+                        <!-- 禁区 -->
+                        <rect x="226" y="70" width="188" height="190" fill="url(#paint)" stroke="rgba(255,255,255,.7)" stroke-width="3"/>
+                        <circle cx="320" cy="165" r="58" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-dasharray="9 8"/>
+                        <!-- 篮筐 -->
+                        <circle cx="320" cy="165" r="12" fill="none" stroke="#ff6a3d" stroke-width="4"/>
+                        <line x1="320" y1="132" x2="320" y2="48" stroke="rgba(255,255,255,.45)" stroke-width="3"/>
+                        <!-- 中圈 -->
+                        <circle cx="640" cy="165" r="66" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div class="shade"></div>
+
+                <span class="live-flag">直播</span>
+                <span class="wm"><i class="fa-solid fa-basketball"></i>腾讯体育</span>
+
+                <div class="big-play" id="bigPlay" onclick="togglePlay()">
+                    <i class="fa-solid fa-play" id="bigPlayIcon"></i>
+                </div>
+
+                <div class="player-title" id="playerTitle">NBA常规赛 湖人 vs 快船</div>
+
+                <div class="controls">
+                    <span class="ctrl" id="ctrlPlay" onclick="togglePlay()"><i class="fa-solid fa-play" id="ctrlPlayIcon"></i></span>
+                    <span class="time" id="timeText">01:00 / 02:54</span>
+                    <div class="progress" id="progress" onclick="seek(event)">
+                        <div class="bar" id="bar"></div>
+                        <div class="dot" id="dot"></div>
+                    </div>
+                    <span class="ctrl" title="音量"><i class="fa-solid fa-volume-high"></i></span>
+                    <span class="ctrl" title="画中画"><i class="fa-solid fa-clone"></i></span>
+                    <span class="ctrl" title="全屏"><i class="fa-solid fa-expand"></i></span>
+                    <span class="play-from">腾讯视频播放</span>
+                </div>
+            </div>
+
+            <!-- 右侧视频卡 -->
+            <div class="side-card" onclick="switchVideo('NBA常规赛 火箭vs雄鹿', 'b')">
+                <div class="thumb b"></div>
+                <div class="silhouette"></div>
+                <span class="top-flag">TOP</span>
+                <div class="play-mini"><i class="fa-solid fa-play"></i></div>
+                <div class="info">
+                    <div class="lg">NBA常规赛</div>
+                    <div class="tt">火箭 vs 雄鹿</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 精彩推荐 ==================== -->
+        <section style="margin-top:26px">
+            <div class="sec-head">
+                <span class="flag"><i></i><i></i></span>
+                <h2>精彩推荐</h2>
+                <span class="more">更多 <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+            </div>
+
+            <div class="rec-grid">
+                <div class="rec-card">
+                    <div class="rec-cover c1">
+                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">12:36</span>
+                    </div>
+                    <div class="rec-info">
+                        <h4>詹姆斯赛季十佳球：隔扣、追帽、绝杀全都有</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>3.2 万次播放</div>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <div class="rec-cover c2">
+                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">08:42</span>
+                    </div>
+                    <div class="rec-info">
+                        <h4>库里三分雨集锦：单场 8 记三分打穿防线</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>2.7 万次播放</div>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <div class="rec-cover c3">
+                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">15:20</span>
+                    </div>
+                    <div class="rec-info">
+                        <h4>新秀赛季首秀全记录：从替补席到关键先生</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>1.9 万次播放</div>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <div class="rec-cover c4">
+                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">06:18</span>
+                    </div>
+                    <div class="rec-info">
+                        <h4>赛后采访：教练谈末节战术与轮换调整</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>1.1 万次播放</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>三级项目 · 前端布局练习 · 数据均为示例 · 徐奔</footer>
+
+    <script>
+        /* ========== 1. 导航高亮切换 ========== */
+        function bindNav(selector) {
+            var links = document.querySelectorAll(selector + ' a');
+            links.forEach(function (a) {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    links.forEach(function (x) { x.classList.remove('active'); });
+                    a.classList.add('active');
+                });
+            });
+        }
+        bindNav('#mainNav');
+        bindNav('#subNav');
+
+        /* ========== 2. 播放器逻辑 ========== */
+        var total = 174;        // 02:54
+        var current = 60;       // 01:00
+        var playing = false;
+        var timer = null;
+
+        var bigPlay = document.getElementById('bigPlay');
+        var bigPlayIcon = document.getElementById('bigPlayIcon');
+        var ctrlPlayIcon = document.getElementById('ctrlPlayIcon');
+        var timeText = document.getElementById('timeText');
+        var bar = document.getElementById('bar');
+        var dot = document.getElementById('dot');
+
+        function fmt(sec) {
+            sec = Math.max(0, Math.min(total, Math.round(sec)));
+            var m = Math.floor(sec / 60), s = sec % 60;
+            return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        }
+
+        function render() {
+            var p = current / total * 100;
+            bar.style.width = p + '%';
+            dot.style.left = p + '%';
+            timeText.textContent = fmt(current) + ' / ' + fmt(total);
+        }
+
+        function togglePlay() {
+            playing = !playing;
+            if (playing) {
+                bigPlay.classList.add('playing');
+                ctrlPlayIcon.className = 'fa-solid fa-pause';
+                bigPlayIcon.className = 'fa-solid fa-pause';
+                timer = setInterval(function () {
+                    current += 1;
+                    if (current >= total) {
+                        current = total;
+                        render();
+                        clearInterval(timer);
+                        playing = false;
+                        bigPlay.classList.remove('playing');
+                        ctrlPlayIcon.className = 'fa-solid fa-play';
+                        bigPlayIcon.className = 'fa-solid fa-play';
+                        return;
+                    }
+                    render();
+                }, 1000);
+            } else {
+                clearInterval(timer);
+                bigPlay.classList.remove('playing');
+                ctrlPlayIcon.className = 'fa-solid fa-play';
+                bigPlayIcon.className = 'fa-solid fa-play';
+            }
+        }
+
+        function seek(e) {
+            var rect = e.currentTarget.getBoundingClientRect();
+            current = (e.clientX - rect.left) / rect.width * total;
+            render();
+        }
+
+        /* ========== 3. 点侧边卡切换主画面 ========== */
+        var titles = { a: 'NBA常规赛 勇士 vs 森林狼', b: 'NBA常规赛 火箭 vs 雄鹿' };
+        function switchVideo(title, theme) {
+            document.getElementById('playerTitle').textContent = title;
+            current = 0;
+            render();
+            if (!playing) togglePlay();
+        }
+
+        render();
+    </script>
+</body>
+</html>
