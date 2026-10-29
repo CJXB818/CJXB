@@ -161,7 +161,7 @@
         <ul class="rank-list" id="rankList"></ul>
     </div>
 
-    <p class="page-tip">16-4 新闻排行榜组件 · <b>徐奔</b> · 点击标题可在新窗口搜索相关新闻</p>
+    <p class="page-tip">16-4 新闻排行榜组件 · <b>徐奔</b> · 点击标题直接用百度搜索</p>
 
     <div class="toast" id="toast"></div>
 
@@ -217,17 +217,17 @@
                 // 标题做成链接：点击后在新标签页搜索相关新闻
                 var title = document.createElement('a');
                 title.className = 'title';
-                title.href = 'https://www.baidu.com/s?tn=news&word=' + encodeURIComponent(item.t);
+                title.href = 'https://www.baidu.com/s?wd=' + encodeURIComponent(item.t);
                 title.target = '_blank';
                 title.rel = 'noopener noreferrer';
-                title.title = '点击搜索相关新闻：' + item.t;
+                title.title = '百度搜索：' + item.t;
                 title.textContent = item.t;
                 title.addEventListener('click', function (e) {
                     e.stopPropagation();
                     var items = rankList.querySelectorAll('.rank-item');
                     for (var k = 0; k < items.length; k++) items[k].classList.remove('active');
                     li.classList.add('active');
-                    showToast('正在搜索相关新闻：' + item.t);
+                    showToast('正在百度搜索：' + item.t);
                 });
 
                 var count = document.createElement('span');
