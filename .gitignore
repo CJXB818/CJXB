@@ -1,0 +1,9 @@
+# 临时文件与本地缓存
+_reports/
+img/
+图像解决方案/assets/edgeprofile/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+*.tmp

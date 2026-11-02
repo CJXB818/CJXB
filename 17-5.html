@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-5 JavaScript 定时器 - 徐奔</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 30px 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; color: #1a56db; margin-bottom: 6px; }
+        .author { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        }
+        .section h2 {
+            color: #1a56db;
+            border-left: 5px solid #1a56db;
+            padding-left: 12px;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        h3 { margin: 22px 0 10px; color: #475569; font-size: 16px; }
+        .desc {
+            background: #eff6ff;
+            border-left: 4px solid #60a5fa;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1e40af;
+            line-height: 1.9;
+            border-radius: 0 6px 6px 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 13.5px;
+            line-height: 1.75;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 16px;
+        }
+        .js-keyword { color: #c084fc; }
+        .js-string { color: #86efac; }
+        .js-comment { color: #64748b; }
+        .js-number { color: #fbbf24; }
+        .js-fn { color: #7dd3fc; }
+
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .run-btn {
+            background: #1a56db; color: #fff; border: none;
+            padding: 9px 18px; border-radius: 6px; font-size: 14px;
+            cursor: pointer; font-family: "Consolas", monospace;
+            transition: filter .2s, transform .1s;
+        }
+        .run-btn:hover { filter: brightness(.9); }
+        .run-btn:active { transform: scale(.96); }
+        .run-btn:disabled { opacity: .55; cursor: not-allowed; }
+        .run-btn.green { background: #059669; }
+        .run-btn.orange { background: #ea580c; }
+        .run-btn.purple { background: #7c3aed; }
+        .run-btn.gray { background: #64748b; }
+
+        /* 演示卡 */
+        .demo-box {
+            border: 1px solid #e6eaf3;
+            border-radius: 10px;
+            padding: 18px;
+            background: #fbfcfe;
+        }
+        .timer-display {
+            font-family: "Consolas", monospace;
+            font-size: 44px;
+            font-weight: bold;
+            color: #1a56db;
+            text-align: center;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            margin: 6px 0 4px;
+        }
+        .timer-label {
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 14px;
+            font-family: "Consolas", monospace;
+        }
+        .bar-wrap {
+            height: 8px;
+            background: #e8eef8;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #4d7cff, #8fb0ff);
+            border-radius: 4px;
+            transition: width .25s linear;
+        }
+        .bar-fill.warn { background: linear-gradient(90deg, #ff9a3c, #ffcf6a); }
+        .bar-fill.done { background: linear-gradient(90deg, #10b981, #6ee7b7); }
+
+        .msg {
+            text-align: center;
+            font-size: 14px;
+            font-family: "Consolas", monospace;
+            color: #475569;
+            min-height: 22px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: background .3s, color .3s;
+        }
+        .msg.fired {
+            background: #ecfdf5;
+            color: #047857;
+            font-weight: bold;
+        }
+
+        /* 计数器 */
+        .counter-box { text-align: center; }
+        .counter-num {
+            font-family: "Consolas", monospace;
+            font-size: 52px;
+            font-weight: bold;
+            color: #7c3aed;
+            line-height: 1.1;
+        }
+        .counter-sub {
+            font-size: 13px;
+            color: #94a3b8;
+            font-family: "Consolas", monospace;
+            margin: 4px 0 14px;
+        }
+
+        /* 时钟 */
+        .clock-box { text-align: center; }
+        .clock-time {
+            font-family: "Consolas", monospace;
+            font-size: 40px;
+            font-weight: bold;
+            color: #0f172a;
+            letter-spacing: 2px;
+        }
+        .clock-date {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 6px 0 14px;
+            font-family: "Consolas", monospace;
+        }
+        .dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-right: 6px;
+            vertical-align: middle;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse { 50% { opacity: .25; } }
+
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        table.cmp { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table.cmp th, table.cmp td { border: 1px solid #e2e8f0; padding: 10px 14px; text-align: left; line-height: 1.7; }
+        table.cmp th { background: #eff6ff; color: #1e40af; }
+        table.cmp td:first-child { font-family: "Consolas", monospace; color: #7c3aed; white-space: nowrap; }
+        table.cmp tr:nth-child(even) { background: #f8fafc; }
+
+        .log {
+            background: #0f172a;
+            color: #a5b4c8;
+            font-family: "Consolas", monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
+            border-radius: 8px;
+            padding: 14px 16px;
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 14px;
+            white-space: pre-wrap;
+        }
+        .log .t { color: #64748b; }
+        .log .ok { color: #6ee7b7; }
+        .log .warn { color: #fbbf24; }
+
+        .tips { font-size: 13px; color: #64748b; line-height: 2; margin-top: 12px; }
+        .tips b { color: #334155; }
+
+        @media (max-width: 720px) {
+            .grid2 { grid-template-columns: 1fr; }
+            .timer-display { font-size: 34px; }
+            .counter-num, .clock-time { font-size: 38px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JavaScript 的两种定时器</h1>
+        <p class="author">徐奔 · setTimeout 执行一次 · setInterval 反复执行</p>
+
+        <!-- ========== 一、区别 ========== -->
+        <div class="section">
+            <h2>一、先分清：一次 与 反复</h2>
+            <div class="desc">
+                <b>setTimeout(fn, 毫秒)</b>：等一会儿，<b>只执行一次</b>，执行完就结束了。<br>
+                <b>setInterval(fn, 毫秒)</b>：每隔一段时间就执行一次，<b>不会自己停</b>，必须手动清除。<br>
+                两者都返回一个数字 id，用 <b>clearTimeout(id)</b> / <b>clearInterval(id)</b> 取消。
+            </div>
+            <div class="code-block"><span class="js-comment">// 3 秒后执行一次</span>
+<span class="js-keyword">const</span> t1 = <span class="js-fn">setTimeout</span>(() =&gt; {
+    console.<span class="js-fn">log</span>(<span class="js-string">'3 秒到了'</span>);
+}, <span class="js-number">3000</span>);
+
+<span class="js-comment">// 取消（还没到时间才有效）</span>
+<span class="js-fn">clearTimeout</span>(t1);
+
+<span class="js-comment">// 每隔 1 秒执行一次，不停</span>
+<span class="js-keyword">const</span> t2 = <span class="js-fn">setInterval</span>(() =&gt; {
+    console.<span class="js-fn">log</span>(<span class="js-string">'嘀嗒'</span>);
+}, <span class="js-number">1000</span>);
+
+<span class="js-comment">// 必须手动清除，否则会一直跑</span>
+<span class="js-fn">clearInterval</span>(t2);</div>
+            <table class="cmp">
+                <tr>
+                    <th style="width:130px">对比项</th>
+                    <th>setTimeout</th>
+                    <th>setInterval</th>
+                </tr>
+                <tr>
+                    <td>执行次数</td>
+                    <td>一次</td>
+                    <td>无限次，直到被清除</td>
+                </tr>
+                <tr>
+                    <td>清除方法</td>
+                    <td>clearTimeout(id)</td>
+                    <td>clearInterval(id)</td>
+                </tr>
+                <tr>
+                    <td>典型场景</td>
+                    <td>提示自动消失、延迟加载、防抖</td>
+                    <td>时钟、倒计时、轮播图、进度条</td>
+                </tr>
+                <tr>
+                    <td>注意点</td>
+                    <td>页面关闭前能执行到的机会不多</td>
+                    <td>忘记清除会让回调越积越多，页面变卡</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- ========== 二、setTimeout ========== -->
+        <div class="section">
+            <h2>二、setTimeout：3 秒后执行一次</h2>
+            <div class="desc">
+                点击按钮开始，倒计时结束后回调函数才执行，页面提示变绿。
+                倒计时进行中再点“提前取消”，可以看到 clearTimeout 把这次执行彻底取消掉。
+            </div>
+            <div class="grid2">
+                <div class="demo-box">
+                    <div class="timer-display" id="t1Num">3.0</div>
+                    <div class="timer-label">秒后执行回调</div>
+                    <div class="bar-wrap"><div class="bar-fill" id="t1Bar"></div></div>
+                    <div class="btn-row" style="justify-content:center;margin-bottom:12px">
+                        <button class="run-btn green" id="t1Start" onclick="startTimeout()">开始（3 秒）</button>
+                        <button class="run-btn orange" id="t1Cancel" onclick="cancelTimeout()" disabled>提前取消</button>
+                    </div>
+                    <div class="msg" id="t1Msg">等待开始...</div>
+                </div>
+                <div class="demo-box">
+                    <div class="code-block" style="margin-bottom:0;font-size:12.5px"><span class="js-keyword">function</span> <span class="js-fn">start</span>() {
+    <span class="js-fn">log</span>(<span class="js-string">'开始计时'</span>);
+
+    timeoutId = <span class="js-fn">setTimeout</span>(() =&gt; {
+        <span class="js-fn">log</span>(<span class="js-string">'3 秒到，执行回调'</span>);
+        msg.textContent = <span class="js-string">'✔ 回调已执行'</span>;
+    }, <span class="js-number">3000</span>);
+}
+
+<span class="js-keyword">function</span> <span class="js-fn">cancel</span>() {
+    <span class="js-fn">clearTimeout</span>(timeoutId);
+    <span class="js-fn">log</span>(<span class="js-string">'已取消，回调不会执行'</span>);
+}</div>
+                </div>
+            </div>
+            <div class="log" id="log1"><span class="t">[等待]</span> 点击“开始”按钮，观察回调在几秒后执行。</div>
+        </div>
+
+        <!-- ========== 三、setInterval ========== -->
+        <div class="section">
+            <h2>三、setInterval：每秒执行一次</h2>
+            <div class="desc">
+                左边计数器每秒 +1，右边时钟每秒刷新。注意“暂停”用的是 <b>clearInterval</b>，
+                不暂停的话即使切换标签页它也会一直在后台跑。
+            </div>
+            <div class="grid2">
+                <div class="demo-box counter-box">
+                    <div class="counter-num" id="countNum">0</div>
+                    <div class="counter-sub">已运行 <span id="countSec">0</span> 秒</div>
+                    <div class="btn-row" style="justify-content:center;margin-bottom:0">
+                        <button class="run-btn purple" id="btnCount" onclick="toggleCount()">开始</button>
+                        <button class="run-btn gray" onclick="resetCount()">归零</button>
+                    </div>
+                </div>
+                <div class="demo-box clock-box">
+                    <div class="clock-time" id="clockTime">--:--:--</div>
+                    <div class="clock-date"><span class="dot"></span><span id="clockDate">加载中...</span></div>
+                    <div class="btn-row" style="justify-content:center;margin-bottom:0">
+                        <button class="run-btn" id="btnClock" onclick="toggleClock()">停止时钟</button>
+                    </div>
+                </div>
+            </div>
+            <div class="log" id="log2"><span class="t">[等待]</span> 点击“开始”，计数器每秒加一。</div>
+        </div>
+
+        <!-- ========== 四、注意点 ========== -->
+        <div class="section">
+            <h2>四、两个容易踩的坑</h2>
+            <div class="desc">
+                <b>坑 1：</b>setInterval 写完之后忘记清除，组件销毁了回调还在跑，久了页面就卡，控制台还会报错说找不到元素。<br>
+                <b>坑 2：</b>setInterval 的间隔是“最短间隔”，如果回调本身很耗时，实际间隔会被拉长，做倒计时会有误差。
+                需要精确计时时，用递归的 setTimeout 或者记录开始时间戳自己算。
+            </div>
+            <div class="code-block"><span class="js-comment">// 坑 2 的解法：不用 setInterval，用时间戳自己算</span>
+<span class="js-keyword">const</span> startTime = Date.<span class="js-fn">now</span>();
+
+<span class="js-keyword">function</span> <span class="js-fn">tick</span>() {
+    <span class="js-keyword">const</span> passed = (Date.<span class="js-fn">now</span>() - startTime) / <span class="js-number">1000</span>;  <span class="js-comment">// 真实过去了多少秒</span>
+    <span class="js-fn">render</span>(passed.<span class="js-fn">toFixed</span>(<span class="js-number">1</span>));
+
+    <span class="js-keyword">if</span> (passed &lt; <span class="js-number">3</span>) {
+        <span class="js-fn">requestAnimationFrame</span>(tick);   <span class="js-comment">// 或者 setTimeout(tick, 100)</span>
+    }
+}
+<span class="js-fn">tick</span>();</div>
+            <p class="tips">
+                <b>页面上的倒计时就是这么做的：</b>用 setTimeout 定 3 秒后触发回调，
+                同时另开一个 100ms 的定时器负责刷新界面上的数字，两者互不干扰。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        /* ================= setTimeout 演示 ================= */
+        var timeoutId = null;
+        var tickId = null;
+        var startAt = 0;
+        var DURATION = 3000;
+
+        var t1Num = document.getElementById('t1Num');
+        var t1Bar = document.getElementById('t1Bar');
+        var t1Msg = document.getElementById('t1Msg');
+        var t1Start = document.getElementById('t1Start');
+        var t1Cancel = document.getElementById('t1Cancel');
+        var log1 = document.getElementById('log1');
+
+        function log(el, text, cls) {
+            var time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+            var line = document.createElement('div');
+            line.innerHTML = '<span class="t">[' + time + ']</span> ' +
+                '<span class="' + (cls || '') + '">' + text + '</span>';
+            el.appendChild(line);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function startTimeout() {
+            if (timeoutId) return;          /* 防止重复点击开多个 */
+
+            startAt = Date.now();
+            t1Start.disabled = true;
+            t1Cancel.disabled = false;
+            t1Msg.className = 'msg';
+            t1Msg.textContent = '计时中，请稍候...';
+            t1Bar.className = 'bar-fill';
+            t1Bar.style.width = '100%';
+            t1Num.textContent = '3.0';
+
+            log(log1, '调用 setTimeout(回调, 3000)，开始计时', 'warn');
+
+            /* 真正决定“3 秒后执行”的只有这一句 */
+            timeoutId = setTimeout(function () {
+                t1Num.textContent = '0.0';
+                t1Bar.style.width = '0%';
+                t1Bar.className = 'bar-fill done';
+                t1Msg.className = 'msg fired';
+                t1Msg.textContent = '✔ 3 秒到，回调执行了（只执行这一次）';
+                log(log1, '回调执行完毕，定时器自动结束', 'ok');
+                resetTimeoutUI();
+            }, DURATION);
+
+            /* 这个只是刷新界面上的倒计时数字 */
+            tickId = setInterval(function () {
+                var left = Math.max(0, DURATION - (Date.now() - startAt));
+                t1Num.textContent = (left / 1000).toFixed(1);
+                t1Bar.style.width = (left / DURATION * 100) + '%';
+                if (left < 1000) t1Bar.className = 'bar-fill warn';
+            }, 80);
+        }
+
+        function cancelTimeout() {
+            if (!timeoutId) return;
+            clearTimeout(timeoutId);
+            clearInterval(tickId);
+            timeoutId = null;
+            tickId = null;
+
+            var left = Math.max(0, DURATION - (Date.now() - startAt));
+            t1Num.textContent = (left / 1000).toFixed(1);
+            t1Bar.className = 'bar-fill warn';
+            t1Msg.className = 'msg';
+            t1Msg.textContent = '✘ 已取消，回调不会执行';
+            log(log1, '调用 clearTimeout(id)，这次执行被取消', 'warn');
+            resetTimeoutUI();
+        }
+
+        function resetTimeoutUI() {
+            timeoutId = null;
+            clearInterval(tickId);
+            tickId = null;
+            t1Start.disabled = false;
+            t1Cancel.disabled = true;
+        }
+
+        /* ================= setInterval 计数器 ================= */
+        var countId = null;
+        var countVal = 0;
+        var countNum = document.getElementById('countNum');
+        var countSec = document.getElementById('countSec');
+        var btnCount = document.getElementById('btnCount');
+        var log2 = document.getElementById('log2');
+
+        function toggleCount() {
+            if (countId) {
+                clearInterval(countId);
+                countId = null;
+                btnCount.textContent = '继续';
+                btnCount.className = 'run-btn purple';
+                log(log2, 'clearInterval(id)，计数器暂停在 ' + countVal, 'warn');
+            } else {
+                countId = setInterval(function () {
+                    countVal++;
+                    countNum.textContent = countVal;
+                    countSec.textContent = countVal;
+                }, 1000);
+                btnCount.textContent = '暂停';
+                btnCount.className = 'run-btn orange';
+                log(log2, 'setInterval(回调, 1000) 已启动，每秒 +1', 'ok');
+            }
+        }
+
+        function resetCount() {
+            clearInterval(countId);
+            countId = null;
+            countVal = 0;
+            countNum.textContent = '0';
+            countSec.textContent = '0';
+            btnCount.textContent = '开始';
+            btnCount.className = 'run-btn purple';
+            log(log2, '计数器归零', '');
+        }
+
+        /* ================= 时钟 ================= */
+        var clockId = null;
+        var clockTime = document.getElementById('clockTime');
+        var clockDate = document.getElementById('clockDate');
+        var btnClock = document.getElementById('btnClock');
+
+        function renderClock() {
+            var d = new Date();
+            var hh = String(d.getHours()).padStart(2, '0');
+            var mm = String(d.getMinutes()).padStart(2, '0');
+            var ss = String(d.getSeconds()).padStart(2, '0');
+            clockTime.textContent = hh + ':' + mm + ':' + ss;
+
+            var week = ['日', '一', '二', '三', '四', '五', '六'][d.getDay()];
+            clockDate.textContent = d.getFullYear() + ' 年 ' + (d.getMonth() + 1) + ' 月 ' +
+                d.getDate() + ' 日 星期' + week;
+        }
+
+        function toggleClock() {
+            if (clockId) {
+                clearInterval(clockId);
+                clockId = null;
+                btnClock.textContent = '继续时钟';
+                btnClock.className = 'run-btn green';
+            } else {
+                renderClock();
+                clockId = setInterval(renderClock, 1000);
+                btnClock.textContent = '停止时钟';
+                btnClock.className = 'run-btn';
+            }
+        }
+
+        /* 页面初始化 */
+        renderClock();
+        clockId = setInterval(renderClock, 1000);
+
+        /* 离开页面时清理，养成习惯 */
+        window.addEventListener('beforeunload', function () {
+            clearTimeout(timeoutId);
+            clearInterval(tickId);
+            clearInterval(countId);
+            clearInterval(clockId);
+        });
+    </script>
+</body>
+</html>

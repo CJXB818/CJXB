@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17-1 JSON 数据格式 - 徐奔</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 30px 20px;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 { text-align: center; color: #1a56db; margin-bottom: 6px; }
+        .author { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        }
+        .section h2 {
+            color: #1a56db;
+            border-left: 5px solid #1a56db;
+            padding-left: 12px;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+        .desc {
+            background: #eff6ff;
+            border-left: 4px solid #60a5fa;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1e40af;
+            line-height: 1.9;
+            border-radius: 0 6px 6px 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 16px;
+        }
+        .js-keyword { color: #c084fc; }
+        .js-string { color: #86efac; }
+        .js-comment { color: #64748b; }
+        .js-number { color: #fbbf24; }
+        .js-fn { color: #7dd3fc; }
+
+        .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+        .run-btn {
+            background: #1a56db; color: #fff; border: none;
+            padding: 9px 18px; border-radius: 6px; font-size: 14px;
+            cursor: pointer; font-family: "Consolas", monospace;
+            transition: background .2s, transform .1s;
+        }
+        .run-btn:hover { filter: brightness(.9); }
+        .run-btn:active { transform: scale(.96); }
+        .run-btn.green { background: #059669; }
+        .run-btn.orange { background: #ea580c; }
+        .run-btn.purple { background: #7c3aed; }
+        .run-btn.gray { background: #64748b; }
+
+        /* 对比布局 */
+        .compare {
+            display: grid;
+            grid-template-columns: 1fr 44px 1fr;
+            gap: 4px;
+            align-items: stretch;
+            margin-bottom: 16px;
+        }
+        .panel {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel .ph {
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 12.5px;
+            font-family: "Consolas", monospace;
+            padding: 7px 12px;
+            border-bottom: 1px solid #e0e7ff;
+        }
+        .panel .pbody { padding: 12px; flex: 1; overflow: auto; }
+        .arrow {
+            display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; font-size: 20px;
+        }
+
+        /* 对象树 */
+        .kv { font-family: "Consolas", monospace; font-size: 13.5px; line-height: 1.95; }
+        .kv .indent { padding-left: 18px; }
+        .kv .k { color: #7c3aed; }
+        .kv .c { color: #94a3b8; }
+        .kv .v-s { color: #059669; }
+        .kv .v-n { color: #d97706; }
+        .kv .v-b { color: #2563eb; }
+        .kv .v-a { color: #64748b; }
+
+        /* JSON 文本 */
+        .json-view {
+            font-family: "Consolas", monospace;
+            font-size: 13.5px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #0f172a;
+            min-height: 40px;
+        }
+        .j-key { color: #7c3aed; }
+        .j-str { color: #059669; }
+        .j-num { color: #d97706; }
+        .j-bool { color: #2563eb; }
+        .j-null { color: #94a3b8; }
+
+        .output {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: "Consolas", monospace;
+            font-size: 13.5px;
+            color: #92400e;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 30px;
+        }
+        .output.err {
+            background: #fef2f2;
+            border-color: #f87171;
+            color: #b91c1c;
+        }
+        .output.ok {
+            background: #ecfdf5;
+            border-color: #34d399;
+            color: #047857;
+        }
+
+        table.rule { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table.rule th, table.rule td { border: 1px solid #e2e8f0; padding: 9px 12px; text-align: left; }
+        table.rule th { background: #eff6ff; color: #1e40af; }
+        table.rule td:first-child { font-family: "Consolas", monospace; color: #7c3aed; white-space: nowrap; }
+        table.rule tr:nth-child(even) { background: #f8fafc; }
+        .bad { color: #dc2626; font-family: "Consolas", monospace; }
+        .good { color: #059669; font-family: "Consolas", monospace; }
+
+        @media (max-width: 760px) {
+            .compare { grid-template-columns: 1fr; }
+            .arrow { padding: 6px 0; transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JavaScript 中的 JSON</h1>
+        <p class="author">徐奔 · 对象与字符串的互转 · 语法规则 · 嵌套数据</p>
+
+        <!-- ========== 一、JSON 是什么 ========== -->
+        <div class="section">
+            <h2>一、JSON 是“字符串”，不是对象</h2>
+            <div class="desc">
+                JSON（JavaScript Object Notation）是一种<b>文本格式</b>，长得像 JS 对象，但它本质是<b>字符串</b>。
+                服务器和浏览器之间传输数据时用它，因为文本任何语言都认识。<br>
+                左边是 JS 对象（内存里的东西），右边是 JSON 字符串（可以发给服务器的文本）。
+                <b>JSON.stringify()</b> 把对象变成字符串，<b>JSON.parse()</b> 把字符串变回对象。
+            </div>
+
+            <div class="compare">
+                <div class="panel">
+                    <div class="ph">JS 对象　object</div>
+                    <div class="pbody"><div class="kv" id="objView"></div></div>
+                </div>
+                <div class="arrow">⇄</div>
+                <div class="panel">
+                    <div class="ph">JSON 字符串　string</div>
+                    <div class="pbody"><pre class="json-view" id="strView">（点击下面的按钮生成）</pre></div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="run-btn green" onclick="toJSON()">JSON.stringify(obj)</button>
+                <button class="run-btn purple" onclick="toPretty()">美化：加缩进</button>
+                <button class="run-btn" onclick="toObject()">JSON.parse(str)</button>
+                <button class="run-btn orange" onclick="badJSON()">解析错误示范</button>
+            </div>
+            <div class="output" id="out1">点击按钮，观察对象与字符串之间的转换。</div>
+        </div>
+
+        <!-- ========== 二、语法规则 ========== -->
+        <div class="section">
+            <h2>二、JSON 的六条硬规则</h2>
+            <div class="desc">JSON 比 JS 对象字面量严格得多，写错一个引号就解析失败。下面是和 JS 写法的对比。</div>
+            <table class="rule">
+                <tr>
+                    <th style="width:150px">规则</th>
+                    <th>JS 对象写法</th>
+                    <th>JSON 写法</th>
+                </tr>
+                <tr>
+                    <td>键名必须双引号</td>
+                    <td class="bad">{ name: '小明' }</td>
+                    <td class="good">{ "name": "小明" }</td>
+                </tr>
+                <tr>
+                    <td>字符串必须双引号</td>
+                    <td class="bad">{ "name": '小明' }</td>
+                    <td class="good">{ "name": "小明" }</td>
+                </tr>
+                <tr>
+                    <td>不能有函数</td>
+                    <td class="bad">{ "fn": function(){} }</td>
+                    <td class="good">去掉函数，只传数据</td>
+                </tr>
+                <tr>
+                    <td>不能有 undefined</td>
+                    <td class="bad">{ "a": undefined }</td>
+                    <td class="good">{ "a": null }</td>
+                </tr>
+                <tr>
+                    <td>不能有注释</td>
+                    <td class="bad">{ /* 注释 */ "a": 1 }</td>
+                    <td class="good">{ "a": 1 }</td>
+                </tr>
+                <tr>
+                    <td>不能有尾逗号</td>
+                    <td class="bad">{ "a": 1, }</td>
+                    <td class="good">{ "a": 1 }</td>
+                </tr>
+            </table>
+            <div class="code-block" style="margin-top:16px"><span class="js-keyword">const</span> obj = { name: <span class="js-string">'小明'</span>, age: <span class="js-number">18</span> };
+
+<span class="js-keyword">const</span> str = JSON.<span class="js-fn">stringify</span>(obj);        <span class="js-comment">// '{"name":"小明","age":18}'</span>
+<span class="js-keyword">const</span> back = JSON.<span class="js-fn">parse</span>(str);              <span class="js-comment">// 又变回对象</span>
+
+<span class="js-comment">// stringify 的三个常用参数：值、替换器、缩进</span>
+JSON.<span class="js-fn">stringify</span>(obj, <span class="js-keyword">null</span>, <span class="js-number">2</span>);       <span class="js-comment">// 缩进 2 空格，适合展示</span>
+JSON.<span class="js-fn">stringify</span>(obj, [<span class="js-string">'name'</span>]);         <span class="js-comment">// 只要 name 字段 → '{"name":"小明"}'</span>
+
+<span class="js-comment">// 判断字符串能不能转：用 try...catch</span>
+<span class="js-keyword">try</span> {
+    JSON.<span class="js-fn">parse</span>(<span class="js-string">'{name:"小明"}'</span>);          <span class="js-comment">// 键没加引号，报错</span>
+} <span class="js-keyword">catch</span> (e) {
+    console.<span class="js-fn">log</span>(e.message);
+}</div>
+        </div>
+
+        <!-- ========== 三、嵌套数据 ========== -->
+        <div class="section">
+            <h2>三、真实接口长什么样：嵌套的 JSON</h2>
+            <div class="desc">
+                接口返回的数据通常是“对象套数组、数组套对象”。下面这份是后面 17-2、17-3 要用的商品数据结构，
+                把它转成对象后用 <b>点号</b> 和 <b>下标</b> 层层取值。
+            </div>
+            <div class="code-block" id="code3"><span class="js-keyword">const</span> json = <span class="js-string">`{
+  "id": 1,
+  "title": "Essence Mascara Lash Princess",
+  "price": 9.99,
+  "rating": 4.94,
+  "tags": ["beauty", "mascara"],
+  "dimensions": { "width": 15.14, "height": 13.08 }
+}`</span>;</div>
+            <button class="run-btn green" onclick="demo3()">解析并逐层取值</button>
+            <button class="run-btn gray" onclick="showRaw()">查看原始 JSON</button>
+            <div class="output" id="out3" style="margin-top:14px">点击按钮，看如何从嵌套数据里取出想要的值。</div>
+        </div>
+    </div>
+
+    <script>
+        /* ---------- 数据 ---------- */
+        var user = {
+            name: '小明',
+            age: 18,
+            isStudent: true,
+            hobbies: ['篮球', '音乐'],
+            address: { city: '大连', zip: '116000' }
+        };
+
+        /* ---------- 对象 → 树形展示 ---------- */
+        function renderTree(obj, depth) {
+            depth = depth || 0;
+            var html = '';
+            Object.keys(obj).forEach(function (k) {
+                var v = obj[k];
+                var pad = 'padding-left:' + (depth * 18) + 'px';
+                if (v && typeof v === 'object' && !Array.isArray(v)) {
+                    html += '<div class="indent" style="' + pad + '"><span class="k">"' + k + '"</span> <span class="c">{</span></div>';
+                    html += renderTree(v, depth + 1);
+                    html += '<div style="' + pad + '"><span class="c">}</span></div>';
+                } else if (Array.isArray(v)) {
+                    html += '<div style="' + pad + '"><span class="k">"' + k + '"</span> <span class="c">: [</span></div>';
+                    v.forEach(function (item) {
+                        var cls = typeof item === 'string' ? 'v-s' : 'v-n';
+                        html += '<div style="padding-left:' + ((depth + 1) * 18) + 'px"><span class="' + cls + '">' +
+                            (typeof item === 'string' ? '"' + item + '"' : item) + '</span><span class="c">,</span></div>';
+                    });
+                    html += '<div style="' + pad + '"><span class="c">]</span></div>';
+                } else {
+                    var cls2 = typeof v === 'string' ? 'v-s' : (typeof v === 'number' ? 'v-n' : 'v-b');
+                    var show = typeof v === 'string' ? '"' + v + '"' : String(v);
+                    html += '<div style="' + pad + '"><span class="k">"' + k + '"</span><span class="c">: </span><span class="' +
+                        cls2 + '">' + show + '</span><span class="c">,</span></div>';
+                }
+            });
+            return html;
+        }
+
+        /* ---------- JSON 语法着色 ---------- */
+        function highlight(text) {
+            var safe = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return safe.replace(
+                /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                function (m) {
+                    var cls = 'j-num';
+                    if (/^"/.test(m)) {
+                        cls = /:$/.test(m) ? 'j-key' : 'j-str';
+                    } else if (/true|false/.test(m)) {
+                        cls = 'j-bool';
+                    } else if (/null/.test(m)) {
+                        cls = 'j-null';
+                    }
+                    return '<span class="' + cls + '">' + m + '</span>';
+                }
+            );
+        }
+
+        var strView = document.getElementById('strView');
+        var out1 = document.getElementById('out1');
+        var currentJSON = '';
+
+        function toJSON() {
+            currentJSON = JSON.stringify(user);
+            strView.innerHTML = highlight(currentJSON);
+            setOut(out1, 'JSON.stringify(user)\n→ ' + currentJSON +
+                '\n\n注意：整段只有一个字符串，里面的双引号是字符串的“内容”，\n不能直接拿它当对象用 user.name。', '');
+        }
+
+        function toPretty() {
+            currentJSON = JSON.stringify(user, null, 2);
+            strView.innerHTML = highlight(currentJSON);
+            setOut(out1, 'JSON.stringify(user, null, 2)\n→ 加了缩进，方便人看；\n接口调试时常用这种格式，实际传输用不带缩进的版本更省流量。', '');
+        }
+
+        function toObject() {
+            if (!currentJSON) {
+                setOut(out1, '请先点“JSON.stringify(obj)”生成字符串。', 'err');
+                return;
+            }
+            var obj = JSON.parse(currentJSON);
+            setOut(out1, 'JSON.parse(str)\n→ 类型：' + typeof obj +
+                '\n→ 取值：obj.name = ' + obj.name +
+                '\n→ 取值：obj.address.city = ' + obj.address.city +
+                '\n→ 取值：obj.hobbies[0] = ' + obj.hobbies[0] +
+                '\n\n字符串解析回对象后，才能用点号和下标取值。', 'ok');
+        }
+
+        function badJSON() {
+            var bad = '{name:"小明", age:18,}';
+            try {
+                JSON.parse(bad);
+                setOut(out1, '解析成功（不应该出现）', 'ok');
+            } catch (e) {
+                setOut(out1, 'JSON.parse(\'' + bad + '\')\n\n✗ 抛出异常：' + e.message +
+                    '\n\n两个错误：\n1. 键 name 没有加双引号\n2. 对象末尾多了逗号\n\n' +
+                    '所以解析接口数据一定要放在 try...catch 里。', 'err');
+            }
+        }
+
+        function setOut(el, text, type) {
+            el.textContent = text;
+            el.className = 'output' + (type ? ' ' + type : '');
+        }
+
+        /* ---------- 嵌套演示 ---------- */
+        var rawJson = '{\n' +
+            '  "id": 1,\n' +
+            '  "title": "Essence Mascara Lash Princess",\n' +
+            '  "price": 9.99,\n' +
+            '  "rating": 4.94,\n' +
+            '  "tags": ["beauty", "mascara"],\n' +
+            '  "dimensions": { "width": 15.14, "height": 13.08 }\n' +
+            '}';
+
+        function showRaw() {
+            document.getElementById('out3').className = 'output';
+            document.getElementById('out3').innerHTML = highlight(rawJson);
+        }
+
+        function demo3() {
+            var p = JSON.parse(rawJson);
+            var lines = [
+                'JSON.parse(json) 之后：',
+                '',
+                'p.id                 → ' + p.id + '　（数字）',
+                'p.title              → ' + p.title + '　（字符串）',
+                'p.price              → ' + p.price,
+                'p.tags[0]            → ' + p.tags[0] + '　（数组用下标）',
+                'p.tags.length        → ' + p.tags.length,
+                'p.dimensions.width   → ' + p.dimensions.width + '　（对象套对象，一层层点下去）',
+                '',
+                '反过来的写法：',
+                'JSON.stringify(p.dimensions) → ' + JSON.stringify(p.dimensions)
+            ];
+            setOut(document.getElementById('out3'), lines.join('\n'), 'ok');
+        }
+
+        /* ---------- 初始化 ---------- */
+        document.getElementById('objView').innerHTML = renderTree(user, 0);
+        currentJSON = JSON.stringify(user);
+        strView.innerHTML = highlight(currentJSON);
+    </script>
+</body>
+</html>

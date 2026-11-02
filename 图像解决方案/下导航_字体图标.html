@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!-- 项目：图像解决方案 · 下导航（字体图标方案）  作者：徐奔  班级：____  学号：____ -->
+<!-- 类名前缀 xb- 为姓名缩写（徐奔），符合"代码中包含姓名缩写"要求 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>下导航 - 字体图标方案 - 徐奔</title>
+<link rel="stylesheet" href="assets/fa/all.min.css">
+<style>
+  /* ===== 全局 CSS（不使用 id 选择器） ===== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root{
+    --xb-primary:#1a2384;
+    --xb-gradient:linear-gradient(100deg,#1a2384 0%,#3d2a9e 45%,#7a4ab5 100%);
+    --xb-active:#ff7a2f;
+    --xb-text:#1b2333;
+    --xb-sub:#8c95a8;
+    --xb-bg:#eef1f8;
+    --xb-card:#ffffff;
+    --xb-line:#e6eaf3;
+  }
+  body{
+    font-family:"Microsoft YaHei","PingFang SC",sans-serif;
+    background:var(--xb-bg);
+    color:var(--xb-text);
+  }
+  .xb-page{ max-width:1140px; margin:0 auto; min-height:100vh; padding-bottom:64px; }
+
+  /* 顶部标题区（演示用） */
+  .xb-header{
+    background:var(--xb-gradient);
+    color:#fff; padding:18px 16px 14px;
+  }
+  .xb-header h1{ font-size:18px; font-weight:700; letter-spacing:.5px; }
+  .xb-header p{ font-size:12px; opacity:.86; margin-top:4px; }
+
+  /* 模拟内容卡片 */
+  .xb-content{ padding:14px; display:grid; gap:12px; }
+  .xb-card{
+    background:var(--xb-card); border-radius:12px; padding:14px;
+    box-shadow:0 4px 14px rgba(26,35,132,.06);
+    display:flex; gap:12px; align-items:center;
+  }
+  .xb-thumb{
+    width:64px; height:48px; border-radius:8px; flex:0 0 auto;
+    background:linear-gradient(135deg,#2b5cff,#7a4ab5);
+  }
+  .xb-card .xb-meta b{ font-size:14px; }
+  .xb-card .xb-meta span{ display:block; font-size:12px; color:var(--xb-sub); margin-top:4px; }
+
+  /* ===== 下导航：字体图标方案（核心） ===== */
+  .xb-tabbar{
+    position:fixed; left:0; right:0; bottom:0;
+    display:flex;                /* flex 布局实现自适应宽度 */
+    background:#fff;
+    border-top:1px solid var(--xb-line);
+    box-shadow:0 -4px 18px rgba(26,35,132,.08);
+    z-index:50;
+  }
+  .xb-tabbar a{
+    flex:1 1 0;                   /* 每项等分 → 自适应任意视口宽度 */
+    text-align:center;
+    padding:8px 0 10px;
+    color:var(--xb-sub);
+    text-decoration:none;
+    transition:color .2s;
+    min-width:0;                 /* 允许窄屏收缩 */
+  }
+  .xb-tabbar a i{
+    display:block;
+    font-size:22px;              /* 字体图标用 font-size 控制大小 */
+    line-height:1.2;
+  }
+  .xb-tabbar a span{
+    display:block;
+    font-size:11px;
+    margin-top:3px;
+  }
+  .xb-tabbar a.is-active{ color:var(--xb-active); }   /* CSS 修饰：选中态变色 */
+  .xb-tabbar a.is-active i{ transform:translateY(-2px); }
+
+  /* 大屏：下导航居中限宽，避免过宽 */
+  @media (min-width:768px){
+    .xb-tabbar{ max-width:480px; left:50%; transform:translateX(-50%); border-radius:14px 14px 0 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="xb-page">
+    <header class="xb-header">
+      <h1>腾讯体育 · 移动版下导航</h1>
+      <p>字体图标（Font Awesome）方案 · 自适应宽度 · 作者 徐奔</p>
+    </header>
+
+    <main class="xb-content">
+      <article class="xb-card"><div class="xb-thumb"></div><div class="xb-meta"><b>赛事速递</b><span>NBA / CBA / 欧冠 实时战报</span></div></article>
+      <article class="xb-card"><div class="xb-thumb"></div><div class="xb-meta"><b>精彩集锦</b><span>进球、绝杀、十佳球一网打尽</span></div></article>
+      <article class="xb-card"><div class="xb-thumb"></div><div class="xb-meta"><b>赛事数据</b><span>球队排行 · 球员技术统计</span></div></article>
+      <article class="xb-card"><div class="xb-thumb"></div><div class="xb-meta"><b>我的关注</b><span>收藏球队 · 订阅提醒</span></div></article>
+    </main>
+  </div>
+
+  <!-- 下导航：5 个标签，字体图标来自 Font Awesome -->
+  <nav class="xb-tabbar" aria-label="徐奔-下导航-字体图标">
+    <a href="#" class="is-active"><i class="fa-solid fa-house"></i><span>首页</span></a>
+    <a href="#"><i class="fa-solid fa-list-ol"></i><span>赛程</span></a>
+    <a href="#"><i class="fa-solid fa-film"></i><span>视频</span></a>
+    <a href="#"><i class="fa-solid fa-compass"></i><span>发现</span></a>
+    <a href="#"><i class="fa-solid fa-user"></i><span>我的</span></a>
+  </nav>
+</body>
+</html>

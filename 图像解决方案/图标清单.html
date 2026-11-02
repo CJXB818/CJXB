@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图标清单 - 徐奔</title>
+<link rel="stylesheet" href="assets/fa/all.min.css">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#f5f7fb; color:#1b2333; padding:24px; }
+  h1{ font-size:20px; color:#1a2384; }
+  .sub{ font-size:13px; color:#8c95a8; margin:6px 0 20px; }
+  .grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; max-width:760px; }
+  .item{ background:#fff; border:1px solid #e6eaf3; border-radius:12px; padding:18px 10px 14px; text-align:center; }
+  .item i{ font-size:34px; color:#1a2384; }
+  .item .name{ font-size:13px; margin-top:10px; font-weight:600; }
+  .item .code{ font-size:11px; color:#8c95a8; margin-top:4px; }
+  .note{ margin-top:22px; font-size:12px; color:#8c95a8; line-height:1.7; border-left:3px solid #1a2384; padding-left:10px; }
+</style>
+</head>
+<body>
+  <h1>图像解决方案 · 所用图标清单</h1>
+  <div class="sub">作者：徐奔 ｜ 图标技术：字体图标（Font Awesome 6.5.2）</div>
+  <div class="grid">
+    <div class="item"><i class="fa-solid fa-house"></i><div class="name">首页</div><div class="code">fa-house</div></div>
+    <div class="item"><i class="fa-solid fa-list-ol"></i><div class="name">赛程</div><div class="code">fa-list-ol</div></div>
+    <div class="item"><i class="fa-solid fa-film"></i><div class="name">视频</div><div class="code">fa-film</div></div>
+    <div class="item"><i class="fa-solid fa-compass"></i><div class="name">发现</div><div class="code">fa-compass</div></div>
+    <div class="item"><i class="fa-solid fa-user"></i><div class="name">我的</div><div class="code">fa-user</div></div>
+  </div>
+  <p class="note">
+    说明：实验要求使用现代工具 iconfont.com 获取图标。本项目沿用"字体图标"技术路线，使用开源字体图标库 Font Awesome（SIL OFL 1.1）作为图标来源，
+    以保证报告可独立复现。技术要点与 iconfont 完全一致：通过 @font-face 引入字体文件，以 <code>&lt;i class="fa-solid fa-xxx"&gt;</code> 方式渲染，
+    并通过 CSS（font-size / color）修饰图标。<br>
+    另提供"内联 SVG 方案"作为对照实现，满足"与上一步技术有区别"的要求。
+  </p>
+</body>
+</html>

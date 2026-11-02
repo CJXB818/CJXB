@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>三级项目 - NBA 频道 - 徐奔</title>
-    <!-- 图标库：Font Awesome 6（所有图标均从这里挑选） -->
+    <title>三级项目 - 腾讯体育首页仿写 - 徐奔</title>
+    <!-- 字体图标：Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
     <style>
+        /* ================= 全局 ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --nav: #0a1a5e;
-            --nav-2: #16309b;
+            --nav-1: #1a2384;
+            --nav-2: #3d2a9e;
+            --nav-3: #7a4ab5;
             --blue: #2b5cff;
-            --bg: #eef2f8;
-            --card: #ffffff;
+            --bg: #eef1f8;
             --text: #1b2333;
             --sub: #8c95a8;
-            --line: #e9eef7;
-            --orange: #ff7a2f;
+            --line: #e6eaf3;
             --red: #ff3b30;
-            --gold: #ffb400;
+            --orange: #ff7a2f;
+            --gold: #c9932f;
         }
         body {
             font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
@@ -29,471 +30,477 @@
         }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
-        .wrap { width: 1160px; max-width: 100%; margin: 0 auto; padding: 0 16px; }
+        .wrap { width: 1140px; max-width: 100%; margin: 0 auto; padding: 0 14px; }
 
-        /* ==================== 顶部主导航 ==================== */
+        /* ================= 顶部：第一行工具栏 ================= */
         .topbar {
-            height: 54px;
-            background: linear-gradient(90deg, #0a1a5e 0%, #16309b 48%, #0a1a5e 100%);
+            position: relative;
+            background: linear-gradient(100deg, #1a2384 0%, #2c2ba0 38%, #5b3aae 72%, #7a4ab5 100%);
             color: #fff;
-            position: sticky;
-            top: 0;
+            overflow: hidden;
             z-index: 100;
-            box-shadow: 0 2px 8px rgba(10, 26, 94, .28);
         }
-        .topbar .wrap { display: flex; align-items: center; height: 100%; }
+        .topbar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 78% 10%, rgba(255,255,255,.16), transparent 46%),
+                linear-gradient(180deg, rgba(255,255,255,.06), transparent 60%);
+            pointer-events: none;
+        }
+        .watermark {
+            position: absolute;
+            right: 380px;
+            top: 2px;
+            z-index: 1;
+            font-size: 32px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,.22);
+            transform: scaleY(1.15) skewX(-10deg);
+            pointer-events: none;
+            white-space: nowrap;
+        }
 
-        .logo { display: flex; align-items: center; gap: 8px; margin-right: 22px; flex-shrink: 0; }
-        .logo-ball {
+        .top-row { position: relative; z-index: 2; }
+        .top-row .wrap { display: flex; align-items: center; height: 46px; gap: 20px; }
+
+        .logo { display: flex; align-items: center; gap: 8px; margin-right: 16px; }
+        .logo-mark {
             width: 22px; height: 22px;
             border-radius: 50%;
-            background: conic-gradient(from 210deg, #ff3b30, #ffb400, #2b5cff, #ff3b30);
-            box-shadow: 0 0 6px rgba(255,255,255,.35);
+            background: conic-gradient(from 200deg, #ff3b30, #ffb400, #2b5cff, #ff3b30);
             position: relative;
+            box-shadow: 0 0 8px rgba(255,255,255,.35);
         }
-        .logo-ball::after {
+        .logo-mark::after {
             content: "";
             position: absolute; inset: 6px;
+            background: #fff;
             border-radius: 50%;
-            background: rgba(255,255,255,.85);
         }
         .logo-txt { font-size: 17px; font-weight: bold; letter-spacing: 1px; }
 
-        .main-nav { display: flex; align-items: stretch; height: 100%; flex: 1; }
-        .main-nav a {
-            position: relative;
-            display: flex; align-items: center;
-            padding: 0 13px;
-            font-size: 14px;
-            color: rgba(255,255,255,.82);
+        .tool-nav { display: flex; align-items: center; gap: 20px; font-size: 13px; }
+        .tool-nav a {
+            display: flex; align-items: center; gap: 5px;
+            color: rgba(255,255,255,.9);
             transition: color .18s;
-            white-space: nowrap;
         }
-        .main-nav a:hover { color: #fff; }
-        .main-nav a.active { color: #fff; font-weight: bold; }
-        .main-nav a.active::after {
-            content: "";
-            position: absolute; left: 13px; right: 13px; bottom: 0;
-            height: 3px;
+        .tool-nav a:hover { color: #fff; }
+        .tool-nav i { font-size: 12.5px; opacity: .95; }
+
+        .user-area { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+        .vip {
+            display: flex; align-items: center; gap: 4px;
+            font-size: 13px;
+            color: #ffd76a;
+        }
+        .login { font-size: 13px; color: rgba(255,255,255,.92); cursor: pointer; }
+        .login:hover { color: #fff; }
+        .shot {
+            display: flex; align-items: center; gap: 6px;
             background: #fff;
-            border-radius: 3px 3px 0 0;
-        }
-
-        .top-actions { display: flex; align-items: center; gap: 16px; font-size: 12.5px; }
-        .top-actions .act {
-            display: flex; align-items: center; gap: 5px;
-            color: rgba(255,255,255,.8);
-            transition: color .18s;
-            white-space: nowrap;
-        }
-        .top-actions .act:hover { color: #fff; }
-        .top-actions .act i { font-size: 13px; }
-
-        .btn-login {
-            display: flex; align-items: center; gap: 5px;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,.45);
-            color: #fff;
-            padding: 5px 14px;
-            border-radius: 15px;
-            font-size: 12.5px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background .18s;
-        }
-        .btn-login:hover { background: rgba(255,255,255,.14); }
-        .btn-shot {
-            display: flex; align-items: center; gap: 5px;
-            background: linear-gradient(135deg, #4b82ff, #1a42c4);
+            color: #2b3a6b;
             border: none;
-            color: #fff;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 12.5px;
-            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 14px;
+            font-size: 13px;
             font-family: inherit;
-            box-shadow: 0 2px 10px rgba(43, 92, 255, .5);
-            transition: filter .18s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,.18);
+            transition: transform .15s;
         }
-        .btn-shot:hover { filter: brightness(1.12); }
+        .shot:hover { transform: translateY(-1px); }
 
-        /* ==================== 二级栏目 ==================== */
-        .subnav {
-            background: #fff;
-            border-bottom: 1px solid var(--line);
-            position: sticky;
-            top: 54px;
-            z-index: 90;
-        }
-        .subnav ul {
-            display: flex;
-            justify-content: center;
-            gap: 44px;
-            height: 46px;
-        }
-        .subnav a {
+        /* ================= 顶部：第二行频道 ================= */
+        .channel-row {
             position: relative;
-            display: flex; align-items: center;
-            height: 100%;
-            font-size: 15px;
-            color: #4b5468;
+            z-index: 2;
+            background: rgba(12, 18, 90, .45);
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+        .channels {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            height: 42px;
+        }
+        .channels a {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14.5px;
+            color: rgba(255,255,255,.86);
             transition: color .18s;
         }
-        .subnav a:hover { color: var(--blue); }
-        .subnav a.active { color: var(--text); font-weight: bold; }
-        .subnav a.active::after {
+        .channels a:hover { color: #fff; }
+        .channels a.active { color: #fff; font-weight: bold; }
+        .channels a.active::after {
             content: "";
-            position: absolute; left: 0; right: 0; bottom: 0;
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 26px;
             height: 3px;
-            background: var(--blue);
+            transform: translateX(-50%);
+            background: #fff;
             border-radius: 2px 2px 0 0;
         }
 
-        /* ==================== 通用标题 ==================== */
-        main { padding: 20px 0 36px; }
-        .sec-head { display: flex; align-items: center; gap: 9px; margin-bottom: 12px; }
-        .sec-head .flag { display: flex; gap: 2px; }
-        .sec-head .flag i {
+        /* ================= 内容区 ================= */
+        main { padding: 18px 0 40px; }
+
+        .sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; }
+        .sec-head .flag {
             width: 4px; height: 17px;
             border-radius: 1px;
-            display: block;
+            background: linear-gradient(180deg, #3b6bff 0%, #3b6bff 55%, #ff4d3a 55%, #ff4d3a 100%);
         }
-        .sec-head .flag i:first-child { background: #ff4d3a; }
-        .sec-head .flag i:last-child { background: var(--blue); }
         .sec-head h2 { font-size: 18px; font-weight: bold; letter-spacing: .5px; }
-        .sec-head .count { font-size: 12px; color: var(--sub); margin-left: 2px; }
-        .sec-head .more {
-            margin-left: auto;
-            font-size: 12.5px;
-            color: var(--sub);
-            display: flex; align-items: center; gap: 4px;
-            cursor: pointer;
-            transition: color .18s;
-        }
-        .sec-head .more:hover { color: var(--blue); }
+        .sec-head .count { font-size: 11.5px; color: var(--sub); margin-top: 4px; }
 
-        /* ==================== 热门比赛 ==================== */
-        .match-row {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 2px 2px 8px;
-        }
-        .match-row::-webkit-scrollbar { height: 6px; }
-        .match-row::-webkit-scrollbar-thumb { background: #cfd8e6; border-radius: 3px; }
-        .match-row::-webkit-scrollbar-track { background: transparent; }
+        /* ---------- 比赛卡片 ---------- */
+        .match-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+        .match-row::-webkit-scrollbar { height: 5px; }
+        .match-row::-webkit-scrollbar-thumb { background: #ccd6e6; border-radius: 3px; }
 
-        .match-card {
-            flex: 0 0 202px;
-            background: var(--card);
+        .m-card {
+            flex: 0 0 200px;
+            height: 100px;
+            background: #fff;
             border: 1px solid var(--line);
-            border-radius: 6px;
-            padding: 9px 11px 11px;
+            border-radius: 5px;
+            padding: 8px 10px 7px;
             cursor: pointer;
-            transition: transform .2s, box-shadow .2s, border-color .2s;
             display: flex;
             flex-direction: column;
-            min-height: 112px;
+            transition: box-shadow .18s, border-color .18s, transform .18s;
         }
-        .match-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 18px rgba(20, 40, 90, .13);
-            border-color: #cdd9f5;
+        .m-card:hover {
+            border-color: #b9cdf5;
+            box-shadow: 0 6px 14px rgba(24, 45, 100, .12);
+            transform: translateY(-2px);
         }
 
-        .mc-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
-        .tag {
-            font-size: 10.5px;
-            line-height: 1;
-            padding: 3px 5px;
+        .m-top { display: flex; align-items: center; gap: 5px; height: 15px; }
+        .lg { font-size: 10px; color: #1c3fb0; white-space: nowrap; overflow: hidden; }
+        .lg.dark {
+            background: #1d2b5c;
+            color: #fff;
+            padding: 1px 5px;
             border-radius: 2px;
-            white-space: nowrap;
         }
-        .tag.nba { background: #fff2ee; color: #ff5a3c; }
-        .tag.show { background: #eef4ff; color: var(--blue); }
-        .tag.classic { background: #fff8e6; color: #c08700; }
-        .tag.zb {
-            border: 1px solid #ffd9c7;
-            background: #fffbf7;
-            color: var(--orange);
-        }
-        .tag.live { color: var(--red); display: flex; align-items: center; gap: 3px; }
-        .tag.live i { font-size: 7px; animation: blink 1.1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
-        .mc-time { font-size: 10.5px; color: var(--sub); margin-left: auto; white-space: nowrap; }
-
-        .mc-main { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
-        .team { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 54px; }
-        .team-badge { width: 34px; height: 34px; display: block; }
-        .team-name { font-size: 11.5px; color: #4b5468; white-space: nowrap; }
-        .score {
-            font-family: "DIN Alternate", "Impact", "Consolas", sans-serif;
-            font-size: 19px;
+        .lg.vip { color: var(--gold); display: flex; align-items: center; gap: 2px; }
+        .lg.vip i { font-size: 9px; }
+        .itv {
+            background: #e63329;
+            color: #fff;
+            font-size: 9px;
+            line-height: 1;
+            padding: 1px 4px;
+            border-radius: 2px;
             font-weight: bold;
-            letter-spacing: .5px;
-            color: #17223c;
+            flex-shrink: 0;
         }
-        .program {
-            font-size: 12.5px;
-            line-height: 1.55;
+        .live { font-size: 10px; color: var(--red); display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+        .live i { font-size: 6px; animation: blink 1.1s infinite; }
+        .round { font-size: 10px; color: var(--red); white-space: nowrap; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+
+        .m-sub { font-size: 9.5px; color: #a2abbd; margin-top: 3px; height: 12px; white-space: nowrap; overflow: hidden; }
+        .m-sub em { font-style: normal; }
+
+        .m-body { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .team-side { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 46px; }
+        .badge { width: 30px; height: 30px; display: block; }
+        .team-nm { font-size: 10.5px; color: #56607a; white-space: nowrap; }
+        .vs-score {
+            font-size: 16px;
+            font-weight: bold;
+            color: #16233d;
+            letter-spacing: .5px;
+            font-family: "DIN Alternate", "Impact", Arial, sans-serif;
+        }
+        .m-text {
+            margin-top: 7px;
+            font-size: 12px;
+            line-height: 1.45;
             color: #2e3a52;
+            overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
-            overflow: hidden;
         }
-        .program-sub { font-size: 11px; color: var(--sub); margin-top: 6px; }
 
         .all-card {
-            flex: 0 0 60px;
-            background: var(--card);
+            flex: 0 0 54px;
+            height: 100px;
+            background: #fff;
             border: 1px solid var(--line);
-            border-radius: 6px;
+            border-radius: 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            cursor: pointer;
+            gap: 5px;
             color: var(--sub);
-            font-size: 11.5px;
+            font-size: 10.5px;
+            cursor: pointer;
             transition: color .18s, border-color .18s;
         }
-        .all-card i { font-size: 15px; }
-        .all-card:hover { color: var(--blue); border-color: #cdd9f5; }
+        .all-card i { font-size: 14px; }
+        .all-card:hover { color: var(--blue); border-color: #b9cdf5; }
 
-        /* ==================== 视频区 ==================== */
-        .video-area {
+        /* ================= 播放区 ================= */
+        .stage {
             display: grid;
-            grid-template-columns: 208px 1fr 208px;
-            gap: 2px;
-            margin-top: 18px;
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(16, 32, 80, .2);
+            grid-template-columns: 1fr 132px;
+            gap: 6px;
+            margin-top: 16px;
         }
 
-        .side-card {
+        .screen {
             position: relative;
-            height: 330px;
+            height: 420px;
+            background: #05060c;
+            border-radius: 4px;
             overflow: hidden;
-            cursor: pointer;
-            background: #0b1020;
         }
-        .side-card .thumb { position: absolute; inset: 0; transition: transform .45s; }
-        .side-card:hover .thumb { transform: scale(1.06); }
-        .side-card .thumb.a {
-            background:
-                radial-gradient(circle at 46% 34%, rgba(120, 150, 255, .28), transparent 55%),
-                linear-gradient(165deg, #1a2b6b 0%, #0a1130 58%, #170f2c 100%);
-        }
-        .side-card .thumb.b {
-            background:
-                radial-gradient(circle at 54% 38%, rgba(255, 110, 70, .26), transparent 58%),
-                linear-gradient(165deg, #3c1526 0%, #140a1e 62%, #080d24 100%);
-        }
-        .side-card .thumb::after {
-            content: "";
+        /* 模拟广告画面：暗调 + 手机 */
+        .screen .bg {
             position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,.05) 30%, rgba(0,0,0,.05) 42%, rgba(0,0,0,.86) 100%);
+            background:
+                radial-gradient(circle at 52% 46%, rgba(120, 150, 210, .18), transparent 52%),
+                radial-gradient(circle at 20% 80%, rgba(90, 60, 140, .22), transparent 55%),
+                linear-gradient(140deg, #0a0c18 0%, #05060c 55%, #0b0a14 100%);
         }
-        /* 抽象球员剪影，模拟人物照片 */
-        .silhouette {
+        .phone {
             position: absolute;
-            left: 50%; top: 22%;
-            transform: translateX(-50%);
-            width: 86px; height: 150px;
-            background: radial-gradient(ellipse at 50% 18%, rgba(255,255,255,.22) 0 16px, transparent 17px),
-                        radial-gradient(ellipse at 50% 62%, rgba(255,255,255,.14) 0 40px, transparent 41px);
-            filter: blur(1px);
-            z-index: 1;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%) rotate(-14deg);
+            width: 150px;
+            height: 296px;
+            border-radius: 20px;
+            background: linear-gradient(160deg, #1b1f2e, #0c0e18);
+            border: 2px solid #2c3145;
+            box-shadow: 0 22px 48px rgba(0,0,0,.7), inset 0 0 24px rgba(90, 130, 255, .12);
         }
-        .side-card .top-flag {
-            position: absolute; top: 0; left: 0;
-            z-index: 3;
-            background: linear-gradient(90deg, #ff8a2b, #ff4d3a);
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            padding: 3px 9px;
-            border-radius: 0 0 6px 0;
+        .phone::before {
+            content: "";
+            position: absolute; inset: 9px;
+            border-radius: 13px;
+            background:
+                radial-gradient(circle at 62% 30%, rgba(200, 220, 255, .22), transparent 42%),
+                linear-gradient(200deg, #1a2a52 0%, #0a1225 60%, #05070f 100%);
         }
-        .side-card .play-mini {
+        .phone::after {
+            content: "";
             position: absolute;
             left: 50%; top: 50%;
             transform: translate(-50%, -50%);
-            z-index: 3;
-            width: 40px; height: 40px;
+            width: 20px; height: 20px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, .38);
-            border: 1px solid rgba(255,255,255,.72);
-            display: flex; align-items: center; justify-content: center;
-            color: #fff;
-            font-size: 13px;
-            transition: background .2s, transform .2s;
+            background: radial-gradient(circle, #dfe8ff 0 26%, transparent 28%);
+            box-shadow: 0 0 18px rgba(190, 215, 255, .5);
         }
-        .side-card:hover .play-mini {
-            background: rgba(43, 92, 255, .9);
-            transform: translate(-50%, -50%) scale(1.08);
+        .hand {
+            position: absolute;
+            width: 96px; height: 220px;
+            border-radius: 50%;
+            background: linear-gradient(150deg, rgba(52, 40, 40, .95), rgba(16, 12, 14, .95));
+            filter: blur(2px);
         }
-        .side-card .info {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            z-index: 3;
-            padding: 12px 12px 14px;
-            color: #fff;
-        }
-        .side-card .info .lg {
-            font-size: 10.5px;
-            color: var(--gold);
-            letter-spacing: .5px;
-            margin-bottom: 3px;
-        }
-        .side-card .info .tt {
-            font-size: 13px;
-            font-weight: bold;
-            line-height: 1.45;
-        }
+        .hand.l { left: 36%; top: 22%; transform: rotate(18deg); }
+        .hand.r { right: 30%; top: 12%; transform: rotate(-22deg); }
 
-        /* ---------- 播放器 ---------- */
-        .player { position: relative; height: 330px; background: #0a0f24; overflow: hidden; }
-        .court { position: absolute; inset: 0; }
-        .court svg { width: 100%; height: 100%; display: block; }
-        .shade {
-            position: absolute; inset: 0;
-            background: radial-gradient(circle at 52% 48%, rgba(0,0,0,.04) 0%, rgba(0,0,0,.5) 92%);
-        }
-        .live-flag {
-            position: absolute; top: 10px; left: 12px;
+        .side-tools {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            color: rgba(255,255,255,.55);
+            font-size: 15px;
             z-index: 3;
-            background: linear-gradient(90deg, #ff5a3c, #ff2f2f);
-            color: #fff;
-            font-size: 10.5px;
-            padding: 3px 8px;
-            border-radius: 3px;
-            letter-spacing: .5px;
         }
-        .wm {
-            position: absolute; top: 10px; right: 12px;
-            z-index: 3;
-            font-size: 10.5px;
+        .side-tools span { cursor: pointer; transition: color .18s; }
+        .side-tools span:hover { color: #fff; }
+
+        .ad-tip {
+            position: absolute;
+            right: 12px; top: 10px;
+            font-size: 11px;
             color: rgba(255,255,255,.72);
-            background: rgba(0,0,0,.3);
-            padding: 3px 8px;
-            border-radius: 10px;
-            letter-spacing: .5px;
-            display: flex; align-items: center; gap: 4px;
+            z-index: 3;
         }
+        .ad-tip b { color: #ffb84d; font-weight: normal; }
+
+        .ad-link {
+            position: absolute;
+            right: 12px; bottom: 46px;
+            display: flex; align-items: center; gap: 5px;
+            background: linear-gradient(90deg, #ff7a3c, #f04a2a);
+            color: #fff;
+            font-size: 11.5px;
+            padding: 5px 12px;
+            border-radius: 14px;
+            z-index: 3;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(240, 74, 42, .4);
+            transition: filter .18s;
+        }
+        .ad-link:hover { filter: brightness(1.08); }
+
         .big-play {
             position: absolute;
             left: 50%; top: 50%;
             transform: translate(-50%, -50%);
-            z-index: 4;
-            width: 56px; height: 56px;
+            width: 54px; height: 54px;
             border-radius: 50%;
-            background: rgba(255,255,255,.14);
-            border: 2px solid rgba(255,255,255,.8);
+            background: rgba(255,255,255,.12);
+            border: 2px solid rgba(255,255,255,.7);
             display: flex; align-items: center; justify-content: center;
-            color: #fff;
-            font-size: 18px;
+            color: #fff; font-size: 17px;
             cursor: pointer;
-            backdrop-filter: blur(2px);
-            transition: background .2s, transform .2s, opacity .2s;
+            z-index: 4;
+            transition: background .2s, opacity .2s;
         }
-        .big-play:hover {
-            background: rgba(43, 92, 255, .88);
-            transform: translate(-50%, -50%) scale(1.06);
-        }
+        .big-play:hover { background: rgba(43,92,255,.85); }
         .big-play.playing { opacity: 0; pointer-events: none; }
 
-        .player-title {
+        .ctrl-bar {
             position: absolute;
-            left: 14px; bottom: 54px;
-            z-index: 3;
-            color: #fff;
-            font-size: 13px;
-            font-weight: bold;
-            text-shadow: 0 1px 6px rgba(0,0,0,.75);
-        }
-
-        .controls {
-            position: absolute; left: 0; right: 0; bottom: 0;
-            z-index: 4;
+            left: 0; right: 0; bottom: 0;
+            height: 38px;
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 10px 12px 11px;
+            padding: 0 12px;
             color: #fff;
-            font-size: 11.5px;
-            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,.82) 100%);
+            font-size: 11px;
+            background: linear-gradient(180deg, transparent, rgba(0,0,0,.82));
+            z-index: 4;
         }
-        .ctrl {
-            cursor: pointer;
-            opacity: .92;
-            transition: opacity .15s;
-            display: flex; align-items: center; justify-content: center;
-            min-width: 16px;
-        }
-        .ctrl:hover { opacity: 1; }
-        .ctrl i { font-size: 12.5px; }
-        .time { font-family: "Consolas", monospace; opacity: .92; white-space: nowrap; letter-spacing: .5px; }
-        .progress {
+        .ctrl-bar .c { cursor: pointer; opacity: .9; }
+        .ctrl-bar .c:hover { opacity: 1; }
+        .ctrl-bar .c i { font-size: 12px; }
+        .bar-track {
             flex: 1;
             height: 3px;
-            background: rgba(255,255,255,.3);
+            background: rgba(255,255,255,.28);
             border-radius: 2px;
             position: relative;
             cursor: pointer;
-            margin: 0 2px;
         }
-        .progress .bar {
-            position: absolute; left: 0; top: 0; bottom: 0;
-            width: 34%;
-            background: linear-gradient(90deg, #4d7cff, #9dbcff);
-            border-radius: 2px;
+        .bar-in { position: absolute; left: 0; top: 0; bottom: 0; width: 22%; background: #4d7cff; border-radius: 2px; }
+        .bar-dot {
+            position: absolute; left: 22%; top: 50%;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #fff; transform: translate(-50%, -50%);
         }
-        .progress .dot {
-            position: absolute;
-            left: 34%; top: 50%;
-            width: 9px; height: 9px;
-            border-radius: 50%;
-            background: #fff;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 5px rgba(0,0,0,.5);
-        }
-        .play-from { font-size: 10.5px; color: rgba(255,255,255,.75); white-space: nowrap; }
+        .tm { font-family: Consolas, monospace; opacity: .9; }
 
-        /* ==================== 推荐区 ==================== */
-        .rec-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+        /* ---------- 右侧竖列 ---------- */
+        .side-list {
+            height: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            padding-right: 2px;
         }
+        .side-list::-webkit-scrollbar { width: 4px; }
+        .side-list::-webkit-scrollbar-thumb { background: #cfd8e6; border-radius: 2px; }
+
+        .v-item {
+            position: relative;
+            flex: 0 0 96px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            background: #0b1020;
+            border: 2px solid transparent;
+        }
+        .v-item:hover { border-color: #6f9bff; }
+        .v-item.on { border-color: #ff3b30; }
+        .v-item .thumb { position: absolute; inset: 0; transition: transform .35s; }
+        .v-item:hover .thumb { transform: scale(1.05); }
+        .v-item .thumb.k1 { background: radial-gradient(circle at 50% 35%, rgba(255,120,80,.3), transparent 60%), linear-gradient(150deg, #3a1520, #120a18 70%, #0a0e22); }
+        .v-item .thumb.k2 { background: radial-gradient(circle at 50% 35%, rgba(120,160,255,.26), transparent 60%), linear-gradient(150deg, #14224f, #0a1024 70%, #060a16); }
+        .v-item .thumb.k3 { background: radial-gradient(circle at 50% 35%, rgba(255,90,120,.22), transparent 60%), linear-gradient(150deg, #2a1030, #100a18 70%, #080a16); }
+        .v-item .thumb.k4 { background: radial-gradient(circle at 50% 35%, rgba(120,255,200,.2), transparent 60%), linear-gradient(150deg, #103028, #0a1418 70%, #060a12); }
+        .v-item .thumb::after {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.15) 45%, rgba(0,0,0,.88) 100%);
+        }
+        .v-item .cap {
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            padding: 4px 5px 5px;
+            font-size: 10px;
+            line-height: 1.35;
+            color: #fff;
+            z-index: 2;
+        }
+        .v-item .tag-red {
+            display: inline-block;
+            background: #e63329;
+            color: #fff;
+            font-size: 9px;
+            padding: 0 4px;
+            border-radius: 2px;
+            margin-bottom: 2px;
+        }
+        .v-item .pbtn {
+            position: absolute;
+            left: 50%; top: 34%;
+            transform: translate(-50%, -50%);
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.6);
+            background: rgba(0,0,0,.35);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            font-size: 8px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity .2s;
+        }
+        .v-item:hover .pbtn { opacity: 1; }
+
+        /* ================= 推荐区 ================= */
+        .rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .rec-card {
             background: #fff;
             border: 1px solid var(--line);
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
             cursor: pointer;
             transition: transform .2s, box-shadow .2s;
         }
-        .rec-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(20, 40, 90, .13); }
+        .rec-card:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(24, 45, 100, .13); }
         .rec-cover {
-            height: 108px;
+            height: 118px;
             position: relative;
             display: flex; align-items: center; justify-content: center;
             color: #fff;
         }
-        .rec-cover .play-ico {
-            width: 36px; height: 36px;
+        .rec-cover .p {
+            width: 38px; height: 38px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.72);
+            border: 1px solid rgba(255,255,255,.7);
             background: rgba(0,0,0,.3);
             display: flex; align-items: center; justify-content: center;
             font-size: 12px;
             transition: background .2s;
         }
-        .rec-card:hover .play-ico { background: rgba(43, 92, 255, .9); }
+        .rec-card:hover .rec-cover .p { background: rgba(43,92,255,.9); }
         .rec-cover .dur {
             position: absolute; right: 7px; bottom: 7px;
             font-size: 10.5px;
@@ -501,11 +508,11 @@
             padding: 1px 5px;
             border-radius: 2px;
         }
-        .rec-cover.c1 { background: linear-gradient(135deg, #1b2a66, #0d1538); }
-        .rec-cover.c2 { background: linear-gradient(135deg, #3a1630, #170c26); }
-        .rec-cover.c3 { background: linear-gradient(135deg, #123a55, #071a26); }
-        .rec-cover.c4 { background: linear-gradient(135deg, #4a2a10, #1c1006); }
-        .rec-info { padding: 9px 11px 12px; }
+        .rec-cover.g1 { background: linear-gradient(135deg, #16225c, #0a1130); }
+        .rec-cover.g2 { background: linear-gradient(135deg, #3a1630, #170c26); }
+        .rec-cover.g3 { background: linear-gradient(135deg, #123a55, #071a26); }
+        .rec-cover.g4 { background: linear-gradient(135deg, #4a2a10, #1c1006); }
+        .rec-info { padding: 10px 12px 14px; }
         .rec-info h4 {
             font-size: 13px;
             font-weight: normal;
@@ -518,413 +525,382 @@
         }
         .rec-info .meta { font-size: 11px; color: var(--sub); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
 
-        footer {
-            margin-top: 30px;
-            background: #0a1a5e;
-            color: rgba(255,255,255,.5);
-            font-size: 12px;
-            text-align: center;
-            padding: 16px 0;
-        }
-
-        /* ==================== 响应式 ==================== */
-        @media (max-width: 1120px) {
+        /* ================= 响应式 ================= */
+        @media (max-width: 1180px) {
             .wrap { width: 100%; }
+            .watermark { display: none; }
         }
         @media (max-width: 900px) {
-            .video-area { grid-template-columns: 1fr; }
-            .side-card { display: none; }
-            .rec-grid { grid-template-columns: repeat(2, 1fr); }
-            .main-nav { overflow-x: auto; }
-            .main-nav::-webkit-scrollbar { display: none; }
-            .top-actions .act { display: none; }
+            .stage { grid-template-columns: 1fr; }
+            .side-list { flex-direction: row; height: auto; overflow-x: auto; }
+            .v-item { flex: 0 0 132px; height: 78px; }
+            .tool-nav, .vip, .login { display: none; }
+            .channels { grid-template-columns: repeat(5, 1fr); }
+            .channels a { height: 34px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <!-- ==================== 顶部导航 ==================== -->
     <header class="topbar">
-        <div class="wrap">
-            <a href="#" class="logo">
-                <span class="logo-ball"></span>
-                <span class="logo-txt">腾讯体育</span>
-            </a>
+        <span class="watermark">为热爱加冕!!</span>
 
-            <nav class="main-nav" id="mainNav">
-                <a href="#">首页</a>
-                <a href="#">赛程</a>
-                <a href="#" class="active">NBA</a>
-                <a href="#">CBA</a>
-                <a href="#">欧冠</a>
-                <a href="#">中超</a>
-                <a href="#">德甲</a>
-                <a href="#">英超</a>
-                <a href="#">西甲</a>
-                <a href="#">意甲</a>
-            </nav>
+        <div class="top-row">
+            <div class="wrap">
+                <a href="#" class="logo">
+                    <span class="logo-mark"></span>
+                    <span class="logo-txt">腾讯体育</span>
+                </a>
+                <nav class="tool-nav">
+                    <a href="#"><i class="fa-solid fa-tower-broadcast"></i>电子</a>
+                    <a href="#"><i class="fa-solid fa-store"></i>商城</a>
+                    <a href="#"><i class="fa-solid fa-download"></i>下载客户端</a>
+                    <a href="#"><i class="fa-solid fa-table-cells-large"></i>快捷访问</a>
+                </nav>
+                <div class="user-area">
+                    <a href="#" class="vip"><i class="fa-solid fa-crown"></i>会员</a>
+                    <span class="login">登录</span>
+                    <button class="shot"><i class="fa-solid fa-basketball"></i>投篮</button>
+                </div>
+            </div>
+        </div>
 
-            <div class="top-actions">
-                <a href="#" class="act"><i class="fa-solid fa-table-cells-large"></i>快捷访问</a>
-                <a href="#" class="act"><i class="fa-solid fa-download"></i>下载客户端</a>
-                <a href="#" class="act"><i class="fa-solid fa-bag-shopping"></i>商城</a>
-                <button class="btn-login"><i class="fa-regular fa-circle-user"></i>登录</button>
-                <button class="btn-shot"><i class="fa-solid fa-basketball"></i>投篮</button>
+        <div class="channel-row">
+            <div class="wrap">
+                <nav class="channels" id="channels">
+                    <a href="#" class="active">首页</a>
+                    <a href="#">赛程</a>
+                    <a href="#">NBA</a>
+                    <a href="#">CBA</a>
+                    <a href="#">欧冠</a>
+                    <a href="#">中超</a>
+                    <a href="#">德甲</a>
+                    <a href="#">英超</a>
+                    <a href="#">西甲</a>
+                    <a href="#">意甲</a>
+                </nav>
             </div>
         </div>
     </header>
-
-    <!-- ==================== 二级栏目 ==================== -->
-    <nav class="subnav">
-        <div class="wrap">
-            <ul id="subNav">
-                <li><a href="#" class="active">赛程</a></li>
-                <li><a href="#">排行</a></li>
-                <li><a href="#">季后赛</a></li>
-                <li><a href="#">数据</a></li>
-                <li><a href="#">球员</a></li>
-                <li><a href="#">球队</a></li>
-            </ul>
-        </div>
-    </nav>
 
     <main class="wrap">
         <!-- ==================== 热门比赛 ==================== -->
         <section>
             <div class="sec-head">
-                <span class="flag"><i></i><i></i></span>
+                <span class="flag"></span>
                 <h2>热门比赛</h2>
-                <span class="count">今日共 17 场</span>
-                <span class="more" onclick="alert('跳转到完整赛程页')">全部 <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+                <span class="count">今日共37场</span>
             </div>
 
             <div class="match-row">
-                <!-- 卡片 1：已结束的比赛 -->
-                <div class="match-card">
-                    <div class="mc-head">
-                        <span class="tag nba">NBA常规赛</span>
-                        <span class="tag zb">图文直播</span>
-                        <span class="mc-time">今天 09:30</span>
+                <!-- 1. NBA 比分 -->
+                <div class="m-card">
+                    <div class="m-top">
+                        <span class="lg">NBA常规赛</span>
+                        <span class="lg dark" style="background:#fff4e8;color:#ff7a2f">图文直播</span>
                     </div>
-                    <div class="mc-main">
-                        <div class="team">
-                            <svg class="team-badge" viewBox="0 0 40 40">
-                                <circle cx="20" cy="20" r="19" fill="#1d428a"/>
-                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#ffc72c" stroke-width="1.6"/>
-                                <path d="M12 26 Q20 12 28 26" fill="none" stroke="#ffc72c" stroke-width="1.6"/>
-                                <line x1="20" y1="13" x2="20" y2="27" stroke="#ffc72c" stroke-width="1.6"/>
+                    <div class="m-sub">今天10:00 <em>主播:王凯谈笑</em></div>
+                    <div class="m-body">
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="18" fill="#ffffff" stroke="#c8102e" stroke-width="2"/>
+                                <circle cx="20" cy="20" r="12" fill="none" stroke="#c8102e" stroke-width="1.5"/>
+                                <path d="M11 30 L20 12 L29 30" fill="none" stroke="#c8102e" stroke-width="2"/>
                             </svg>
-                            <span class="team-name">勇士</span>
+                            <span class="team-nm">猛龙</span>
                         </div>
-                        <div class="score">96 - 120</div>
-                        <div class="team">
-                            <svg class="team-badge" viewBox="0 0 40 40">
-                                <circle cx="20" cy="20" r="19" fill="#c8102e"/>
-                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#1d428a" stroke-width="2"/>
-                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="Arial">C</text>
+                        <span class="vs-score">125 - 131</span>
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <circle cx="20" cy="20" r="18" fill="#552583"/>
+                                <circle cx="20" cy="20" r="14" fill="none" stroke="#fdb927" stroke-width="2"/>
+                                <text x="20" y="26" text-anchor="middle" font-size="13" font-weight="bold" fill="#fdb927" font-family="Arial">L</text>
                             </svg>
-                            <span class="team-name">快船</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 卡片 2：直播节目 -->
-                <div class="match-card">
-                    <div class="mc-head">
-                        <span class="tag show">篮球直播节目</span>
-                        <span class="tag zb">图文直播</span>
-                        <span class="mc-time">今天 10:10</span>
-                    </div>
-                    <div class="program">《早安Tip-Off》第9期：爱德华兹倒下，开局一周的伤病潮盘点</div>
-                    <div class="program-sub">主播 · 解说阵容</div>
-                </div>
-
-                <!-- 卡片 3：进行中的比赛 -->
-                <div class="match-card">
-                    <div class="mc-head">
-                        <span class="tag nba">NBA常规赛</span>
-                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
-                        <span class="mc-time">今天 10:30</span>
-                    </div>
-                    <div class="mc-main">
-                        <div class="team">
-                            <svg class="team-badge" viewBox="0 0 40 40">
-                                <circle cx="20" cy="20" r="19" fill="#552583"/>
-                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#fdb927" stroke-width="1.8"/>
-                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fdb927" font-family="Arial">L</text>
-                            </svg>
-                            <span class="team-name">湖人</span>
-                        </div>
-                        <div class="score">103 - 87</div>
-                        <div class="team">
-                            <svg class="team-badge" viewBox="0 0 40 40">
-                                <circle cx="20" cy="20" r="19" fill="#c8102e"/>
-                                <circle cx="20" cy="20" r="16.5" fill="none" stroke="#1d428a" stroke-width="2"/>
-                                <text x="20" y="26" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" font-family="Arial">C</text>
-                            </svg>
-                            <span class="team-name">快船</span>
+                            <span class="team-nm">湖人</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- 卡片 4 -->
-                <div class="match-card">
-                    <div class="mc-head">
-                        <span class="tag classic">NBA经典赛</span>
-                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
-                        <span class="mc-time">今天 14:00</span>
+                <!-- 2. 节目 -->
+                <div class="m-card">
+                    <div class="m-top">
+                        <span class="lg vip"><i class="fa-solid fa-crown"></i>NBA经典赛</span>
                     </div>
-                    <div class="program">NBA常规赛精彩回顾：76人 vs 步行者</div>
-                    <div class="program-sub">经典赛事 · 全场回放</div>
+                    <div class="m-sub">今天14:00 <em>主播:王子星 刘乘欣</em></div>
+                    <div class="m-text">NBA常规赛精彩回顾：凯尔特人vs魔术</div>
                 </div>
 
-                <!-- 卡片 5 -->
-                <div class="match-card">
-                    <div class="mc-head">
-                        <span class="tag classic">NBA经典赛</span>
-                        <span class="tag live"><i class="fa-solid fa-circle"></i>进行中</span>
-                        <span class="mc-time">今天 16:00</span>
+                <!-- 3. 斯诺克 -->
+                <div class="m-card">
+                    <div class="m-top">
+                        <span class="lg dark">斯诺克国际锦标赛第3轮</span>
+                        <span class="itv">itv</span>
+                        <span class="live"><i class="fa-solid fa-circle"></i>进行中</span>
                     </div>
-                    <div class="program">NBA常规赛精彩回顾：火箭 vs 雄鹿</div>
-                    <div class="program-sub">经典赛事 · 全场回放</div>
+                    <div class="m-sub">今天14:00</div>
+                    <div class="m-body">
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#de2910"/>
+                                <path d="M8 6 L10 11 L15 11 L11 14 L12.5 19 L8 16 L3.5 19 L5 14 L1 11 L6 11 Z" fill="#ffde00" transform="scale(0.85) translate(2,1)"/>
+                            </svg>
+                            <span class="team-nm">斯佳辉</span>
+                        </div>
+                        <span class="vs-score">4 - 0</span>
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#de2910"/>
+                                <path d="M8 6 L10 11 L15 11 L11 14 L12.5 19 L8 16 L3.5 19 L5 14 L1 11 L6 11 Z" fill="#ffde00" transform="scale(0.85) translate(2,1)"/>
+                            </svg>
+                            <span class="team-nm">刘宏宇</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 斯诺克 -->
+                <div class="m-card">
+                    <div class="m-top">
+                        <span class="lg dark">斯诺克国际锦标赛第3轮</span>
+                        <span class="itv">itv</span>
+                        <span class="round">第5局</span>
+                    </div>
+                    <div class="m-sub">今天14:00</div>
+                    <div class="m-body">
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#de2910"/>
+                                <path d="M8 6 L10 11 L15 11 L11 14 L12.5 19 L8 16 L3.5 19 L5 14 L1 11 L6 11 Z" fill="#ffde00" transform="scale(0.85) translate(2,1)"/>
+                            </svg>
+                            <span class="team-nm">丁俊晖</span>
+                        </div>
+                        <span class="vs-score">3 - 1</span>
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#de2910"/>
+                                <path d="M8 6 L10 11 L15 11 L11 14 L12.5 19 L8 16 L3.5 19 L5 14 L1 11 L6 11 Z" fill="#ffde00" transform="scale(0.85) translate(2,1)"/>
+                            </svg>
+                            <span class="team-nm">张安达</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 斯诺克 -->
+                <div class="m-card">
+                    <div class="m-top">
+                        <span class="lg dark">斯诺克国际锦标赛第3轮</span>
+                        <span class="itv">itv</span>
+                        <span class="round">第4局</span>
+                    </div>
+                    <div class="m-sub">今天14:00</div>
+                    <div class="m-body">
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#f5f5f5" stroke="#ddd"/>
+                                <rect x="13" y="8" width="14" height="24" fill="#d52b1e"/>
+                                <rect x="8" y="13" width="24" height="14" fill="#d52b1e"/>
+                            </svg>
+                            <span class="team-nm">勒克莱尔</span>
+                        </div>
+                        <span class="vs-score">1 - 2</span>
+                        <div class="team-side">
+                            <svg class="badge" viewBox="0 0 40 40">
+                                <rect width="40" height="40" rx="3" fill="#de2910"/>
+                                <path d="M8 6 L10 11 L15 11 L11 14 L12.5 19 L8 16 L3.5 19 L5 14 L1 11 L6 11 Z" fill="#ffde00" transform="scale(0.85) translate(2,1)"/>
+                            </svg>
+                            <span class="team-nm">傅家俊</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="all-card">
-                    <i class="fa-solid fa-ellipsis"></i>
+                    <i class="fa-solid fa-mobile-screen-button"></i>
                     <span>全部</span>
                 </div>
             </div>
         </section>
 
-        <!-- ==================== 视频区 ==================== -->
-        <section class="video-area">
-            <!-- 左侧视频卡 -->
-            <div class="side-card" onclick="switchVideo('NBA常规赛 勇士vs森林狼', 'a')">
-                <div class="thumb a"></div>
-                <div class="silhouette"></div>
-                <span class="top-flag">TOP</span>
-                <div class="play-mini"><i class="fa-solid fa-play"></i></div>
-                <div class="info">
-                    <div class="lg">NBA常规赛</div>
-                    <div class="tt">勇士 vs 森林狼</div>
-                </div>
-            </div>
+        <!-- ==================== 大屏 + 右侧列表 ==================== -->
+        <section class="stage">
+            <div class="screen">
+                <div class="bg"></div>
+                <div class="hand l"></div>
+                <div class="hand r"></div>
+                <div class="phone"></div>
 
-            <!-- 播放器 -->
-            <div class="player">
-                <div class="court">
-                    <svg viewBox="0 0 640 330" preserveAspectRatio="xMidYMid slice">
-                        <defs>
-                            <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#dda76d"/>
-                                <stop offset="50%" stop-color="#cb8d4f"/>
-                                <stop offset="100%" stop-color="#a96c33"/>
-                            </linearGradient>
-                            <linearGradient id="paint" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#22367f"/>
-                                <stop offset="100%" stop-color="#0c1850"/>
-                            </linearGradient>
-                        </defs>
-                        <rect width="640" height="330" fill="url(#wood)"/>
-                        <!-- 地板拼接纹理 -->
-                        <g stroke="rgba(0,0,0,.07)" stroke-width="1">
-                            <line x1="0" y1="36" x2="640" y2="36"/>
-                            <line x1="0" y1="84" x2="640" y2="84"/>
-                            <line x1="0" y1="130" x2="640" y2="130"/>
-                            <line x1="0" y1="204" x2="640" y2="204"/>
-                            <line x1="0" y1="256" x2="640" y2="256"/>
-                            <line x1="0" y1="300" x2="640" y2="300"/>
-                        </g>
-                        <!-- 三分弧线 -->
-                        <path d="M 96 -40 A 250 250 0 0 0 96 370" fill="none" stroke="rgba(255,255,255,.72)" stroke-width="3"/>
-                        <path d="M 544 -40 A 250 250 0 0 1 544 370" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="3"/>
-                        <!-- 禁区 -->
-                        <rect x="226" y="70" width="188" height="190" fill="url(#paint)" stroke="rgba(255,255,255,.7)" stroke-width="3"/>
-                        <circle cx="320" cy="165" r="58" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-dasharray="9 8"/>
-                        <!-- 篮筐 -->
-                        <circle cx="320" cy="165" r="12" fill="none" stroke="#ff6a3d" stroke-width="4"/>
-                        <line x1="320" y1="132" x2="320" y2="48" stroke="rgba(255,255,255,.45)" stroke-width="3"/>
-                        <!-- 中圈 -->
-                        <circle cx="640" cy="165" r="66" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3"/>
-                    </svg>
+                <div class="side-tools">
+                    <span title="评论"><i class="fa-regular fa-comment-dots"></i></span>
+                    <span title="收藏"><i class="fa-regular fa-star"></i></span>
+                    <span title="分享"><i class="fa-solid fa-share-nodes"></i></span>
+                    <span title="举报"><i class="fa-regular fa-flag"></i></span>
                 </div>
-                <div class="shade"></div>
 
-                <span class="live-flag">直播</span>
-                <span class="wm"><i class="fa-solid fa-basketball"></i>腾讯体育</span>
+                <span class="ad-tip">广告剩余: <b>4秒</b></span>
+                <a href="#" class="ad-link"><i class="fa-solid fa-hand-pointer"></i>点击画面，了解详情</a>
 
                 <div class="big-play" id="bigPlay" onclick="togglePlay()">
                     <i class="fa-solid fa-play" id="bigPlayIcon"></i>
                 </div>
 
-                <div class="player-title" id="playerTitle">NBA常规赛 湖人 vs 快船</div>
-
-                <div class="controls">
-                    <span class="ctrl" id="ctrlPlay" onclick="togglePlay()"><i class="fa-solid fa-play" id="ctrlPlayIcon"></i></span>
-                    <span class="time" id="timeText">01:00 / 02:54</span>
-                    <div class="progress" id="progress" onclick="seek(event)">
-                        <div class="bar" id="bar"></div>
-                        <div class="dot" id="dot"></div>
+                <div class="ctrl-bar">
+                    <span class="c" onclick="togglePlay()"><i class="fa-solid fa-play" id="ctrlIcon"></i></span>
+                    <span class="tm" id="timeText">00:32 / 02:28</span>
+                    <div class="bar-track" id="track" onclick="seek(event)">
+                        <div class="bar-in" id="barIn"></div>
+                        <div class="bar-dot" id="barDot"></div>
                     </div>
-                    <span class="ctrl" title="音量"><i class="fa-solid fa-volume-high"></i></span>
-                    <span class="ctrl" title="画中画"><i class="fa-solid fa-clone"></i></span>
-                    <span class="ctrl" title="全屏"><i class="fa-solid fa-expand"></i></span>
-                    <span class="play-from">腾讯视频播放</span>
+                    <span class="c" title="音量"><i class="fa-solid fa-volume-high"></i></span>
+                    <span class="c" title="画中画"><i class="fa-solid fa-clone"></i></span>
+                    <span class="c" title="全屏"><i class="fa-solid fa-expand"></i></span>
                 </div>
             </div>
 
-            <!-- 右侧视频卡 -->
-            <div class="side-card" onclick="switchVideo('NBA常规赛 火箭vs雄鹿', 'b')">
-                <div class="thumb b"></div>
-                <div class="silhouette"></div>
-                <span class="top-flag">TOP</span>
-                <div class="play-mini"><i class="fa-solid fa-play"></i></div>
-                <div class="info">
-                    <div class="lg">NBA常规赛</div>
-                    <div class="tt">火箭 vs 雄鹿</div>
+            <aside class="side-list" id="sideList">
+                <div class="v-item on" onclick="pick(this,'NBA常规赛 猛龙vs湖人')">
+                    <div class="thumb k1"></div>
+                    <span class="pbtn"><i class="fa-solid fa-play"></i></span>
+                    <div class="cap"><span class="tag-red">直播</span><br>NBA常规赛 猛龙vs湖人</div>
                 </div>
-            </div>
+                <div class="v-item" onclick="pick(this,'斯诺克国际锦标赛第3轮 丁俊晖vs张安达')">
+                    <div class="thumb k2"></div>
+                    <span class="pbtn"><i class="fa-solid fa-play"></i></span>
+                    <div class="cap">斯诺克国际锦标赛第3轮 丁…</div>
+                </div>
+                <div class="v-item" onclick="pick(this,'斯诺克国际锦标赛第3轮 斯佳辉vs刘宏宇')">
+                    <div class="thumb k3"></div>
+                    <span class="pbtn"><i class="fa-solid fa-play"></i></span>
+                    <div class="cap">斯诺克国际锦标赛第3轮 斯…</div>
+                </div>
+                <div class="v-item" onclick="pick(this,'斯诺克国际锦标赛第3轮 勒克莱尔vs傅家俊')">
+                    <div class="thumb k4"></div>
+                    <span class="pbtn"><i class="fa-solid fa-play"></i></span>
+                    <div class="cap">斯诺克国际锦标赛第3轮 勒…</div>
+                </div>
+            </aside>
         </section>
 
         <!-- ==================== 精彩推荐 ==================== -->
-        <section style="margin-top:26px">
+        <section style="margin-top:24px">
             <div class="sec-head">
-                <span class="flag"><i></i><i></i></span>
+                <span class="flag"></span>
                 <h2>精彩推荐</h2>
-                <span class="more">更多 <i class="fa-solid fa-chevron-right" style="font-size:10px"></i></span>
+                <span class="count">为你精选</span>
             </div>
-
             <div class="rec-grid">
                 <div class="rec-card">
-                    <div class="rec-cover c1">
-                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
-                        <span class="dur">12:36</span>
+                    <div class="rec-cover g1">
+                        <span class="p"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">10:26</span>
                     </div>
                     <div class="rec-info">
-                        <h4>詹姆斯赛季十佳球：隔扣、追帽、绝杀全都有</h4>
-                        <div class="meta"><i class="fa-regular fa-circle-play"></i>3.2 万次播放</div>
+                        <h4>湖人vs猛龙全场集锦：末节连续三分完成逆转</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>4.6 万次播放</div>
                     </div>
                 </div>
                 <div class="rec-card">
-                    <div class="rec-cover c2">
-                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
-                        <span class="dur">08:42</span>
+                    <div class="rec-cover g2">
+                        <span class="p"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">08:15</span>
                     </div>
                     <div class="rec-info">
-                        <h4>库里三分雨集锦：单场 8 记三分打穿防线</h4>
+                        <h4>斯诺克国际锦标赛：丁俊晖单杆破百合集</h4>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>3.1 万次播放</div>
+                    </div>
+                </div>
+                <div class="rec-card">
+                    <div class="rec-cover g3">
+                        <span class="p"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">12:48</span>
+                    </div>
+                    <div class="rec-info">
+                        <h4>赛季十佳球：隔扣、追帽、压哨绝杀全都有</h4>
                         <div class="meta"><i class="fa-regular fa-circle-play"></i>2.7 万次播放</div>
                     </div>
                 </div>
                 <div class="rec-card">
-                    <div class="rec-cover c3">
-                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
-                        <span class="dur">15:20</span>
-                    </div>
-                    <div class="rec-info">
-                        <h4>新秀赛季首秀全记录：从替补席到关键先生</h4>
-                        <div class="meta"><i class="fa-regular fa-circle-play"></i>1.9 万次播放</div>
-                    </div>
-                </div>
-                <div class="rec-card">
-                    <div class="rec-cover c4">
-                        <span class="play-ico"><i class="fa-solid fa-play"></i></span>
-                        <span class="dur">06:18</span>
+                    <div class="rec-cover g4">
+                        <span class="p"><i class="fa-solid fa-play"></i></span>
+                        <span class="dur">05:39</span>
                     </div>
                     <div class="rec-info">
                         <h4>赛后采访：教练谈末节战术与轮换调整</h4>
-                        <div class="meta"><i class="fa-regular fa-circle-play"></i>1.1 万次播放</div>
+                        <div class="meta"><i class="fa-regular fa-circle-play"></i>1.3 万次播放</div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer>三级项目 · 前端布局练习 · 数据均为示例 · 徐奔</footer>
-
     <script>
-        /* ========== 1. 导航高亮切换 ========== */
-        function bindNav(selector) {
-            var links = document.querySelectorAll(selector + ' a');
-            links.forEach(function (a) {
-                a.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    links.forEach(function (x) { x.classList.remove('active'); });
-                    a.classList.add('active');
-                });
+        /* ---------- 频道高亮 ---------- */
+        var chans = document.querySelectorAll('#channels a');
+        for (var i = 0; i < chans.length; i++) {
+            chans[i].addEventListener('click', function (e) {
+                e.preventDefault();
+                for (var k = 0; k < chans.length; k++) chans[k].classList.remove('active');
+                this.classList.add('active');
             });
         }
-        bindNav('#mainNav');
-        bindNav('#subNav');
 
-        /* ========== 2. 播放器逻辑 ========== */
-        var total = 174;        // 02:54
-        var current = 60;       // 01:00
-        var playing = false;
-        var timer = null;
-
+        /* ---------- 播放逻辑 ---------- */
+        var total = 148, current = 32, playing = false, timer = null;
         var bigPlay = document.getElementById('bigPlay');
         var bigPlayIcon = document.getElementById('bigPlayIcon');
-        var ctrlPlayIcon = document.getElementById('ctrlPlayIcon');
+        var ctrlIcon = document.getElementById('ctrlIcon');
         var timeText = document.getElementById('timeText');
-        var bar = document.getElementById('bar');
-        var dot = document.getElementById('dot');
+        var barIn = document.getElementById('barIn');
+        var barDot = document.getElementById('barDot');
 
-        function fmt(sec) {
-            sec = Math.max(0, Math.min(total, Math.round(sec)));
-            var m = Math.floor(sec / 60), s = sec % 60;
-            return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+        function fmt(s) {
+            s = Math.max(0, Math.min(total, Math.round(s)));
+            var m = Math.floor(s / 60), sec = s % 60;
+            return (m < 10 ? '0' + m : m) + ':' + (sec < 10 ? '0' + sec : sec);
         }
-
-        function render() {
+        function draw() {
             var p = current / total * 100;
-            bar.style.width = p + '%';
-            dot.style.left = p + '%';
+            barIn.style.width = p + '%';
+            barDot.style.left = p + '%';
             timeText.textContent = fmt(current) + ' / ' + fmt(total);
         }
-
         function togglePlay() {
             playing = !playing;
             if (playing) {
                 bigPlay.classList.add('playing');
-                ctrlPlayIcon.className = 'fa-solid fa-pause';
-                bigPlayIcon.className = 'fa-solid fa-pause';
+                ctrlIcon.className = 'fa-solid fa-pause';
                 timer = setInterval(function () {
-                    current += 1;
+                    current++;
                     if (current >= total) {
-                        current = total;
-                        render();
-                        clearInterval(timer);
-                        playing = false;
+                        current = total; draw();
+                        clearInterval(timer); playing = false;
                         bigPlay.classList.remove('playing');
-                        ctrlPlayIcon.className = 'fa-solid fa-play';
-                        bigPlayIcon.className = 'fa-solid fa-play';
+                        ctrlIcon.className = 'fa-solid fa-play';
                         return;
                     }
-                    render();
+                    draw();
                 }, 1000);
             } else {
                 clearInterval(timer);
                 bigPlay.classList.remove('playing');
-                ctrlPlayIcon.className = 'fa-solid fa-play';
-                bigPlayIcon.className = 'fa-solid fa-play';
+                ctrlIcon.className = 'fa-solid fa-play';
             }
         }
-
         function seek(e) {
-            var rect = e.currentTarget.getBoundingClientRect();
-            current = (e.clientX - rect.left) / rect.width * total;
-            render();
+            var r = e.currentTarget.getBoundingClientRect();
+            current = (e.clientX - r.left) / r.width * total;
+            draw();
         }
+        draw();
 
-        /* ========== 3. 点侧边卡切换主画面 ========== */
-        var titles = { a: 'NBA常规赛 勇士 vs 森林狼', b: 'NBA常规赛 火箭 vs 雄鹿' };
-        function switchVideo(title, theme) {
-            document.getElementById('playerTitle').textContent = title;
+        /* ---------- 右侧列表切换 ---------- */
+        function pick(el, title) {
+            var items = document.querySelectorAll('.v-item');
+            for (var i = 0; i < items.length; i++) items[i].classList.remove('on');
+            el.classList.add('on');
             current = 0;
-            render();
-            if (!playing) togglePlay();
+            draw();
+            if (playing) { clearInterval(timer); playing = false; }
+            togglePlay();
+            console.log('正在播放：' + title);
         }
-
-        render();
     </script>
 </body>
 </html>
