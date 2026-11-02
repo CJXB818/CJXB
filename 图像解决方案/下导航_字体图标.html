@@ -59,7 +59,8 @@
     z-index:50;
   }
   .xb-tabbar a{
-    flex:1 1 0;                   /* 每项等分 → 自适应任意视口宽度 */
+    flex:0 0 auto;               /* 固定等分：每项 20% → 严格自适应 */
+    width:20%;
     text-align:center;
     padding:8px 0 10px;
     color:var(--xb-sub);

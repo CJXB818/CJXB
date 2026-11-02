@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../assets/fa/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+.xb-tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:#fff;border-top:1px solid #eee}
+.xb-tabbar a{flex:0 0 auto;width:20%;text-align:center;padding:8px 0 10px;color:#888;min-width:0}
+.xb-tabbar a i{display:block;font-size:22px}
+.xb-tabbar a span{display:block;font-size:11px}
+#out{font:12px monospace;padding:8px;white-space:pre;background:#fff}
+</style></head><body>
+<div id="out">measuring...</div>
+<nav class="xb-tabbar">
+  <a href="#"><i class="fa-solid fa-house"></i><span>首页</span></a>
+  <a href="#"><i class="fa-solid fa-list-ol"></i><span>赛程</span></a>
+  <a href="#"><i class="fa-solid fa-film"></i><span>视频</span></a>
+  <a href="#"><i class="fa-solid fa-compass"></i><span>发现</span></a>
+  <a href="#"><i class="fa-solid fa-user"></i><span>我的</span></a>
+</nav>
+<script>
+window.onload=function(){
+  var vw=document.documentElement.clientWidth;
+  var as=document.querySelectorAll('.xb-tabbar a');
+  var nav=document.querySelector('.xb-tabbar').getBoundingClientRect();
+  var s='viewport='+vw+' navW='+nav.width+' navRight='+nav.right+' count='+as.length+'\n';
+  as.forEach(function(a,i){var r=a.getBoundingClientRect();s+='['+i+'] x='+Math.round(r.x)+' w='+Math.round(r.width)+' right='+Math.round(r.right)+' text='+a.textContent.trim()+'\n';});
+  document.getElementById('out').textContent=s;
+};
+</script></body></html>
