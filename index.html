@@ -1,192 +1,982 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML 练习作品集 - CJXB818</title>
-    <style>
-        body {
-            font-family: "Microsoft YaHei", sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        h1 {
-            margin: 0 0 8px;
-            font-size: 32px;
-            color: #764ba2;
-        }
-        .subtitle {
-            color: #888;
-            margin-bottom: 32px;
-        }
-        .card {
-            display: block;
-            padding: 20px 24px;
-            margin-bottom: 14px;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.25s ease;
-        }
-        .card:hover {
-            border-color: #764ba2;
-            background: #f8f5ff;
-            transform: translateX(6px);
-            box-shadow: 0 4px 16px rgba(118, 75, 162, 0.15);
-        }
-        .card h3 {
-            margin: 0 0 6px;
-            color: #4a3a6a;
-        }
-        .card p {
-            margin: 0;
-            font-size: 14px;
-            color: #888;
-        }
-        .badge {
-            display: inline-block;
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: #667eea;
-            color: #fff;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        .badge.new { background: #059669; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML 练习作品集 · 徐奔</title>
+<style>
+    :root {
+        --bg: #05070d;
+        --line: rgba(148, 163, 184, .14);
+        --txt: #e6edf7;
+        --dim: #8b9bb4;
+        --html: #38bdf8;
+        --css: #a78bfa;
+        --js: #fbbf24;
+        --viz: #34d399;
+        --proj: #fb7185;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--txt);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+    }
+
+    /* 背景光斑与网格 */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+            radial-gradient(58% 42% at 16% -4%, rgba(56, 189, 248, .18), transparent 70%),
+            radial-gradient(48% 38% at 86% 4%, rgba(167, 139, 250, .16), transparent 70%),
+            radial-gradient(46% 34% at 50% 104%, rgba(52, 211, 153, .10), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(148, 163, 184, .055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148, 163, 184, .055) 1px, transparent 1px);
+        background-size: 58px 58px;
+        -webkit-mask-image: radial-gradient(75% 65% at 50% 0%, #000 25%, transparent 100%);
+        mask-image: radial-gradient(75% 65% at 50% 0%, #000 25%, transparent 100%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    /* ============ 顶部导航 ============ */
+    .nav {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px clamp(20px, 5vw, 64px);
+        backdrop-filter: blur(14px);
+        background: rgba(5, 7, 13, .68);
+        border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: .6px;
+    }
+
+    .brand .mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #38bdf8, #a78bfa);
+        box-shadow: 0 0 18px rgba(56, 189, 248, .45);
+    }
+
+    .brand span { color: var(--dim); font-weight: 400; }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nav-links a {
+        color: var(--dim);
+        text-decoration: none;
+        font-size: 13px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        transition: .2s;
+    }
+
+    .nav-links a:hover { color: var(--txt); background: rgba(148, 163, 184, .1); }
+
+    .nav-links a.gh {
+        color: #dbeafe;
+        border: 1px solid rgba(56, 189, 248, .35);
+        background: rgba(56, 189, 248, .08);
+    }
+
+    .nav-links a.gh:hover { background: rgba(56, 189, 248, .18); border-color: #38bdf8; }
+
+    @media (max-width: 720px) {
+        .nav-links a:not(.gh) { display: none; }
+    }
+
+    /* ============ Hero ============ */
+    .hero {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: clamp(56px, 9vw, 104px) clamp(20px, 5vw, 64px) 36px;
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12.5px;
+        letter-spacing: 1.4px;
+        color: #7dd3fc;
+        text-transform: uppercase;
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, .28);
+        background: rgba(56, 189, 248, .07);
+        margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 10px #34d399;
+    }
+
+    h1 {
+        font-size: clamp(38px, 6.4vw, 72px);
+        line-height: 1.1;
+        letter-spacing: -1.2px;
+        font-weight: 800;
+        margin-bottom: 18px;
+    }
+
+    h1 .grad {
+        background: linear-gradient(100deg, #38bdf8 0%, #a78bfa 48%, #34d399 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .lead {
+        max-width: 620px;
+        color: var(--dim);
+        font-size: 15px;
+        line-height: 1.95;
+    }
+
+    .lead b { color: #cfe0f5; font-weight: 600; }
+
+    .stats {
+        display: flex;
+        gap: clamp(20px, 4vw, 46px);
+        margin-top: 34px;
+        flex-wrap: wrap;
+    }
+
+    .stats div { display: flex; flex-direction: column; gap: 4px; }
+
+    .stats b {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        background: linear-gradient(180deg, #ffffff, #8fa3bd);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats span { font-size: 12px; color: #64748b; letter-spacing: 1px; }
+
+    /* ============ 工具条 ============ */
+    .toolbar {
+        position: sticky;
+        top: 55px;
+        z-index: 20;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 12px clamp(20px, 5vw, 64px);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        background: rgba(5, 7, 13, .82);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+    }
+
+    .search {
+        position: relative;
+        flex: 1 1 240px;
+        max-width: 340px;
+    }
+
+    .search input {
+        width: 100%;
+        padding: 10px 14px 10px 36px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: rgba(15, 23, 42, .7);
+        color: var(--txt);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        transition: .2s;
+    }
+
+    .search input::placeholder { color: #5b6b83; }
+
+    .search input:focus {
+        border-color: rgba(56, 189, 248, .6);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, .12);
+    }
+
+    .search::before {
+        content: '';
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        width: 12px;
+        height: 12px;
+        margin-top: -8px;
+        border: 1.6px solid #64748b;
+        border-radius: 50%;
+    }
+
+    .search::after {
+        content: '';
+        position: absolute;
+        left: 23px;
+        top: 50%;
+        width: 5px;
+        height: 1.6px;
+        background: #64748b;
+        transform: rotate(45deg);
+        margin-top: 2px;
+    }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .chips button {
+        border: 1px solid var(--line);
+        background: rgba(15, 23, 42, .6);
+        color: var(--dim);
+        padding: 8px 15px;
+        border-radius: 999px;
+        font-size: 12.5px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: .2s;
+        white-space: nowrap;
+    }
+
+    .chips button:hover { color: var(--txt); border-color: rgba(148, 163, 184, .4); }
+
+    .chips button.on {
+        color: #04121f;
+        background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+        border-color: transparent;
+        font-weight: 700;
+    }
+
+    /* ============ 内容分组 ============ */
+    main { max-width: 1200px; margin: 0 auto; padding: 34px clamp(20px, 5vw, 64px) 20px; }
+
+    .group { margin-bottom: 46px; }
+    .group[hidden] { display: none; }
+
+    .group-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .group-head .bar {
+        width: 4px;
+        height: 20px;
+        border-radius: 3px;
+        background: var(--accent, #38bdf8);
+        box-shadow: 0 0 14px var(--accent, #38bdf8);
+    }
+
+    .group-head h2 {
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: .4px;
+    }
+
+    .group-head .count {
+        font-size: 12px;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        padding: 2px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+    }
+
+    .group-head .line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--line), transparent);
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(292px, 1fr));
+        gap: 14px;
+    }
+
+    /* 可视化组卡片较短，允许一行排 4 个，避免出现 3+1 的断行 */
+    #sec-viz .grid { grid-template-columns: repeat(auto-fill, minmax(246px, 1fr)); }
+
+    /* 单卡片分组不让卡片被拉满整行 */
+    #sec-proj .card { max-width: 520px; }
+
+    /* ============ 卡片 ============ */
+    .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 20px 20px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(20, 29, 48, .72), rgba(10, 15, 26, .78));
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity .55s ease, transform .55s cubic-bezier(.2, .7, .3, 1),
+                    border-color .3s, box-shadow .3s;
+        --glow: rgba(56, 189, 248, .16);
+    }
+
+    .card.in { opacity: 1; transform: translateY(0); }
+
+    .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(125, 211, 252, .55);
+        box-shadow: 0 18px 42px rgba(2, 8, 20, .75);
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        /* 光斑跟随鼠标（--mx / --my 由 JS 写入） */
+        background: radial-gradient(240px 240px at var(--mx, 50%) var(--my, -20%), var(--glow), transparent 72%);
+        opacity: 0;
+        transition: opacity .3s;
+        pointer-events: none;
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(125, 211, 252, .7), transparent);
+        opacity: 0;
+        transition: opacity .35s;
+    }
+
+    .card:hover::after { opacity: 1; }
+
+    .card .num {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        color: rgba(148, 163, 184, .45);
+        letter-spacing: 1px;
+    }
+
+    .card h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #e8f1ff;
+        padding-right: 34px;
+        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .card p {
+        font-size: 12.5px;
+        line-height: 1.85;
+        color: #8494ab;
+        flex: 1;
+    }
+
+    .card .foot {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 11.5px;
+        color: #64748b;
+        font-family: Consolas, monospace;
+        letter-spacing: .3px;
+        margin-top: 4px;
+    }
+
+    .card .foot .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent, #38bdf8);
+        box-shadow: 0 0 8px var(--accent, #38bdf8);
+    }
+
+    .card .foot .arrow {
+        margin-left: auto;
+        color: #475569;
+        transition: transform .3s, color .3s;
+        font-family: inherit;
+    }
+
+    .card:hover .foot .arrow { transform: translateX(4px); color: #7dd3fc; }
+
+    .tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .8px;
+        padding: 2px 7px;
+        border-radius: 5px;
+        border: 1px solid rgba(148, 163, 184, .28);
+        color: #94a3b8;
+        white-space: nowrap;
+    }
+
+    .tag.new {
+        color: #6ee7b7;
+        border-color: rgba(52, 211, 153, .45);
+        background: rgba(52, 211, 153, .1);
+    }
+
+    /* 每组强调色 */
+    .c-viz  { --accent: var(--viz);  --glow: rgba(52, 211, 153, .16); }
+    .c-js   { --accent: var(--js);   --glow: rgba(251, 191, 36, .14); }
+    .c-css  { --accent: var(--css);  --glow: rgba(167, 139, 250, .16); }
+    .c-html { --accent: var(--html); --glow: rgba(56, 189, 248, .16); }
+    .c-proj { --accent: var(--proj); --glow: rgba(251, 113, 133, .16); }
+
+    /* ============ 空状态 / 页脚 ============ */
+    #empty {
+        display: none;
+        text-align: center;
+        padding: 70px 20px;
+        color: #64748b;
+        font-size: 13.5px;
+    }
+
+    #empty.show { display: block; }
+
+    #empty b { display: block; color: #94a3b8; font-size: 15px; margin-bottom: 8px; }
+
+    footer {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 26px clamp(20px, 5vw, 64px) 56px;
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--line);
+        color: #55657c;
+        font-size: 12.5px;
+    }
+
+    footer a { color: #7dd3fc; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .card { opacity: 1; transform: none; transition: none; }
+        html { scroll-behavior: auto; }
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎨 HTML 练习作品集</h1>
-        <p class="subtitle">CJXB818 · 徐奔 · 前端学习演示页面</p>
+<div class="page">
 
-        <a href="18-4.html" class="card">
-            <h3>18-4 ECharts 数据可视化 <span class="badge new">NEW</span></h3>
-            <p>柱状图 + 双轴折线面积图，echarts 离线引入自本地 cdn 目录</p>
-        </a>
+    <header class="nav">
+        <div class="brand">
+            <i class="mark"></i>
+            CJXB<span>· 前端练习作品集</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#sec-viz">可视化</a>
+            <a href="#sec-js">JavaScript</a>
+            <a href="#sec-css">CSS</a>
+            <a href="#sec-html">HTML</a>
+            <a class="gh" href="https://github.com/CJXB818/CJXB" target="_blank" rel="noopener">GitHub ↗</a>
+        </nav>
+    </header>
 
-        <a href="18-3.html" class="card">
-            <h3>18-3 SVG 智能客服系统架构图 <span class="badge new">NEW</span></h3>
-            <p>科研方向：基于知识库的 RAG 架构，六层结构，悬停高亮可导出 SVG</p>
-        </a>
+    <section class="hero">
+        <p class="eyebrow">HTML / CSS / JavaScript Practice</p>
+        <h1>从标签到<span class="grad">可视化</span><br>前端练习作品集</h1>
+        <p class="lead">
+            收录 <b>35 个</b> 循序渐进的前端练习页面：从基础标签、表单、盒模型，
+            到 Flex 与 Grid 布局、DOM 与异步请求，再到 <b>Canvas 动画、SVG 架构图与 ECharts 数据可视化</b>。
+            每个页面都可直接打开运行。
+        </p>
+        <div class="stats">
+            <div><b>35</b><span>PAGES</span></div>
+            <div><b>5</b><span>CHAPTERS</span></div>
+            <div><b>11.05</b><span>UPDATED</span></div>
+        </div>
+    </section>
 
-        <a href="18-2.html" class="card">
-            <h3>18-2 Canvas 电商系统架构图 <span class="badge new">NEW</span></h3>
-            <p>纯 Canvas 绘制分层架构：数据流动画、悬停说明、一键导出 PNG</p>
-        </a>
-
-        <a href="18-1.html" class="card">
-            <h3>18-1 Canvas 粒子文字动画 <span class="badge new">NEW</span></h3>
-            <p>像素采样 + 弹簧物理，粒子汇聚成文字，支持主题切换与鼠标交互</p>
-        </a>
-
-        <a href="17-6.html" class="card">
-            <h3>17-6 Promise / async 包饺子 <span class="badge new">NEW</span></h3>
-            <p>买原料→取原料→和面与和馅并行→包饺子→吃饺子，进度条实时展示流程</p>
-        </a>
-
-        <a href="17-5.html" class="card">
-            <h3>17-5 JavaScript 两种定时器 <span class="badge new">NEW</span></h3>
-            <p>setTimeout 执行一次 / setInterval 反复执行，含倒计时、计数器与实时时钟</p>
-        </a>
-
-        <a href="17-4.html" class="card">
-            <h3>17-4 接口测试工具 <span class="badge new">NEW</span></h3>
-            <p>GET/POST/PUT/PATCH/DELETE 请求，显示状态码、耗时、响应数据与错误提示</p>
-        </a>
-
-        <a href="17-3.html" class="card">
-            <h3>17-3 商品列表与详情 <span class="badge new">NEW</span></h3>
-            <p>fetch 请求 dummyjson 商品接口，列表跳转详情页并按 id 获取单个商品</p>
-        </a>
-
-        <a href="17-2.html" class="card">
-            <h3>17-2 fetch 获取接口数据 <span class="badge new">NEW</span></h3>
-            <p>加载中骨架屏、成功渲染卡片、失败错误提示，含查看原始 JSON</p>
-        </a>
-
-        <a href="17-1.html" class="card">
-            <h3>17-1 JSON 数据格式 <span class="badge new">NEW</span></h3>
-            <p>对象与 JSON 字符串互转、六条语法规则、嵌套数据逐层取值</p>
-        </a>
-
-        <a href="16-4.html" class="card">
-            <h3>16-4 新闻排行榜组件 <span class="badge new">NEW</span></h3>
-            <p>点击排行 / 评论排行双 tab 切换，虚线分栏、序号与热度数字排版</p>
-        </a>
-
-        <a href="三级项目.html" class="card">
-            <h3>三级项目 · NBA 频道页 <span class="badge new">NEW</span></h3>
-            <p>仿体育门户布局：深蓝导航、赛程卡片横排、三栏视频播放区，图标使用 Font Awesome</p>
-        </a>
-
-        <a href="16-2.html" class="card">
-            <h3>16-2 JavaScript 对象与字符串 <span class="badge new">NEW</span></h3>
-            <p>键值对可视化、属性增删改、this 指向、字符串字符格子与常用方法</p>
-        </a>
-
-        <a href="16-1.html" class="card">
-            <h3>16-1 JavaScript 数组方法 <span class="badge new">NEW</span></h3>
-            <p>push/pop、map/filter/reduce、查找、排序截取，方块图实时展示数组变化</p>
-        </a>
-
-        <a href="15-2.html" class="card">
-            <h3>15-2 JavaScript 程序结构 <span class="badge">JS</span></h3>
-            <p>顺序结构、条件结构（if / switch）、循环结构（for / while）</p>
-        </a>
-
-        <a href="15-1.html" class="card">
-            <h3>15-1 逢七过 <span class="badge">JS</span></h3>
-            <p>1~100 盒子，7 的倍数或含 7 的数字显示空盒子，其余显示数字</p>
-        </a>
-
-        <a href="5-2.html" class="card">
-            <h3>5-2 CSS 布局</h3>
-            <p>CSS 布局练习</p>
-        </a>
-
-        <a href="5-1.html" class="card">
-            <h3>5-1 层叠与继承 <span class="badge">CSS</span></h3>
-            <p>CSS 选择器优先级、层叠规则与样式继承演示</p>
-        </a>
-
-        <a href="4-1 Css2.html" class="card">
-            <h3>4-1 CSS 进阶</h3>
-            <p>CSS 布局与样式进阶练习</p>
-        </a>
-
-        <a href="3.2 css.html" class="card">
-            <h3>3-2 CSS 样式</h3>
-            <p>CSS 基础样式练习</p>
-        </a>
-
-        <a href="3-1 form.html" class="card">
-            <h3>3-1 表单</h3>
-            <p>HTML 表单元素练习</p>
-        </a>
-
-        <a href="2.2.html" class="card">
-            <h3>2.2 表格与列表</h3>
-            <p>表格、列表等结构化标签练习</p>
-        </a>
-
-        <a href="2-1.html" class="card">
-            <h3>2-1 HTML 基础</h3>
-            <p>HTML 基础标签练习</p>
-        </a>
+    <div class="toolbar">
+        <div class="search">
+            <input id="q" type="search" placeholder="搜索页面标题或关键词（按 / 聚焦）" autocomplete="off">
+        </div>
+        <div class="chips" id="chips">
+            <button data-filter="all" class="on">全部</button>
+            <button data-filter="viz">可视化</button>
+            <button data-filter="js">JavaScript</button>
+            <button data-filter="css">CSS</button>
+            <button data-filter="html">HTML</button>
+            <button data-filter="proj">项目</button>
+        </div>
     </div>
+
+    <main id="main">
+
+        <!-- ============ 可视化 ============ -->
+        <section class="group" id="sec-viz" data-cat="viz" style="--accent:#34d399">
+            <div class="group-head">
+                <i class="bar"></i>
+                <h2>Canvas · SVG · 数据可视化</h2>
+                <span class="count">4</span>
+                <span class="line"></span>
+            </div>
+            <div class="grid">
+                <a class="card c-viz" href="18-1.html" data-key="canvas 粒子 文字 动画 requestanimationframe 徐奔">
+                    <span class="num">35</span>
+                    <h3>Canvas 粒子文字动画<span class="tag new">NEW</span></h3>
+                    <p>离屏画布采样文字像素，用弹簧物理让数千粒子汇聚成姓名，支持主题切换与鼠标交互。</p>
+                    <div class="foot"><i class="dot"></i>Canvas 2D<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-viz" href="18-2.html" data-key="canvas 架构图 电商 系统 全站">
+                    <span class="num">34</span>
+                    <h3>Canvas 电商系统架构图<span class="tag new">NEW</span></h3>
+                    <p>六层架构逐层绘制，连线箭头与数据流动画，悬停查看模块说明，可一键导出 PNG。</p>
+                    <div class="foot"><i class="dot"></i>Canvas 2D · 架构<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-viz" href="18-3.html" data-key="svg 架构图 智能客服 rag 知识库 科研">
+                    <span class="num">33</span>
+                    <h3>SVG 智能客服架构图<span class="tag new">NEW</span></h3>
+                    <p>科研方向：检索增强生成（RAG）驱动的知识库问答架构，六层结构 + 反馈闭环，可导出 SVG。</p>
+                    <div class="foot"><i class="dot"></i>SVG · RAG<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-viz" href="18-4.html" data-key="echarts 图表 柱状图 折线图 数据 可视化 cdn">
+                    <span class="num">32</span>
+                    <h3>ECharts 数据可视化<span class="tag new">NEW</span></h3>
+                    <p>柱状图与双轴面积折线图，echarts 引入自本地 cdn 目录，离线可用、随窗口自适应。</p>
+                    <div class="foot"><i class="dot"></i>ECharts 5<i class="arrow">→</i></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============ JavaScript ============ -->
+        <section class="group" id="sec-js" data-cat="js" style="--accent:#fbbf24">
+            <div class="group-head">
+                <i class="bar"></i>
+                <h2>JavaScript 交互与异步</h2>
+                <span class="count">11</span>
+                <span class="line"></span>
+            </div>
+            <div class="grid">
+                <a class="card c-js" href="17-6.html" data-key="promise async await race all 包饺子 异步">
+                    <span class="num">31</span>
+                    <h3>Promise / async 包饺子<span class="tag new">NEW</span></h3>
+                    <p>买原料 race 抢单、和面与和馅 all 并行，进度条实时展示 async/await 串行编排。</p>
+                    <div class="foot"><i class="dot"></i>Promise<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="17-5.html" data-key="定时器 settimeout setinterval 倒计时 时钟">
+                    <span class="num">30</span>
+                    <h3>JavaScript 两种定时器</h3>
+                    <p>setTimeout 执行一次、setInterval 反复执行，含倒计时、计数器与实时时钟。</p>
+                    <div class="foot"><i class="dot"></i>Timer<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="17-4.html" data-key="接口 测试 fetch 请求 get post put delete 状态码">
+                    <span class="num">29</span>
+                    <h3>接口测试工具</h3>
+                    <p>支持 GET / POST / PUT / PATCH / DELETE，展示状态码、耗时与响应数据。</p>
+                    <div class="foot"><i class="dot"></i>Fetch API<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="17-3.html" data-key="商品 列表 详情 fetch 接口 跳转">
+                    <span class="num">28</span>
+                    <h3>商品列表与详情</h3>
+                    <p>fetch 请求商品接口渲染列表，点击跳转详情页并按 id 获取单条数据。</p>
+                    <div class="foot"><i class="dot"></i>Fetch · 列表页<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="17-2.html" data-key="fetch 接口 数据 骨架屏 加载 错误">
+                    <span class="num">27</span>
+                    <h3>fetch 获取接口数据</h3>
+                    <p>加载中骨架屏、成功渲染卡片、失败错误提示，可展开查看原始 JSON。</p>
+                    <div class="foot"><i class="dot"></i>Fetch<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="17-1.html" data-key="json 数据格式 对象 字符串 转换">
+                    <span class="num">26</span>
+                    <h3>JSON 数据格式</h3>
+                    <p>对象与 JSON 字符串互转、六条语法规则、嵌套数据逐层取值演示。</p>
+                    <div class="foot"><i class="dot"></i>JSON<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="16-4.html" data-key="新闻 排行 榜 tab 切换 组件">
+                    <span class="num">25</span>
+                    <h3>新闻排行榜组件</h3>
+                    <p>点击排行 / 评论排行双 tab 切换，虚线分栏与序号热度排版。</p>
+                    <div class="foot"><i class="dot"></i>DOM<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="16-2.html" data-key="对象 字符串 this 属性 方法">
+                    <span class="num">24</span>
+                    <h3>对象与字符串</h3>
+                    <p>键值对可视化、属性增删改、this 指向、字符串方法与字符格子。</p>
+                    <div class="foot"><i class="dot"></i>Object<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="16-1.html" data-key="数组 方法 map filter reduce push pop 排序">
+                    <span class="num">23</span>
+                    <h3>数组方法图解</h3>
+                    <p>push/pop、map/filter/reduce、查找排序，方块图实时展示数组变化。</p>
+                    <div class="foot"><i class="dot"></i>Array<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="15-2.html" data-key="程序结构 顺序 条件 循环 if switch for">
+                    <span class="num">22</span>
+                    <h3>JavaScript 程序结构</h3>
+                    <p>顺序结构、条件结构（if / switch）、循环结构（for / while）对照演示。</p>
+                    <div class="foot"><i class="dot"></i>流程控制<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-js" href="15-1.html" data-key="逢七过 游戏 循环 取余">
+                    <span class="num">21</span>
+                    <h3>逢七过</h3>
+                    <p>1~100 数字盒子，7 的倍数或含 7 的数字显示空盒子。</p>
+                    <div class="foot"><i class="dot"></i>循环练习<i class="arrow">→</i></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============ CSS ============ -->
+        <section class="group" id="sec-css" data-cat="css" style="--accent:#a78bfa">
+            <div class="group-head">
+                <i class="bar"></i>
+                <h2>CSS 布局、动画与响应式</h2>
+                <span class="count">17</span>
+                <span class="line"></span>
+            </div>
+            <div class="grid">
+                <a class="card c-css" href="12-2.html" data-key="grid 网格 布局">
+                    <span class="num">20</span>
+                    <h3>Grid 布局</h3>
+                    <p>二维网格布局的行列定义、区域划分与自适应排列练习。</p>
+                    <div class="foot"><i class="dot"></i>Grid<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="12-1.html" data-key="css 变量 自定义属性 主题">
+                    <span class="num">19</span>
+                    <h3>CSS 变量</h3>
+                    <p>自定义属性 --var 的定义、作用域与主题换色实践。</p>
+                    <div class="foot"><i class="dot"></i>Custom Properties<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="10-4.html" data-key="media query 媒体查询 响应式 布局">
+                    <span class="num">18</span>
+                    <h3>Media Query 布局</h3>
+                    <p>多断点下的页面重排，从桌面三栏到移动单列的适配。</p>
+                    <div class="foot"><i class="dot"></i>响应式<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="10-3.html" data-key="媒体查询 media query 屏幕">
+                    <span class="num">17</span>
+                    <h3>媒体查询</h3>
+                    <p>按屏幕宽度切换样式的媒体查询基础用法。</p>
+                    <div class="foot"><i class="dot"></i>@media<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="10-2.html" data-key="幻灯片 轮播 动画 css">
+                    <span class="num">16</span>
+                    <h3>CSS 幻灯片</h3>
+                    <p>纯 CSS 实现轮播切换，使用过渡与动画关键帧。</p>
+                    <div class="foot"><i class="dot"></i>Animation<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="10-1.html" data-key="背景 颜色 动画 渐变">
+                    <span class="num">15</span>
+                    <h3>背景颜色动画</h3>
+                    <p>渐变背景配色与颜色循环动画效果。</p>
+                    <div class="foot"><i class="dot"></i>Animation<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="9-1.html" data-key="css 综合 练习 页面">
+                    <span class="num">14</span>
+                    <h3>CSS 综合练习</h3>
+                    <p>综合运用选择器、盒模型与浮动定位的页面练习。</p>
+                    <div class="foot"><i class="dot"></i>CSS 基础<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="8-1css3.html" data-key="css3 圆角 阴影 渐变 过渡">
+                    <span class="num">13</span>
+                    <h3>CSS3 特性</h3>
+                    <p>圆角、阴影、渐变、过渡等 CSS3 新特性演示。</p>
+                    <div class="foot"><i class="dot"></i>CSS3<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="7-2左图右文.html" data-key="左图右文 图文 布局">
+                    <span class="num">12</span>
+                    <h3>左图右文</h3>
+                    <p>图片与文字左右排列的常见图文列表布局。</p>
+                    <div class="foot"><i class="dot"></i>Float / Flex<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="7-1上图下文.html" data-key="上图下文 卡片 图文">
+                    <span class="num">11</span>
+                    <h3>上图下文</h3>
+                    <p>图片在上、说明文字在下的卡片式图文布局。</p>
+                    <div class="foot"><i class="dot"></i>布局<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="6-2.html" data-key="flex 弹性 布局 练习">
+                    <span class="num">10</span>
+                    <h3>Flex 布局练习</h3>
+                    <p>主轴与交叉轴对齐，弹性伸缩与间距控制。</p>
+                    <div class="foot"><i class="dot"></i>Flex<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="6-1 flex.html" data-key="flex 弹性盒 导航 布局">
+                    <span class="num">09</span>
+                    <h3>Flex 弹性布局</h3>
+                    <p>使用 flex 完成导航条与卡片排列的基础练习。</p>
+                    <div class="foot"><i class="dot"></i>Flex<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="5-2.html" data-key="css 布局 定位">
+                    <span class="num">08</span>
+                    <h3>CSS 布局</h3>
+                    <p>标准文档流、定位与浮动的布局综合练习。</p>
+                    <div class="foot"><i class="dot"></i>Layout<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="5-1.html" data-key="层叠 继承 优先级 选择器">
+                    <span class="num">07</span>
+                    <h3>层叠与继承</h3>
+                    <p>选择器优先级权重、层叠规则与可继承属性的直观演示。</p>
+                    <div class="foot"><i class="dot"></i>Cascade<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="4-1 Css2.html" data-key="css 进阶 高级 网页设计">
+                    <span class="num">06</span>
+                    <h3>CSS 进阶实践</h3>
+                    <p>高级网页设计课堂实践，综合样式与版式训练。</p>
+                    <div class="foot"><i class="dot"></i>CSS<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-css" href="3.2 css.html" data-key="css 基础 样式 选择器">
+                    <span class="num">05</span>
+                    <h3>CSS 基础样式</h3>
+                    <p>行内、内部、外部三种引入方式与基础选择器。</p>
+                    <div class="foot"><i class="dot"></i>CSS 基础<i class="arrow">→</i></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============ HTML ============ -->
+        <section class="group" id="sec-html" data-cat="html" style="--accent:#38bdf8">
+            <div class="group-head">
+                <i class="bar"></i>
+                <h2>HTML 基础与表单</h2>
+                <span class="count">2</span>
+                <span class="line"></span>
+            </div>
+            <div class="grid">
+                <a class="card c-html" href="3-1 form.html" data-key="表单 form input 按钮 元素">
+                    <span class="num">04</span>
+                    <h3>HTML 表单</h3>
+                    <p>input、select、textarea、按钮等表单控件与字段集。</p>
+                    <div class="foot"><i class="dot"></i>Form<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-html" href="2-1.html" data-key="html 基础 标签 文本 图片 链接">
+                    <span class="num">03</span>
+                    <h3>HTML 基础标签</h3>
+                    <p>标题、段落、图片、超链接等常用标签的入门练习。</p>
+                    <div class="foot"><i class="dot"></i>HTML<i class="arrow">→</i></div>
+                </a>
+
+                <a class="card c-html" href="2.2.html" data-key="表格 列表 结构化 table ul ol">
+                    <span class="num">02</span>
+                    <h3>表格与列表</h3>
+                    <p>table 表格合并单元格，有序、无序与自定义列表。</p>
+                    <div class="foot"><i class="dot"></i>HTML<i class="arrow">→</i></div>
+                </a>
+            </div>
+        </section>
+
+        <!-- ============ 综合项目 ============ -->
+        <section class="group" id="sec-proj" data-cat="proj" style="--accent:#fb7185">
+            <div class="group-head">
+                <i class="bar"></i>
+                <h2>综合项目</h2>
+                <span class="count">1</span>
+                <span class="line"></span>
+            </div>
+            <div class="grid">
+                <a class="card c-proj" href="三级项目.html" data-key="腾讯 体育 首页 仿写 项目 门户 导航">
+                    <span class="num">01</span>
+                    <h3>腾讯体育首页仿写<span class="tag">项目</span></h3>
+                    <p>仿体育门户：深蓝导航、赛程卡片横排、三栏视频播放区，图标使用 Font Awesome。</p>
+                    <div class="foot"><i class="dot"></i>综合项目<i class="arrow">→</i></div>
+                </a>
+            </div>
+        </section>
+
+        <div id="empty">
+            <b>没有匹配的页面</b>
+            换个关键词试试，或点击「全部」查看所有练习。
+        </div>
+    </main>
+
+    <footer>
+        <span>© 2026 徐奔 · 前端练习作品集 · 共 35 个页面</span>
+        <span>源码托管于 <a href="https://github.com/CJXB818/CJXB" target="_blank" rel="noopener">GitHub</a> · 由 GitHub Pages 发布</span>
+    </footer>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    var groups = Array.prototype.slice.call(document.querySelectorAll('.group'));
+    var chips = Array.prototype.slice.call(document.querySelectorAll('#chips button'));
+    var search = document.getElementById('q');
+    var empty = document.getElementById('empty');
+    var currentCat = 'all';
+
+    // 分组计数以实际卡片数为准，避免手工写错
+    groups.forEach(function (group) {
+        var countEl = group.querySelector('.count');
+        if (countEl) countEl.textContent = group.querySelectorAll('.card').length;
+    });
+
+    /* ---------- 入场动画：滚动到视口时淡入 ---------- */
+    if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    // 同一行的卡片依次错开一点，形成瀑布感
+                    var delay = (entry.target.dataset.i || 0) * 55;
+                    setTimeout(function () {
+                        entry.target.classList.add('in');
+                    }, delay);
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        cards.forEach(function (c, i) {
+            c.dataset.i = i % 4;
+            io.observe(c);
+        });
+    } else {
+        cards.forEach(function (c) { c.classList.add('in'); });
+    }
+
+    /* ---------- 筛选与搜索 ---------- */
+    function apply() {
+        var kw = search.value.trim().toLowerCase();
+        var visibleTotal = 0;
+
+        groups.forEach(function (group) {
+            var shown = 0;
+            var groupCards = group.querySelectorAll('.card');
+
+            groupCards.forEach(function (card) {
+                var matchCat = currentCat === 'all' || group.dataset.cat === currentCat;
+                var text = (card.textContent + ' ' + (card.dataset.key || '')).toLowerCase();
+                var matchKw = !kw || text.indexOf(kw) !== -1;
+                var show = matchCat && matchKw;
+
+                card.style.display = show ? '' : 'none';
+                if (show) {
+                    card.classList.add('in');
+                    shown++;
+                }
+            });
+
+            group.hidden = shown === 0;
+            visibleTotal += shown;
+        });
+
+        empty.classList.toggle('show', visibleTotal === 0);
+    }
+
+    chips.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            chips.forEach(function (b) { b.classList.remove('on'); });
+            btn.classList.add('on');
+            currentCat = btn.dataset.filter;
+            apply();
+        });
+    });
+
+    search.addEventListener('input', apply);
+
+    /* ---------- 卡片内的光斑跟随鼠标 ---------- */
+    var mainEl = document.getElementById('main');
+    mainEl.addEventListener('mousemove', function (e) {
+        var card = e.target.closest ? e.target.closest('.card') : null;
+        if (!card) return;
+        var rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+    });
+
+    // 按 / 聚焦搜索框
+    document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement !== search) {
+            e.preventDefault();
+            search.focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === search) {
+            search.value = '';
+            search.blur();
+            apply();
+        }
+    });
+})();
+</script>
 </body>
 </html>
