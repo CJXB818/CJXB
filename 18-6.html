@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-6 Mermaid 智能客服流程图与 ER 图 - 徐奔</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        background: radial-gradient(1100px 520px at 50% -10%, #16233f 0%, #0a1020 58%, #05080f 100%);
+        color: #e2e8f0;
+        min-height: 100vh;
+        padding: 30px 20px 56px;
+    }
+    .wrap { max-width: 1240px; margin: 0 auto; }
+
+    header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+    h1 { font-size: 22px; }
+    h1 em { font-style: normal; color: #f472b6; }
+    .sub { color: #64748b; font-size: 13px; margin-top: 8px; line-height: 1.9; }
+    .sub code {
+        background: rgba(244,114,182,.1);
+        border: 1px solid rgba(244,114,182,.25);
+        color: #f9a8d4;
+        padding: 1px 7px;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
+        font-size: 12px;
+    }
+    .tools { display: flex; gap: 8px; }
+    .tools button {
+        border: 1px solid rgba(148,163,184,.28);
+        background: rgba(15,23,42,.7);
+        color: #cbd5e1;
+        padding: 8px 15px;
+        border-radius: 9px;
+        font-size: 12.5px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: .2s;
+    }
+    .tools button:hover { border-color: #f472b6; color: #f9a8d4; }
+
+    .card {
+        background: linear-gradient(180deg, rgba(22,32,54,.9), rgba(10,16,32,.94));
+        border: 1px solid rgba(148,163,184,.16);
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 22px;
+        box-shadow: 0 20px 50px rgba(2,8,20,.6);
+    }
+    .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .card-head .bar { width: 4px; height: 18px; border-radius: 2px; background: linear-gradient(180deg,#f472b6,#a78bfa); }
+    .card-head h2 { font-size: 16px; }
+    .card-head .badge {
+        font-size: 10.5px; letter-spacing: .6px;
+        padding: 2px 8px; border-radius: 5px;
+        border: 1px solid rgba(148,163,184,.3); color: #94a3b8;
+        font-family: Consolas, monospace;
+    }
+    .desc { color: #7d8ea8; font-size: 12.5px; line-height: 1.9; margin-bottom: 14px; }
+
+    .fig {
+        background: #070c17;
+        border: 1px solid rgba(148,163,184,.14);
+        border-radius: 12px;
+        padding: 18px;
+        overflow-x: auto;
+        min-height: 120px;
+    }
+    .fig svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+
+    /* mermaid ER 图默认属性行是白底，深色主题下需覆盖，否则白底白字 */
+    #fig-er svg .er.attributeBoxOdd { fill: #16233c !important; }
+    #fig-er svg .er.attributeBoxEven { fill: #0f1a2c !important; }
+    #fig-er svg .er.entityBox { fill: #132038 !important; }
+    #fig-er svg .er.relationshipLine { stroke: rgba(125, 211, 252, .55) !important; }
+
+    .err {
+        color: #fca5a5;
+        font-size: 13px;
+        padding: 14px;
+        border-radius: 8px;
+        background: rgba(127,29,29,.3);
+        border: 1px solid rgba(248,113,113,.4);
+        white-space: pre-wrap;
+    }
+
+    details { margin-top: 14px; }
+    summary {
+        cursor: pointer;
+        font-size: 12.5px;
+        color: #7dd3fc;
+        padding: 8px 0;
+        user-select: none;
+        list-style: none;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '▸ '; color: #64748b; }
+    details[open] summary::before { content: '▾ '; }
+
+    pre.code {
+        background: #0b1220;
+        border: 1px solid rgba(148,163,184,.14);
+        border-radius: 10px;
+        padding: 16px;
+        overflow-x: auto;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 12.5px;
+        line-height: 1.75;
+        color: #a8c7e8;
+        white-space: pre;
+        margin-top: 6px;
+    }
+
+    .legend { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: #64748b; }
+    .legend span::before {
+        content: '';
+        display: inline-block;
+        width: 9px; height: 9px;
+        border-radius: 3px;
+        margin-right: 7px;
+        vertical-align: middle;
+        background: #38bdf8;
+    }
+    .legend span:nth-child(2)::before { background: #34d399; }
+    .legend span:nth-child(3)::before { background: #fbbf24; }
+    .legend span:nth-child(4)::before { background: #f472b6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div>
+            <h1>18-6 <em>Mermaid</em> · 智能客服用例流程图与 ER 图</h1>
+            <div class="sub">
+                使用本地 <code>cdn/mermaid.min.js</code> 渲染，Markdown 式文本即代码，图形自动布局，可导出 SVG。
+            </div>
+        </div>
+        <div class="tools">
+            <button id="rerender">重新渲染</button>
+        </div>
+    </header>
+
+    <div class="card">
+        <div class="card-head">
+            <i class="bar"></i>
+            <h2>图一：智能客服问答业务流程图</h2>
+            <span class="badge">flowchart</span>
+        </div>
+        <p class="desc">从用户发起咨询到答案返回的完整链路，包含意图识别、RAG 知识检索、置信度判定、人工兜底与标注回流。</p>
+        <div class="fig" id="fig-flow">
+<pre class="mermaid">
+flowchart TD
+    A([用户发起咨询]) --> B{接入渠道}
+    B -->|网页 / App| C[消息网关]
+    B -->|电话语音| D[ASR 语音转文本]
+    D --> C
+    C --> E[文本预处理]
+    E --> F[意图识别 NLU]
+
+    F --> G{是否知识问答}
+    G -->|否| H[转人工坐席]
+    G -->|是| I[知识库检索 RAG]
+
+    I --> J{召回置信度达标}
+    J -->|否| K[澄清追问]
+    K --> F
+    J -->|是| L[大模型生成答案]
+
+    L --> M[事实校验与引用溯源]
+    M --> N{审核通过}
+    N -->|否| H
+    N -->|是| O[返回用户]
+
+    O --> P[满意度评价]
+    P --> Q[日志入湖与样本标注]
+    Q --> I
+
+    H --> R([人工处理完成])
+    classDef ai fill:#132038,stroke:#38bdf8,color:#e2e8f0,stroke-width:1.4px
+    classDef human fill:#2a1f38,stroke:#a78bfa,color:#e9d5ff,stroke-width:1.4px
+    classDef term fill:#0f2a24,stroke:#34d399,color:#bbf7d0,stroke-width:1.4px
+    class A,O,R term
+    class H,K human
+    class C,D,E,F,I,L,M,Q ai
+</pre>
+        </div>
+        <details>
+            <summary>查看 Mermaid 源码</summary>
+<pre class="code">flowchart TD
+    A([用户发起咨询]) --&gt; B{接入渠道}
+    B --&gt;|网页 / App| C[消息网关]
+    B --&gt;|电话语音| D[ASR 语音转文本]
+    D --&gt; C
+    C --&gt; E[文本预处理]
+    E --&gt; F[意图识别 NLU]
+    F --&gt; G{是否知识问答}
+    G --&gt;|否| H[转人工坐席]
+    G --&gt;|是| I[知识库检索 RAG]
+    ...
+    classDef ai fill:#132038,stroke:#38bdf8,color:#e2e8f0</pre>
+        </details>
+        <div class="legend">
+            <span>AI 自动处理</span>
+            <span>终端节点</span>
+            <span>人工介入 / 追问</span>
+            <span>数据回流</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <i class="bar"></i>
+            <h2>图二：智能客服系统 ER 图</h2>
+            <span class="badge">erDiagram</span>
+        </div>
+        <p class="desc">描述会话、消息、答案、知识库与工单之间的实体关系，其中知识条目经切分与向量化后供 RAG 检索使用。</p>
+        <div class="fig" id="fig-er">
+<pre class="mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    MESSAGE ||--o| ANSWER : "生成"
+    ANSWER }o--o{ KNOWLEDGE : "引用"
+    KNOWLEDGE ||--o{ CHUNK : "切分"
+    CHUNK ||--o{ VECTOR : "向量化"
+    SESSION ||--o| TICKET : "转人工"
+    AGENT ||--o{ TICKET : "处理"
+    ANSWER ||--o{ FEEDBACK : "评价"
+
+    USER {
+        bigint id PK "用户主键"
+        varchar nickname "昵称"
+        varchar channel "来源渠道"
+        datetime created_at "创建时间"
+    }
+    SESSION {
+        bigint id PK "会话主键"
+        bigint user_id FK "所属用户"
+        varchar status "进行中 / 已结束"
+        datetime started_at "开始时间"
+    }
+    MESSAGE {
+        bigint id PK "消息主键"
+        bigint session_id FK "所属会话"
+        varchar role "user / bot"
+        text content "消息内容"
+    }
+    ANSWER {
+        bigint id PK "答案主键"
+        bigint message_id FK "对应消息"
+        decimal confidence "置信度"
+        varchar status "通过 / 转人工"
+        text citations "引用条目"
+    }
+    KNOWLEDGE {
+        bigint id PK "知识条目"
+        varchar title "标题"
+        varchar category "分类"
+        varchar version "版本号"
+    }
+    CHUNK {
+        bigint id PK "切分段"
+        bigint knowledge_id FK "所属条目"
+        int seq "段序号"
+        text content "文本内容"
+    }
+    VECTOR {
+        bigint id PK "向量主键"
+        bigint chunk_id FK "所属切分段"
+        varchar model "Embedding 模型"
+        blob embedding "向量数据"
+    }
+    TICKET {
+        bigint id PK "工单主键"
+        bigint session_id FK "来源会话"
+        bigint agent_id FK "处理坐席"
+        varchar priority "优先级"
+        varchar state "待处理 / 已解决"
+    }
+    AGENT {
+        bigint id PK "坐席主键"
+        varchar name "姓名"
+        varchar group_name "技能组"
+        int online "在线状态"
+    }
+    FEEDBACK {
+        bigint id PK "评价主键"
+        bigint answer_id FK "对应答案"
+        int score "1-5 分"
+        varchar comment "评价内容"
+    }
+</pre>
+        </div>
+        <details>
+            <summary>查看 Mermaid 源码</summary>
+<pre class="code">erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--o{ MESSAGE : "包含"
+    MESSAGE ||--o| ANSWER : "生成"
+    ANSWER }o--o{ KNOWLEDGE : "引用"
+    KNOWLEDGE ||--o{ CHUNK : "切分"
+    CHUNK ||--o{ VECTOR : "向量化"
+    SESSION ||--o| TICKET : "转人工"
+    AGENT ||--o{ TICKET : "处理"
+    ANSWER ||--o{ FEEDBACK : "评价"</pre>
+        </details>
+    </div>
+</div>
+
+<script src="cdn/mermaid.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    var CONFIG = {
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+            background: '#070c17',
+            primaryColor: '#132038',
+            primaryTextColor: '#e2e8f0',
+            primaryBorderColor: '#38bdf8',
+            secondaryColor: '#1b2740',
+            tertiaryColor: '#0f172a',
+            lineColor: '#5f7392',
+            textColor: '#e2e8f0',
+            fontSize: '14px',
+            fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+            edgeLabelBackground: '#0b1220'
+        },
+        flowchart: { curve: 'basis', padding: 18, htmlLabels: true, nodeSpacing: 42, rankSpacing: 46 },
+        er: { useMaxWidth: true, entityPadding: 14, minEntityWidth: 120 }
+    };
+
+    if (typeof mermaid === 'undefined') {
+        document.querySelectorAll('.fig').forEach(function (f) {
+            f.innerHTML = '<div class="err">未能加载 cdn/mermaid.min.js，请确认 cdn 目录与页面在同一层级。</div>';
+        });
+        return;
+    }
+
+    mermaid.initialize(CONFIG);
+
+    function renderAll() {
+        // 每次重新渲染前还原原始定义，避免二次渲染读到已生成的 svg
+        document.querySelectorAll('.fig .mermaid').forEach(function (el) {
+            if (!el.dataset.src) el.dataset.src = el.textContent;
+            el.removeAttribute('data-processed');
+            el.textContent = el.dataset.src;
+        });
+
+        try {
+            mermaid.run({ querySelector: '.fig .mermaid' });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    renderAll();
+
+    document.getElementById('rerender').addEventListener('click', function () {
+        location.reload();
+    });
+})();
+</script>
+</body>
+</html>

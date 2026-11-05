@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-8 智能客服运营数据大屏 - 徐奔</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+        font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        background:
+            radial-gradient(1200px 600px at 50% -10%, #10233f 0%, #060d1a 55%, #03070e 100%);
+        color: #dbeafe;
+        overflow: hidden;
+    }
+
+    /* ============ 顶部标题栏 ============ */
+    .topbar {
+        position: relative;
+        height: 62px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        border-bottom: 1px solid rgba(56, 189, 248, .18);
+        background: linear-gradient(180deg, rgba(15, 32, 56, .9), rgba(6, 13, 26, .5));
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+        letter-spacing: 3px;
+        font-weight: 700;
+        background: linear-gradient(180deg, #ffffff 20%, #7dd3fc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 26px rgba(56, 189, 248, .35);
+    }
+
+    .topbar .side {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 12.5px;
+        color: #7d93b0;
+        font-family: Consolas, monospace;
+        min-width: 260px;
+    }
+
+    .topbar .side.right { justify-content: flex-end; }
+
+    .dot-live {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 10px #34d399;
+        animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: .35; transform: scale(.75); }
+    }
+
+    #clock { color: #9ec7ea; }
+
+    /* ============ 三列布局 ============ */
+    .screen {
+        height: calc(100vh - 62px);
+        display: grid;
+        grid-template-columns: 1fr 1.62fr 1fr;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 0;
+    }
+
+    .col.center .panel.grow { flex: 1.35; }
+
+    /* ============ 面板 ============ */
+    .panel {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 12px 8px;
+        border-radius: 10px;
+        border: 1px solid rgba(56, 189, 248, .16);
+        background:
+            linear-gradient(180deg, rgba(16, 34, 58, .78), rgba(7, 15, 28, .82));
+        box-shadow: inset 0 0 40px rgba(56, 189, 248, .05);
+        overflow: hidden;
+    }
+
+    /* 面板四角装饰 */
+    .panel::before,
+    .panel::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border: 1.5px solid rgba(56, 189, 248, .6);
+        pointer-events: none;
+    }
+
+    .panel::before { left: 0; top: 0; border-right: 0; border-bottom: 0; border-radius: 10px 0 0 0; }
+    .panel::after { right: 0; bottom: 0; border-left: 0; border-top: 0; border-radius: 0 0 10px 0; }
+
+    .ph {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #cfe6ff;
+        letter-spacing: .6px;
+        padding-bottom: 8px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid rgba(56, 189, 248, .12);
+        flex: none;
+    }
+
+    .ph::before {
+        content: '';
+        width: 3px;
+        height: 13px;
+        border-radius: 2px;
+        background: linear-gradient(180deg, #38bdf8, #6366f1);
+        box-shadow: 0 0 10px rgba(56, 189, 248, .8);
+    }
+
+    .ph .extra {
+        margin-left: auto;
+        font-family: Consolas, monospace;
+        font-size: 11px;
+        font-weight: 400;
+        color: #5d7793;
+    }
+
+    .chart { flex: 1; min-height: 0; width: 100%; }
+
+    /* ============ 指标卡 ============ */
+    .kpis {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        flex: none;
+    }
+
+    .kpi {
+        padding: 11px 13px;
+        border-radius: 10px;
+        border: 1px solid rgba(56, 189, 248, .18);
+        background: linear-gradient(135deg, rgba(20, 44, 74, .8), rgba(9, 20, 36, .8));
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi::after {
+        content: '';
+        position: absolute;
+        right: -18px;
+        top: -18px;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--kc, rgba(56, 189, 248, .35)), transparent 70%);
+    }
+
+    .kpi .k-label { font-size: 11.5px; color: #7d93b0; letter-spacing: .5px; }
+    .kpi .k-value {
+        margin-top: 5px;
+        font-size: 22px;
+        font-weight: 800;
+        font-family: Consolas, "Microsoft YaHei", monospace;
+        color: var(--kc-text, #7dd3fc);
+        text-shadow: 0 0 18px rgba(56, 189, 248, .35);
+        line-height: 1.2;
+    }
+    .kpi .k-value small { font-size: 12px; font-weight: 400; margin-left: 3px; color: #7d93b0; }
+    .kpi .k-sub { margin-top: 3px; font-size: 10.5px; color: #55657c; font-family: Consolas, monospace; }
+
+    /* ============ 排行榜 ============ */
+    .rank { list-style: none; flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; justify-content: space-around; }
+
+    .rank li {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12px;
+        color: #b6cbe2;
+    }
+
+    .rank .no {
+        width: 17px;
+        height: 17px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 4px;
+        font-size: 10.5px;
+        font-family: Consolas, monospace;
+        background: rgba(56, 189, 248, .14);
+        color: #7dd3fc;
+    }
+
+    .rank li:nth-child(1) .no { background: rgba(251, 191, 36, .2); color: #fbbf24; }
+    .rank li:nth-child(2) .no { background: rgba(148, 163, 184, .2); color: #cbd5e1; }
+    .rank li:nth-child(3) .no { background: rgba(251, 146, 60, .2); color: #fdba74; }
+
+    .rank .txt { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .rank .bar {
+        flex: none;
+        width: 72px;
+        height: 5px;
+        border-radius: 3px;
+        background: rgba(148, 163, 184, .14);
+        overflow: hidden;
+    }
+
+    .rank .bar i {
+        display: block;
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #38bdf8, #818cf8);
+    }
+
+    .rank .val { flex: none; width: 38px; text-align: right; font-family: Consolas, monospace; font-size: 11px; color: #7dd3fc; }
+
+    /* ============ 日志 ============ */
+    .logs { list-style: none; flex: 1; min-height: 0; overflow: hidden; font-family: Consolas, "Microsoft YaHei", monospace; }
+
+    .logs li {
+        display: flex;
+        gap: 8px;
+        font-size: 11.5px;
+        line-height: 1.55;
+        padding: 5px 0;
+        border-bottom: 1px dashed rgba(148, 163, 184, .1);
+        color: #93a9c2;
+        animation: fadeIn .4s ease;
+    }
+
+    .logs li:last-child { border-bottom: 0; }
+
+    .logs .t { color: #4f6a88; flex: none; }
+
+    .logs .k {
+        flex: none;
+        padding: 0 5px;
+        border-radius: 3px;
+        font-size: 10px;
+        height: 15px;
+        line-height: 15px;
+        background: rgba(52, 211, 153, .16);
+        color: #6ee7b7;
+    }
+
+    .logs .k.warn { background: rgba(251, 191, 36, .16); color: #fbbf24; }
+    .logs .k.ai { background: rgba(56, 189, 248, .16); color: #7dd3fc; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    /* ============ 小屏适配 ============ */
+    @media (max-width: 1180px) {
+        body { overflow: auto; }
+        .topbar { height: auto; flex-direction: column; gap: 6px; padding: 10px; }
+        .topbar h1 { font-size: 17px; letter-spacing: 1.5px; }
+        .topbar .side { min-width: 0; }
+        .screen { height: auto; grid-template-columns: 1fr; }
+        .chart { height: 240px; }
+        .panel.grow .chart { height: 300px; }
+        .rank li { padding: 3px 0; }
+    }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+    <div class="side">
+        <i class="dot-live"></i>
+        <span>数据实时同步中</span>
+    </div>
+    <h1>智能客服运营数据大屏</h1>
+    <div class="side right">
+        <span id="clock">--:--:--</span>
+        <span>在线坐席 128</span>
+    </div>
+</header>
+
+<main class="screen">
+
+    <!-- ================= 左列 ================= -->
+    <section class="col">
+        <div class="kpis">
+            <div class="kpi" style="--kc: rgba(56,189,248,.35); --kc-text:#7dd3fc">
+                <div class="k-label">今日会话总量</div>
+                <div class="k-value" id="k1">0<small>次</small></div>
+                <div class="k-sub">环比 +12.6%</div>
+            </div>
+            <div class="kpi" style="--kc: rgba(52,211,153,.35); --kc-text:#6ee7b7">
+                <div class="k-label">独立解决率</div>
+                <div class="k-value" id="k2">0<small>%</small></div>
+                <div class="k-sub">目标 80%</div>
+            </div>
+            <div class="kpi" style="--kc: rgba(167,139,250,.35); --kc-text:#c4b5fd">
+                <div class="k-label">平均响应耗时</div>
+                <div class="k-value" id="k3">0<small>s</small></div>
+                <div class="k-sub">P95 1.8s</div>
+            </div>
+            <div class="kpi" style="--kc: rgba(251,146,60,.35); --kc-text:#fdba74">
+                <div class="k-label">转人工率</div>
+                <div class="k-value" id="k4">0<small>%</small></div>
+                <div class="k-sub">环比 -2.1%</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="ph">近 7 日会话量 <span class="extra">单位：次</span></div>
+            <div class="chart" id="c-bar"></div>
+        </div>
+
+        <div class="panel">
+            <div class="ph">用户意图分布 <span class="extra">TOP 6</span></div>
+            <div class="chart" id="c-intent"></div>
+        </div>
+    </section>
+
+    <!-- ================= 中列 ================= -->
+    <section class="col center">
+        <div class="panel grow">
+            <div class="ph">全国咨询服务分布 <span class="extra">实时飞线 · 可缩放拖动</span></div>
+            <div class="chart" id="c-map"></div>
+        </div>
+
+        <div class="panel">
+            <div class="ph">实时会话量与解决率 <span class="extra">近 24 小时</span></div>
+            <div class="chart" id="c-line"></div>
+        </div>
+    </section>
+
+    <!-- ================= 右列 ================= -->
+    <section class="col">
+        <div class="panel">
+            <div class="ph">咨询渠道占比</div>
+            <div class="chart" id="c-ring"></div>
+        </div>
+
+        <div class="panel">
+            <div class="ph">热门问题 Top 8</div>
+            <ul class="rank" id="rank"></ul>
+        </div>
+
+        <div class="panel">
+            <div class="ph">实时问答日志 <span class="extra">AI 自动应答</span></div>
+            <ul class="logs" id="logs"></ul>
+        </div>
+    </section>
+</main>
+
+<script src="cdn/echarts.min.js"></script>
+<script src="cdn/china-geo.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    if (typeof echarts === 'undefined') {
+        document.body.innerHTML = '<p style="padding:40px;color:#fca5a5">未能加载 cdn/echarts.min.js</p>';
+        return;
+    }
+
+    var AXIS = '#7d93b0';
+    var SPLIT = 'rgba(56,189,248,.08)';
+    var charts = [];
+
+    function init(id) {
+        var c = echarts.init(document.getElementById(id), null, { renderer: 'canvas' });
+        charts.push(c);
+        return c;
+    }
+
+    /* ============ 1. 近 7 日会话量 ============ */
+    var bar = init('c-bar');
+    bar.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: 8, right: 12, top: 16, bottom: 6, containLabel: true },
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(8,18,32,.95)',
+            borderColor: 'rgba(56,189,248,.4)',
+            textStyle: { color: '#cbd5e1', fontSize: 12 }
+        },
+        xAxis: {
+            type: 'category',
+            data: ['10-30', '10-31', '11-01', '11-02', '11-03', '11-04', '11-05'],
+            axisLine: { lineStyle: { color: 'rgba(125,147,176,.3)' } },
+            axisTick: { show: false },
+            axisLabel: { color: AXIS, fontSize: 10.5 }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: AXIS, fontSize: 10.5 },
+            splitLine: { lineStyle: { color: SPLIT } }
+        },
+        series: [{
+            type: 'bar',
+            barWidth: '46%',
+            data: [9860, 10240, 11280, 10860, 11940, 12460, 12846],
+            itemStyle: {
+                borderRadius: [4, 4, 0, 0],
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#38bdf8' },
+                    { offset: 1, color: 'rgba(56,189,248,.12)' }
+                ])
+            }
+        }]
+    });
+
+    /* ============ 2. 意图分布 ============ */
+    var intent = init('c-intent');
+    var intentNames = ['订单查询', '退款售后', '物流进度', '优惠活动', '账号问题', '发票开具'];
+    var intentVals = [3250, 2480, 1960, 1420, 980, 640];
+
+    intent.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: 6, right: 46, top: 8, bottom: 4, containLabel: true },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            backgroundColor: 'rgba(8,18,32,.95)',
+            borderColor: 'rgba(56,189,248,.4)',
+            textStyle: { color: '#cbd5e1', fontSize: 12 }
+        },
+        xAxis: { type: 'value', show: false },
+        yAxis: {
+            type: 'category',
+            inverse: true,
+            data: intentNames,
+            axisLine: { show: false },
+            axisTick: { show: false },
+            axisLabel: { color: '#9eb6cf', fontSize: 11 }
+        },
+        series: [{
+            type: 'bar',
+            data: intentVals,
+            barWidth: 11,
+            showBackground: true,
+            backgroundStyle: { color: 'rgba(148,163,184,.08)', borderRadius: 6 },
+            itemStyle: {
+                borderRadius: 6,
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: '#6366f1' },
+                    { offset: 1, color: '#38bdf8' }
+                ])
+            },
+            label: {
+                show: true,
+                position: 'right',
+                color: '#7dd3fc',
+                fontSize: 10.5,
+                fontFamily: 'Consolas'
+            }
+        }]
+    });
+
+    /* ============ 3. 中国地图 + 飞线 ============ */
+    if (window.CHINA_GEO) {
+        echarts.registerMap('china', window.CHINA_GEO);
+    }
+
+    var CITIES = [
+        { name: '北京', value: [116.40, 39.90, 2860] },
+        { name: '上海', value: [121.47, 31.23, 2480] },
+        { name: '广州', value: [113.26, 23.13, 1980] },
+        { name: '深圳', value: [114.06, 22.55, 1820] },
+        { name: '杭州', value: [120.15, 30.28, 1460] },
+        { name: '成都', value: [104.07, 30.57, 1280] },
+        { name: '武汉', value: [114.30, 30.59, 1120] },
+        { name: '西安', value: [108.95, 34.27, 860] },
+        { name: '南京', value: [118.78, 32.06, 940] },
+        { name: '重庆', value: [106.55, 29.56, 820] },
+        { name: '郑州', value: [113.62, 34.75, 760] },
+        { name: '沈阳', value: [123.43, 41.80, 620] },
+        { name: '哈尔滨', value: [126.53, 45.80, 480] },
+        { name: '昆明', value: [102.71, 25.04, 540] },
+        { name: '乌鲁木齐', value: [87.62, 43.79, 320] },
+        { name: '拉萨', value: [91.11, 29.97, 180] }
+    ];
+
+    var FLY_LINES = [
+        [121.47, 31.23], [113.26, 23.13], [114.06, 22.55], [120.15, 30.28],
+        [104.07, 30.57], [114.30, 30.59], [108.95, 34.27], [118.78, 32.06],
+        [106.55, 29.56], [113.62, 34.75], [123.43, 41.80], [126.53, 45.80],
+        [102.71, 25.04], [87.62, 43.79], [91.11, 29.97]
+    ].map(function (c) {
+        return { coords: [[116.40, 39.90], c] };
+    });
+
+    var mapChart = init('c-map');
+    mapChart.setOption({
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(8,18,32,.95)',
+            borderColor: 'rgba(56,189,248,.4)',
+            textStyle: { color: '#cbd5e1', fontSize: 12 },
+            formatter: function (p) {
+                if (p.seriesType === 'effectScatter') {
+                    return p.name + '：<b style="color:#7dd3fc">' + p.value[2] + '</b> 次咨询';
+                }
+                return '';
+            }
+        },
+        geo: {
+            map: 'china',
+            roam: true,
+            zoom: 1.16,
+            layoutCenter: ['50%', '54%'],
+            layoutSize: '108%',
+            itemStyle: {
+                areaColor: 'rgba(14,34,58,.85)',
+                borderColor: 'rgba(56,189,248,.42)',
+                borderWidth: 0.9,
+                shadowColor: 'rgba(56,189,248,.28)',
+                shadowBlur: 16
+            },
+            emphasis: {
+                itemStyle: {
+                    areaColor: 'rgba(56,189,248,.3)',
+                    borderColor: '#7dd3fc'
+                },
+                label: { show: false }
+            },
+            label: { show: false },
+            select: { disabled: true }
+        },
+        series: [
+            {
+                name: '咨询量',
+                type: 'effectScatter',
+                coordinateSystem: 'geo',
+                data: CITIES,
+                symbolSize: function (v) {
+                    return Math.max(5, Math.sqrt(v[2]) / 2.4);
+                },
+                rippleEffect: { brushType: 'stroke', scale: 3.2, period: 4 },
+                itemStyle: {
+                    color: '#7dd3fc',
+                    shadowBlur: 12,
+                    shadowColor: 'rgba(125,211,252,.9)'
+                },
+                emphasis: { scale: 1.4 },
+                zlevel: 2
+            },
+            {
+                name: '服务链路',
+                type: 'lines',
+                coordinateSystem: 'geo',
+                data: FLY_LINES,
+                effect: {
+                    show: true,
+                    period: 5,
+                    trailLength: 0.32,
+                    symbol: 'arrow',
+                    symbolSize: 5,
+                    color: '#a5f3fc'
+                },
+                lineStyle: {
+                    color: '#38bdf8',
+                    width: 0.9,
+                    opacity: 0.38,
+                    curveness: 0.22
+                },
+                zlevel: 1
+            }
+        ]
+    });
+
+    /* ============ 4. 实时会话量与解决率 ============ */
+    var line = init('c-line');
+    var hours = [];
+    var sessionSeries = [];
+    var rateSeries = [];
+    for (var i = 0; i < 24; i++) {
+        hours.push((i < 10 ? '0' : '') + i + ':00');
+        // 白天高、凌晨低，模拟真实访问曲线
+        var base = 320 + Math.sin((i - 4) / 24 * Math.PI * 2) * 180;
+        sessionSeries.push(Math.round(base + Math.random() * 90));
+        rateSeries.push(+(78 + Math.sin(i / 3) * 4 + Math.random() * 2).toFixed(1));
+    }
+
+    line.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: 8, right: 8, top: 30, bottom: 4, containLabel: true },
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(8,18,32,.95)',
+            borderColor: 'rgba(56,189,248,.4)',
+            textStyle: { color: '#cbd5e1', fontSize: 12 }
+        },
+        legend: {
+            right: 6,
+            top: 0,
+            itemWidth: 10,
+            itemHeight: 6,
+            textStyle: { color: '#7d93b0', fontSize: 10.5 }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: hours,
+            axisLine: { lineStyle: { color: 'rgba(125,147,176,.3)' } },
+            axisTick: { show: false },
+            axisLabel: { color: AXIS, fontSize: 10, interval: 3 }
+        },
+        yAxis: [
+            {
+                type: 'value',
+                axisLabel: { color: AXIS, fontSize: 10 },
+                splitLine: { lineStyle: { color: SPLIT } }
+            },
+            {
+                type: 'value',
+                min: 60,
+                max: 100,
+                axisLabel: { color: '#6ee7b7', fontSize: 10, formatter: '{value}%' },
+                splitLine: { show: false }
+            }
+        ],
+        series: [
+            {
+                name: '会话量',
+                type: 'line',
+                smooth: true,
+                symbol: 'none',
+                data: sessionSeries,
+                lineStyle: { width: 2, color: '#38bdf8' },
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(56,189,248,.42)' },
+                        { offset: 1, color: 'rgba(56,189,248,0)' }
+                    ])
+                }
+            },
+            {
+                name: '解决率',
+                type: 'line',
+                yAxisIndex: 1,
+                smooth: true,
+                symbol: 'none',
+                data: rateSeries,
+                lineStyle: { width: 1.8, color: '#34d399', type: 'dashed' }
+            }
+        ]
+    });
+
+    /* ============ 5. 渠道占比环形图 ============ */
+    var ring = init('c-ring');
+    ring.setOption({
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(8,18,32,.95)',
+            borderColor: 'rgba(56,189,248,.4)',
+            textStyle: { color: '#cbd5e1', fontSize: 12 },
+            formatter: '{b}<br/>{c} 次（{d}%）'
+        },
+        legend: {
+            orient: 'vertical',
+            right: 4,
+            top: 'center',
+            itemWidth: 8,
+            itemHeight: 8,
+            itemGap: 9,
+            textStyle: { color: '#93a9c2', fontSize: 10.5 }
+        },
+        series: [{
+            type: 'pie',
+            radius: ['48%', '72%'],
+            center: ['38%', '52%'],
+            avoidLabelOverlap: true,
+            itemStyle: {
+                borderColor: '#07101d',
+                borderWidth: 2,
+                borderRadius: 3
+            },
+            label: { show: false },
+            labelLine: { show: false },
+            data: [
+                { value: 4880, name: '网页客服', itemStyle: { color: '#38bdf8' } },
+                { value: 3340, name: 'App / 小程序', itemStyle: { color: '#818cf8' } },
+                { value: 2310, name: '微信生态', itemStyle: { color: '#34d399' } },
+                { value: 1540, name: '电话语音', itemStyle: { color: '#fbbf24' } },
+                { value: 776, name: '其他渠道', itemStyle: { color: '#f472b6' } }
+            ]
+        }]
+    });
+    // 环形图中心文字
+    ring.setOption({
+        graphic: [{
+            type: 'text',
+            left: '30.5%',
+            top: '45%',
+            style: {
+                text: '12,846',
+                fill: '#e0f2fe',
+                fontSize: 17,
+                fontWeight: 'bold',
+                fontFamily: 'Consolas'
+            }
+        }, {
+            type: 'text',
+            left: '32.5%',
+            top: '55%',
+            style: { text: '总会话', fill: '#64748b', fontSize: 10.5 }
+        }]
+    });
+
+    /* ============ 6. 热门问题排行 ============ */
+    var RANKS = [
+        { t: '如何申请退款？', v: 1268 },
+        { t: '我的快递到哪了', v: 1102 },
+        { t: '优惠券为什么用不了', v: 906 },
+        { t: '订单可以修改地址吗', v: 782 },
+        { t: '发票怎么开具', v: 645 },
+        { t: '会员权益有哪些', v: 512 },
+        { t: '如何修改绑定手机', v: 438 },
+        { t: '商品什么时候补货', v: 366 }
+    ];
+    var maxV = RANKS[0].v;
+    document.getElementById('rank').innerHTML = RANKS.map(function (r, i) {
+        return '<li>' +
+            '<span class="no">' + (i + 1) + '</span>' +
+            '<span class="txt">' + r.t + '</span>' +
+            '<span class="bar"><i style="width:' + (r.v / maxV * 100).toFixed(1) + '%"></i></span>' +
+            '<span class="val">' + r.v + '</span>' +
+            '</li>';
+    }).join('');
+
+    /* ============ 7. 实时日志 ============ */
+    var LOG_POOL = [
+        { k: 'AI', c: 'ai', t: '用户咨询「退款进度」，命中知识库 #2048' },
+        { k: 'AI', c: 'ai', t: '生成答案，置信度 0.92，引用 2 条知识' },
+        { k: '转人工', c: 'warn', t: '置信度低于阈值 0.65，转接售后技能组' },
+        { k: 'AI', c: 'ai', t: '用户咨询「物流异常」，调用订单接口完成' },
+        { k: 'AI', c: 'ai', t: '意图识别：优惠券使用 → 营销技能域' },
+        { k: '知识', c: '', t: '知识条目 #3120 版本更新，索引重建完成' },
+        { k: 'AI', c: 'ai', t: '多轮对话第 3 轮，上下文长度 1.2k tokens' },
+        { k: '告警', c: 'warn', t: '检索耗时 820ms，高于基线 300ms' }
+    ];
+
+    var logsEl = document.getElementById('logs');
+    var logIndex = 0;
+
+    function pushLog() {
+        var item = LOG_POOL[logIndex % LOG_POOL.length];
+        logIndex++;
+
+        var d = new Date();
+        var ts = [d.getHours(), d.getMinutes(), d.getSeconds()].map(function (n) {
+            return (n < 10 ? '0' : '') + n;
+        }).join(':');
+
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="t">' + ts + '</span>' +
+                       '<span class="k ' + item.c + '">' + item.k + '</span>' +
+                       '<span>' + item.t + '</span>';
+        logsEl.insertBefore(li, logsEl.firstChild);
+
+        while (logsEl.children.length > 8) {
+            logsEl.removeChild(logsEl.lastChild);
+        }
+    }
+
+    for (var n = 0; n < 6; n++) pushLog();
+    setInterval(pushLog, 2600);
+
+    /* ============ 8. 指标数字滚动 ============ */
+    function countUp(id, target, decimals, suffix) {
+        var el = document.getElementById(id);
+        var t0 = performance.now();
+        var dur = 1300;
+
+        function step(t) {
+            var p = Math.min(1, (t - t0) / dur);
+            var eased = 1 - Math.pow(1 - p, 3);
+            var v = target * eased;
+            var text = decimals
+                ? v.toFixed(decimals)
+                : Math.round(v).toLocaleString('en-US');
+            el.innerHTML = text + '<small>' + suffix + '</small>';
+            if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    countUp('k1', 12846, 0, '次');
+    countUp('k2', 82.4, 1, '%');
+    countUp('k3', 1.2, 1, 's');
+    countUp('k4', 17.6, 1, '%');
+
+    /* ============ 9. 时钟与自适应 ============ */
+    function tickClock() {
+        var d = new Date();
+        var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+        document.getElementById('clock').textContent =
+            d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+            ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    var rz = null;
+    window.addEventListener('resize', function () {
+        clearTimeout(rz);
+        rz = setTimeout(function () {
+            charts.forEach(function (c) { c.resize(); });
+            // 环形图中心文字位置随容器变化，重新计算
+            ring.setOption({
+                graphic: [{
+                    type: 'text',
+                    left: '30.5%',
+                    top: '45%',
+                    style: {
+                        text: '12,846',
+                        fill: '#e0f2fe',
+                        fontSize: 17,
+                        fontWeight: 'bold',
+                        fontFamily: 'Consolas'
+                    }
+                }, {
+                    type: 'text',
+                    left: '32.5%',
+                    top: '55%',
+                    style: { text: '总会话', fill: '#64748b', fontSize: 10.5 }
+                }]
+            });
+        }, 180);
+    });
+})();
+</script>
+</body>
+</html>
