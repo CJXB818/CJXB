@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18-1 Canvas 粒子文字动画 - 袁磊</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #060a18; }
+    body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
+
+    #stage {
+        display: block;
+        width: 100%;
+        height: 100%;
+        cursor: crosshair;
+    }
+
+    .bar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 22px;
+        background: linear-gradient(180deg, rgba(6,10,24,.92), rgba(6,10,24,0));
+        pointer-events: none;
+        z-index: 10;
+        flex-wrap: wrap;
+    }
+    .brand { color: #e6edff; font-size: 15px; letter-spacing: 1px; }
+    .brand b { color: #5eead4; }
+    .brand span { color: #64748b; font-size: 12.5px; margin-left: 8px; }
+
+    .tools { display: flex; gap: 8px; pointer-events: auto; flex-wrap: wrap; }
+    .tools button {
+        border: 1px solid rgba(148,163,184,.35);
+        background: rgba(15,23,42,.6);
+        color: #cbd5e1;
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-family: inherit;
+        cursor: pointer;
+        transition: .22s;
+        backdrop-filter: blur(6px);
+    }
+    .tools button:hover { border-color: #5eead4; color: #5eead4; }
+    .tools button.on {
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        border-color: transparent;
+        color: #04121f;
+        font-weight: 700;
+    }
+
+    .hint {
+        position: fixed;
+        bottom: 18px;
+        left: 0; right: 0;
+        text-align: center;
+        color: #475569;
+        font-size: 12.5px;
+        letter-spacing: .5px;
+        pointer-events: none;
+        z-index: 10;
+    }
+    .hint b { color: #64748b; }
+
+    .meta {
+        position: fixed;
+        left: 22px;
+        bottom: 18px;
+        color: #334155;
+        font-size: 12px;
+        line-height: 1.7;
+        z-index: 10;
+        font-family: Consolas, monospace;
+    }
+</style>
+</head>
+<body>
+    <canvas id="stage"></canvas>
+
+    <div class="bar">
+        <div class="brand">18-1 <b>Canvas 粒子文字动画</b><span>requestAnimationFrame · 像素采样 · 弹簧物理</span></div>
+        <div class="tools">
+            <button data-theme="aurora" class="on">极光</button>
+            <button data-theme="sunset">日暮</button>
+            <button data-theme="mono">素白</button>
+            <button data-theme="matrix">矩阵绿</button>
+            <button id="replay">重新聚合</button>
+            <button id="toggleTrace">拖尾：开</button>
+        </div>
+    </div>
+
+    <div class="meta">
+        particles: <span id="pcount">0</span> · fps: <span id="pfps">--</span>
+    </div>
+    <div class="hint">鼠标划过会推开粒子，<b>点击画面</b>把文字炸开再重新聚合</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var TEXT = '袁磊';
+
+    var canvas = document.getElementById('stage');
+    var ctx = canvas.getContext('2d');
+    var pcountEl = document.getElementById('pcount');
+    var pfpsEl = document.getElementById('pfps');
+    var traceBtn = document.getElementById('toggleTrace');
+
+    var W = 0, H = 0, DPR = 1;
+    var particles = [];
+    var mouse = { x: -9999, y: -9999 };
+    var useTrace = true;
+
+    // 四套配色，每套由若干颜色组成，按粒子位置取色
+    var THEMES = {
+        aurora: ['#22d3ee', '#38bdf8', '#818cf8', '#a78bfa', '#5eead4'],
+        sunset: ['#fb7185', '#f97316', '#fbbf24', '#f472b6', '#fb923c'],
+        mono:   ['#ffffff', '#e2e8f0', '#cbd5e1', '#94a3b8', '#f8fafc'],
+        matrix: ['#22c55e', '#4ade80', '#16a34a', '#86efac', '#a3e635']
+    };
+    var currentTheme = 'aurora';
+
+    /* ---------- 像素采样：把文字变成粒子目标点 ---------- */
+    function sampleText() {
+        var off = document.createElement('canvas');
+        off.width = W;
+        off.height = H;
+        var octx = off.getContext('2d');
+
+        // 字号自适应：宽度不超过画布 62%，高度不超过 46%
+        var fontSize = Math.min(W * 0.62 / TEXT.length, H * 0.46);
+        // 保证字号是整数，避免子像素采样抖动
+        fontSize = Math.max(40, Math.floor(fontSize));
+
+        octx.clearRect(0, 0, W, H);
+        octx.fillStyle = '#fff';
+        octx.textAlign = 'center';
+        octx.textBaseline = 'middle';
+        octx.font = 'bold ' + fontSize + 'px "Microsoft YaHei", "PingFang SC", sans-serif';
+        octx.fillText(TEXT, W / 2, H / 2 + fontSize * 0.03);
+
+        var img = octx.getImageData(0, 0, W, H).data;
+        var gap = fontSize > 420 ? 4 : (fontSize > 240 ? 3 : 2);
+        var points = [];
+
+        for (var y = 0; y < H; y += gap) {
+            for (var x = 0; x < W; x += gap) {
+                // 第 4 个通道是 alpha，>128 认为落在笔画上
+                if (img[(y * W + x) * 4 + 3] > 128) {
+                    points.push({ x: x, y: y });
+                }
+            }
+        }
+        return { points: points, gap: gap };
+    }
+
+    /* ---------- 生成 / 重置粒子 ---------- */
+    function buildParticles() {
+        var sampled = sampleText();
+        var points = sampled.points;
+        var gap = sampled.gap;
+        var limit = 4200;
+        // 点太多时随机抽稀，保证帧率
+        if (points.length > limit) {
+            var picked = [];
+            var step = points.length / limit;
+            for (var i = 0; i < limit; i++) {
+                picked.push(points[Math.floor(i * step)]);
+            }
+            points = picked;
+        }
+
+        var palette = THEMES[currentTheme];
+        particles = points.map(function (p, i) {
+            // 从画布内随机位置飞入，1.2 秒左右即可聚拢成字
+            var angle = Math.random() * Math.PI * 2;
+            var radius = Math.min(W, H) * (0.15 + Math.random() * 0.35);
+            return {
+                x: W / 2 + Math.cos(angle) * radius,
+                y: H / 2 + Math.sin(angle) * radius * 1.3,
+                tx: p.x,
+                ty: p.y,
+                vx: 0,
+                vy: 0,
+                // 半径随采样间隔自适应，笔画更饱满
+                size: gap * (0.5 + Math.random() * 0.32),
+                color: palette[(p.x + p.y + i) % palette.length],
+                delay: Math.random() * 26   // 错峰入场，形成汇聚感
+            };
+        });
+
+        pcountEl.textContent = particles.length;
+    }
+
+    function explode() {
+        particles.forEach(function (p) {
+            var angle = Math.random() * Math.PI * 2;
+            var speed = 6 + Math.random() * 16;
+            p.vx += Math.cos(angle) * speed;
+            p.vy += Math.sin(angle) * speed;
+            p.delay = Math.random() * 40;
+        });
+    }
+
+    /* ---------- 尺寸自适应 ---------- */
+    function resize() {
+        DPR = Math.min(window.devicePixelRatio || 1, 2);
+        W = canvas.clientWidth;
+        H = canvas.clientHeight;
+        canvas.width = Math.floor(W * DPR);
+        canvas.height = Math.floor(H * DPR);
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        buildParticles();
+    }
+
+    /* ---------- 动画主循环 ---------- */
+    var lastTime = performance.now();
+    var fpsAcc = 0, fpsFrames = 0;
+
+    function frame(now) {
+        var dt = now - lastTime;
+        lastTime = now;
+
+        // 拖尾：用半透明底色覆盖上一帧，留下运动残影
+        if (useTrace) {
+            ctx.fillStyle = 'rgba(6, 10, 24, 0.16)';
+        } else {
+            ctx.fillStyle = 'rgba(6, 10, 24, 1)';
+        }
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.globalCompositeOperation = 'lighter';
+
+        for (var i = 0; i < particles.length; i++) {
+            var p = particles[i];
+
+            if (p.delay > 0) {
+                p.delay--;
+            } else {
+                // 弹簧：加速度与"到目标点的距离"成正比
+                p.vx += (p.tx - p.x) * 0.062;
+                p.vy += (p.ty - p.y) * 0.062;
+
+                // 鼠标斥力
+                var dx = p.x - mouse.x;
+                var dy = p.y - mouse.y;
+                var dist2 = dx * dx + dy * dy;
+                if (dist2 < 13000 && dist2 > 0.01) {
+                    var force = (13000 - dist2) / 13000 * 2.6;
+                    var dist = Math.sqrt(dist2);
+                    p.vx += dx / dist * force;
+                    p.vy += dy / dist * force;
+                }
+            }
+
+            // 阻尼，让粒子最终稳定在目标点
+            p.vx *= 0.9;
+            p.vy *= 0.9;
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // 鼠标附近轻微放大，增强交互感
+            var mdx = p.x - mouse.x;
+            var mdy = p.y - mouse.y;
+            var near = (mdx * mdx + mdy * mdy) < 5000;
+            var r = near ? p.size * 2.1 : p.size;
+
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.globalCompositeOperation = 'source-over';
+
+        // FPS 统计
+        fpsAcc += dt;
+        fpsFrames++;
+        if (fpsAcc >= 500) {
+            pfpsEl.textContent = Math.round(1000 / (fpsAcc / fpsFrames));
+            fpsAcc = 0;
+            fpsFrames = 0;
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    /* ---------- 交互 ---------- */
+    canvas.addEventListener('mousemove', function (e) {
+        var rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+        mouse.x = -9999;
+        mouse.y = -9999;
+    });
+
+    canvas.addEventListener('click', explode);
+
+    canvas.addEventListener('touchstart', function (e) {
+        var rect = canvas.getBoundingClientRect();
+        mouse.x = e.touches[0].clientX - rect.left;
+        mouse.y = e.touches[0].clientY - rect.top;
+        explode();
+    }, { passive: true });
+
+    document.querySelectorAll('.tools button[data-theme]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.tools button[data-theme]').forEach(function (b) {
+                b.classList.remove('on');
+            });
+            btn.classList.add('on');
+            currentTheme = btn.dataset.theme;
+            var palette = THEMES[currentTheme];
+            particles.forEach(function (p, i) {
+                p.color = palette[i % palette.length];
+            });
+        });
+    });
+
+    document.getElementById('replay').addEventListener('click', function () {
+        buildParticles();
+    });
+
+    traceBtn.addEventListener('click', function () {
+        useTrace = !useTrace;
+        traceBtn.textContent = '拖尾：' + (useTrace ? '开' : '关');
+    });
+
+    window.addEventListener('resize', resize);
+
+    resize();
+    requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
