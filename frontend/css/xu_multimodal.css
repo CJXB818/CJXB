@@ -1,0 +1,465 @@
+/*
+ * 姓名：【徐奔】 | 学号：【24001011011】 |
+ * 时间：2026-11-16 | 大模型：Qwen3-VL-32B-Instruct / SenseVoiceSmall
+ * 说明：多模态识别页面样式（图像识别 + 语音识别），类名统一 xu_ 前缀
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    background:
+        radial-gradient(900px 460px at 10% -6%, rgba(56, 189, 248, .14), transparent 62%),
+        radial-gradient(760px 420px at 90% 2%, rgba(129, 140, 248, .14), transparent 62%),
+        #05070d;
+    color: #e2e8f0;
+    min-height: 100vh;
+}
+
+.xu_page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+}
+
+/* ================= 顶部 ================= */
+.xu_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 0 18px;
+    border-bottom: 1px solid rgba(56, 189, 248, .14);
+    flex-wrap: wrap;
+}
+
+.xu_brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.xu_logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #04121f;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+    box-shadow: 0 0 22px rgba(56, 189, 248, .4);
+}
+
+.xu_brand_text h1 {
+    font-size: 17px;
+    letter-spacing: .4px;
+}
+
+.xu_brand_text p {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.xu_nav {
+    display: flex;
+    gap: 6px;
+}
+
+.xu_nav a {
+    font-size: 12.5px;
+    color: #9fb3c8;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 9px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    background: rgba(15, 23, 42, .55);
+    transition: .2s;
+}
+
+.xu_nav a:hover {
+    color: #e2e8f0;
+    border-color: rgba(125, 211, 252, .55);
+}
+
+.xu_nav a.xu_nav_on {
+    color: #04121f;
+    font-weight: 700;
+    border-color: transparent;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+}
+
+/* ================= 卡片 ================= */
+.xu_main {
+    padding-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.xu_card {
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: linear-gradient(180deg, rgba(18, 29, 48, .82), rgba(9, 15, 27, .86));
+    padding: 18px 20px;
+    box-shadow: 0 18px 44px rgba(2, 8, 20, .5);
+}
+
+.xu_card_title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #cfe6ff;
+    letter-spacing: .4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.xu_card_title::before {
+    content: "";
+    width: 3px;
+    height: 14px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #7dd3fc, #818cf8);
+}
+
+.xu_grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.xu_sub_title {
+    font-size: 12.5px;
+    color: #93a7bd;
+    font-weight: 600;
+    margin: 14px 0 10px;
+    letter-spacing: .3px;
+}
+
+/* ================= 上传区 ================= */
+.xu_drop {
+    border: 1.5px dashed rgba(125, 211, 252, .3);
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: .2s;
+    background: rgba(8, 15, 28, .5);
+}
+
+.xu_drop:hover,
+.xu_drop.xu_drop_on {
+    border-color: rgba(125, 211, 252, .75);
+    background: rgba(12, 24, 42, .7);
+}
+
+.xu_drop_icon {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 10px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    color: #04121f;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+}
+
+.xu_drop_main {
+    font-size: 13px;
+    color: #dbe7f3;
+}
+
+.xu_drop_sub {
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: 6px;
+}
+
+.xu_file_name {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #7dd3fc;
+    word-break: break-all;
+}
+
+/* ================= 按钮 ================= */
+.xu_actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.xu_btn_primary {
+    border: none;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #04121f;
+    padding: 9px 20px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+    transition: .2s;
+}
+
+.xu_btn_primary:hover:not(:disabled) {
+    box-shadow: 0 8px 22px rgba(56, 189, 248, .3);
+    transform: translateY(-1px);
+}
+
+.xu_btn_primary:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.xu_btn_ghost {
+    font-size: 12px;
+    color: #9fb3c8;
+    text-decoration: none;
+    border: 1px solid rgba(148, 163, 184, .24);
+    background: rgba(15, 23, 42, .5);
+    border-radius: 9px;
+    padding: 8px 13px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.xu_btn_ghost:hover {
+    color: #e2e8f0;
+    border-color: rgba(125, 211, 252, .55);
+}
+
+.xu_hint {
+    font-size: 11.5px;
+    color: #5c7086;
+    margin-top: 12px;
+}
+
+/* ================= 预览 ================= */
+.xu_preview {
+    margin-top: 14px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(148, 163, 184, .18);
+    background: #060b14;
+    display: none;
+}
+
+.xu_preview.xu_show {
+    display: block;
+}
+
+.xu_preview img {
+    display: block;
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    background: #060b14;
+}
+
+.xu_preview audio {
+    display: block;
+    width: 100%;
+    padding: 10px;
+}
+
+/* ================= 状态提示 ================= */
+.xu_alert {
+    display: none;
+    border-radius: 11px;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+.xu_alert.xu_show {
+    display: block;
+}
+
+.xu_alert.xu_info {
+    color: #bae6fd;
+    border: 1px solid rgba(56, 189, 248, .4);
+    background: rgba(8, 47, 73, .5);
+}
+
+.xu_alert.xu_error {
+    color: #fecaca;
+    border: 1px solid rgba(248, 113, 113, .45);
+    background: rgba(69, 10, 10, .45);
+}
+
+/* ================= 结果 ================= */
+.xu_result {
+    display: none;
+    margin-top: 4px;
+}
+
+.xu_result.xu_show {
+    display: block;
+    animation: xu_fade .35s ease;
+}
+
+@keyframes xu_fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+
+.xu_kv {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 8px 12px;
+    font-size: 12.5px;
+    line-height: 1.8;
+}
+
+.xu_kv dt {
+    color: #7f93a8;
+}
+
+.xu_kv dd {
+    color: #dbe7f3;
+    word-break: break-word;
+}
+
+.xu_ocr {
+    margin-top: 4px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: rgba(6, 11, 20, .7);
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #c7d6e6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.xu_tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 4px;
+}
+
+.xu_tag {
+    font-size: 11px;
+    color: #a5b4fc;
+    border: 1px solid rgba(129, 140, 248, .4);
+    background: rgba(49, 46, 129, .35);
+    border-radius: 999px;
+    padding: 3px 10px;
+}
+
+.xu_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.xu_chip {
+    font-size: 11.5px;
+    border-radius: 999px;
+    padding: 4px 11px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    background: rgba(15, 23, 42, .6);
+    color: #9fb3c8;
+}
+
+.xu_chip b {
+    color: #e2e8f0;
+    margin-left: 4px;
+}
+
+.xu_chip_good { border-color: rgba(52, 211, 153, .45); color: #6ee7b7; }
+.xu_chip_mid { border-color: rgba(251, 191, 36, .42); color: #fcd34d; }
+.xu_chip_bad { border-color: rgba(248, 113, 113, .45); color: #fca5a5; }
+
+/* 单条评论分类卡 */
+.xu_item {
+    border-radius: 11px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: linear-gradient(180deg, rgba(18, 29, 48, .7), rgba(10, 16, 28, .8));
+    padding: 12px 14px;
+    margin-top: 10px;
+}
+
+.xu_item_head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.xu_badge {
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 7px;
+    padding: 3px 9px;
+}
+
+.xu_badge_good { color: #04121f; background: #34d399; }
+.xu_badge_mid { color: #2a2000; background: #fbbf24; }
+.xu_badge_bad { color: #2a0808; background: #f87171; }
+.xu_badge_none { color: #cbd5e1; background: rgba(100, 116, 139, .5); }
+
+.xu_item_conf {
+    margin-left: auto;
+    font-size: 11.5px;
+    color: #7f93a8;
+}
+
+.xu_item_text {
+    font-size: 12.5px;
+    line-height: 1.85;
+    color: #dbe7f3;
+}
+
+.xu_item_meta {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: #7f93a8;
+    line-height: 1.7;
+}
+
+.xu_review_flag {
+    font-size: 11px;
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, .45);
+    border-radius: 999px;
+    padding: 2px 9px;
+}
+
+/* ================= 页脚 ================= */
+.xu_footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(148, 163, 184, .12);
+    font-size: 11.5px;
+    color: #4f6172;
+}
+
+@media (max-width: 900px) {
+    .xu_grid2 {
+        grid-template-columns: 1fr;
+    }
+}

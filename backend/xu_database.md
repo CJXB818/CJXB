@@ -145,6 +145,55 @@ UPDATE xu_comment SET xu_summary='价格合适，质量一般', xu_confidence=0.
   WHERE xu_file_id=4 AND xu_no=8;
 ```
 
+---
+
+## 2026/11/16 16:38:20 · 新建多模态识别记录表 xu_multimodal
+
+> 背景：新增图像识别（Qwen/Qwen3-VL-32B-Instruct）与语音识别（FunAudioLLM/SenseVoiceSmall）功能，
+> 需要记录每次识别的文件名、识别文本、附加信息（主体 / 场景 / 标签 / 语种 / 时长）与情感分类结果。
+
+```sql
+-- 1. 多模态识别记录表
+CREATE TABLE IF NOT EXISTS xu_multimodal (
+  xu_id INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  xu_modality VARCHAR(20) NOT NULL COMMENT '模态：image 图片 / audio 语音',
+  xu_file_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
+  xu_mime VARCHAR(80) DEFAULT NULL COMMENT '文件 MIME 类型',
+  xu_size INT UNSIGNED DEFAULT 0 COMMENT '文件大小（字节）',
+  xu_text TEXT COMMENT '识别出的文字（图像 OCR / 语音转写）',
+  xu_meta TEXT COMMENT '识别附加信息 JSON（主体、场景、标签、语种、时长等）',
+  xu_sentiment VARCHAR(10) DEFAULT NULL COMMENT '情感分类：好评 / 中评 / 差评',
+  xu_confidence DECIMAL(3,2) DEFAULT NULL COMMENT '置信度 0.00~1.00',
+  xu_need_review TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否需人工复核：1 是 0 否',
+  xu_created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (xu_id),
+  KEY idx_xu_modality (xu_modality),
+  KEY idx_xu_created (xu_created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='多模态识别记录表';
+
+-- 2. 测试数据（8 条，图片 / 语音各 4 条）
+INSERT INTO xu_multimodal (xu_modality, xu_file_name, xu_mime, xu_size, xu_text, xu_meta, xu_sentiment, xu_confidence, xu_need_review) VALUES
+('image', '评论截图-生鲜水果.png', 'image/png', 126400, '果子很甜，汁水足，包装也扎实，家里老人很喜欢。',
+ '{"subject":"赣南脐橙商品页","scene":"电商商品详情与用户评价截图","tags":["脐橙","生鲜","好评"],"clarity":"clear"}', '好评', 0.93, 0),
+('image', '评论截图-小家电.png', 'image/png', 98400, '收到时压坏了一半，客服三天都不回复，很失望。',
+ '{"subject":"破壁机评价截图","scene":"电商评论区截图","tags":["小家电","破损","客服"],"clarity":"clear"}', '差评', 0.90, 0),
+('audio', '语音评论-生鲜水果.wav', 'audio/wav', 354686, '这个橙子真的很甜，汁水也足，就是包装有点简陋，希望下次能改进。',
+ '{"language":"Chinese","duration":9,"asrModel":"FunAudioLLM/SenseVoiceSmall"}', '好评', 0.86, 0),
+('audio', '语音评论-餐饮外卖.wav', 'audio/wav', 298112, '配送比预计晚了一个小时，菜有点凉了，味道还可以。',
+ '{"language":"Chinese","duration":7,"asrModel":"FunAudioLLM/SenseVoiceSmall"}', '中评', 0.74, 0),
+('image', '商品图片-手冲咖啡.png', 'image/png', 88120, '手冲咖啡·拿铁',
+ '{"subject":"手冲咖啡拿铁","scene":"极简风格桌面静物","tags":["咖啡","拿铁","静物"],"clarity":"clear"}', NULL, NULL, 1),
+('audio', '语音评论-母婴用品.wav', 'audio/wav', 412300, '纸尿裤吸水性一般，晚上还是漏了两次，价格也不便宜。',
+ '{"language":"Chinese","duration":11,"asrModel":"FunAudioLLM/SenseVoiceSmall"}', '差评', 0.83, 0),
+('image', '评论截图-数码手机.png', 'image/png', 143800, '手机手感可以，电池续航有点弱，拍照倒是挺清晰。',
+ '{"subject":"手机用户评价","scene":"电商评论区截图","tags":["数码","续航","拍照"],"clarity":"clear"}', '中评', 0.72, 0),
+('audio', '语音评论-图书文具.wav', 'audio/wav', 265900, '书的质量很好，纸张厚实，发货也快，下次还会再买。',
+ '{"language":"Chinese","duration":8,"asrModel":"FunAudioLLM/SenseVoiceSmall"}', '好评', 0.89, 0);
+
+-- 3. 校验
+SELECT xu_modality, COUNT(*) AS xu_count FROM xu_multimodal GROUP BY xu_modality;
+```
+
 ```sql
 -- 3. 校验：查看新增字段的落库情况
 SELECT xu_id, xu_sentiment, xu_confidence, xu_summary, xu_aspects, xu_entities, xu_need_review

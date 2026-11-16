@@ -298,3 +298,160 @@ Excel 列格式示例（第一行为表头）：
 }
 ```
 
+---
+
+## 2026-11-16 16:38 · POST /api/multimodal/image（新增 · 图像识别）
+
+| 项目 | 内容 |
+|---|---|
+| 接口路径 | `/api/multimodal/image` |
+| HTTP 方法 | `POST` |
+| 修改时间 | 2026-11-16 16:38 |
+| 视觉模型 | `Qwen/Qwen3-VL-32B-Instruct`（硅基流动，OpenAI 兼容 chat/completions） |
+| 说明 | 上传评论截图或商品图片，识别画面主体、场景、图中文字，并把图中评价原文送入情感分类模型 |
+
+**请求参数**（`multipart/form-data`）
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `file` | file | 是 | 图片文件，支持 `.png` / `.jpg` / `.jpeg` / `.webp` / `.bmp` / `.gif`，≤5MB |
+
+**请求示例**
+
+```bash
+curl -X POST -F "file=@frontend/images/示例-评论截图.png" \
+  http://localhost:8011/api/multimodal/image
+```
+
+**响应格式（成功，节选）**
+
+```json
+{
+  "code": 0,
+  "msg": "图像识别完成，解析出 3 条评价",
+  "data": {
+    "recordId": 11,
+    "modality": "image",
+    "fileName": "示例-评论截图.png",
+    "size": 65300,
+    "visionModel": "Qwen/Qwen3-VL-32B-Instruct",
+    "subject": "赣南脐橙商品详情页",
+    "scene": "电商平台商品详情页截图，包含商品信息、用户评价与价格",
+    "ocrText": "赣南脐橙 5kg 礼盒装\n¥ 59.90\n已售 3.2 万件 · 好评率 96%\n用户评价\n……",
+    "tags": ["赣南脐橙", "电商平台", "商品详情", "用户评价", "水果", "礼盒装"],
+    "clarity": "clear",
+    "comments": [
+      {
+        "no": 1,
+        "content": "果子很甜，汁水足，包装也扎实，家里老人很喜欢。",
+        "sentiment": "好评",
+        "confidence": 0.94,
+        "aspects": ["口味", "包装"],
+        "entities": [{ "name": "果子", "type": "product" }],
+        "summary": "果子很甜，汁水足，包装也扎实，家里老人很喜欢",
+        "need_review": false,
+        "featured": true,
+        "invalid": false
+      }
+    ],
+    "total": 3,
+    "summary": { "好评": 1, "中评": 1, "差评": 1 },
+    "avgConfidence": 0.89,
+    "needReview": 0,
+    "usage": { "prompt_tokens": 1520, "completion_tokens": 486, "total_tokens": 2006 }
+  }
+}
+```
+
+**说明**
+
+1. 识别结果按约定 JSON 输出：`subject`（主体）、`scene`（场景）、`ocr_text`（图中文字）、`comments`（评价原文）、`tags`（标签）、`clarity`（清晰度）。
+2. 若模型未单独给出 `comments`，则用整段 `ocr_text` 作为一条评价（置信度通常较低，会被标记 `need_review`）。
+3. `comments` 中每条评价都会调用 `/api/comment/analyze` 相同的分类流程（同一套提示词与字段校验），因此字段与上一节一致。
+4. 识别记录写入 `xu_multimodal`（`xu_modality = 'image'`），入库失败不影响接口返回。
+
+**错误码**
+
+| code | 场景 |
+|---|---|
+| 400 | 未上传文件、格式不支持、超过 5MB |
+| 502 | 视觉模型返回非 JSON，或上游返回错误 |
+| 500 | 服务端未配置密钥等内部错误 |
+
+---
+
+## 2026-11-16 16:38 · POST /api/multimodal/audio（新增 · 语音识别）
+
+| 项目 | 内容 |
+|---|---|
+| 接口路径 | `/api/multimodal/audio` |
+| HTTP 方法 | `POST` |
+| 修改时间 | 2026-11-16 16:38 |
+| 语音模型 | `FunAudioLLM/SenseVoiceSmall`（硅基流动 `/v1/audio/transcriptions`） |
+| 说明 | 上传语音评论，先转写为文字，再调用情感分类模型给出分类、摘要与维度 |
+
+**请求参数**（`multipart/form-data`）
+
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `file` | file | 是 | 音频文件，支持 `.wav` / `.mp3` / `.m4a` / `.webm` / `.ogg` / `.flac` / `.amr` / `.aac`，≤10MB |
+
+**请求示例**
+
+```bash
+curl -X POST -F "file=@frontend/downloads/示例-语音评论.wav" \
+  http://localhost:8011/api/multimodal/audio
+```
+
+**响应格式（成功，节选）**
+
+```json
+{
+  "code": 0,
+  "msg": "语音识别完成，已转写并完成情感分类",
+  "data": {
+    "recordId": 12,
+    "modality": "audio",
+    "fileName": "示例-语音评论.wav",
+    "size": 354686,
+    "asrModel": "FunAudioLLM/SenseVoiceSmall",
+    "text": "这个橙子真的很甜，汁水也足，就是包装有点简陋，希望下次能改进。",
+    "language": "Chinese",
+    "duration": 9,
+    "comments": [
+      {
+        "no": 1,
+        "content": "这个橙子真的很甜，汁水也足，就是包装有点简陋，希望下次能改进。",
+        "sentiment": "中评",
+        "confidence": 0.78,
+        "aspects": ["口味", "包装"],
+        "entities": [{ "name": "橙子", "type": "product" }],
+        "summary": "橙子甜汁水足，包装待改进",
+        "need_review": false,
+        "featured": true,
+        "invalid": false
+      }
+    ],
+    "total": 1,
+    "summary": { "好评": 0, "中评": 1, "差评": 0 },
+    "avgConfidence": 0.78,
+    "needReview": 0
+  }
+}
+```
+
+**说明**
+
+1. 语音转写走独立的 `/audio/transcriptions` 接口，返回 `text`、`language` 与音频时长。
+2. 转写文本非空时才会进入情感分类；空文本返回 422 并提示重新录制。
+3. 识别记录写入 `xu_multimodal`（`xu_modality = 'audio'`）。
+4. 后端终端会分别打印 `[发送给语音模型] / [从语音模型接收]` 与 `[发送给大模型] / [从大模型接收]` 两组日志。
+
+**错误码**
+
+| code | 场景 |
+|---|---|
+| 400 | 未上传文件、格式不支持、超过 10MB |
+| 422 | 转写结果为空 |
+| 502 | 语音模型调用失败 |
+

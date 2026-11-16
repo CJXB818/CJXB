@@ -17,13 +17,18 @@
 GJWY/
 ├── frontend/                     # 前端（原生 HTML / CSS / JavaScript，无框架、无 CDN）
 │   ├── comment.html              # 商业评论情感分类页面
+│   ├── multimodal.html           # 多模态识别页面（图片 + 语音）
 │   ├── index.html                # 首页（含各页面入口链接）
 │   ├── css/xu_comment.css        # 分类页样式（xu_ 前缀）
+│   ├── css/xu_multimodal.css     # 多模态页样式（xu_ 前缀）
 │   ├── js/xu_comment.js          # 上传、请求、饼图绘制与结果渲染
-│   └── downloads/                # 3 份示例数据（每份 20 条评论）
+│   ├── js/xu_multimodal.js       # 图片 / 语音上传、识别请求与结果渲染
+│   ├── images/                   # 示例图片（评论截图、商品图片）
+│   └── downloads/                # 3 份示例 Excel（每份 20 条）与示例语音
 ├── backend/                      # 后端（Node.js + Express）
 │   ├── server.js                 # 入口：静态托管、跨域、路由、统一错误处理
 │   ├── xu_comment.js             # 业务：Excel 解析 → 提示词 → 校验重试 → 入库
+│   ├── xu_multimodal.js          # 业务：图像识别 / 语音识别 → 文本 → 情感分类
 │   ├── xu_llm.js                 # 大模型调用封装（打印发送 / 接收数据）
 │   ├── xu_db.js                  # MySQL 连接池
 │   ├── xu_env.js                 # .env 配置读取
@@ -47,7 +52,7 @@ GJWY/
 | 包管理器 | `cnpm`（优先）或 `npm`、`pnpm` |
 | MySQL | 8.0，字符集 `utf8mb4` |
 | 浏览器 | Chrome / Edge 最新版 |
-| 大模型服务 | 硅基流动 SiliconFlow，模型 `deepseek-ai/DeepSeek-V4.1-Flash` |
+| 大模型服务 | 硅基流动 SiliconFlow：`deepseek-ai/DeepSeek-V4.1-Flash`（文本）、`Qwen/Qwen3-VL-32B-Instruct`（图像）、`FunAudioLLM/SenseVoiceSmall`（语音） |
 | 端口 | 后端固定 **8011**，前端由 `express.static` 托管 |
 
 ---
@@ -64,7 +69,9 @@ GJWY/
 | `DB_HOST` | MySQL 主机 | `localhost` |
 | `DB_NAME` | 数据库名 | `xu_sentiment` |
 | `LLM_BASE_URL` | 大模型 OpenAI 兼容端点 | `https://api.siliconflow.cn/v1` |
-| `LLM_MODEL` | 模型名称 | `deepseek-ai/DeepSeek-V4.1-Flash` |
+| `LLM_MODEL` | 文本模型名称 | `deepseek-ai/DeepSeek-V4.1-Flash` |
+| `LLM_VISION_MODEL` | 图像识别模型 | `Qwen/Qwen3-VL-32B-Instruct` |
+| `LLM_ASR_MODEL` | 语音识别模型 | `FunAudioLLM/SenseVoiceSmall` |
 | `LLM_API_KEY` | 平台密钥（仅保存在服务端） | `sk-********` |
 
 API Key 申请地址：<https://cloud.siliconflow.cn/account/ak>。
@@ -92,6 +99,7 @@ node server.js
 启动后：
 
 - 分类页面：<http://localhost:8011/comment.html>
+- 多模态页面：<http://localhost:8011/multimodal.html>
 - 健康检查：<http://localhost:8011/api/health>
 
 ---
@@ -105,6 +113,8 @@ node server.js
 4. **可视化**：Canvas 环形饼图（好评 / 中评 / 差评）、维度热度 Top5 条形图、精选评论卡片、置信度与待复核统计。
 5. **数据持久化**：文件记录写入 `xu_comment_file`，分类结果写入 `xu_comment`（含摘要、维度、实体、复核标记）。
 6. **可观测性**：后端终端打印发送给大模型的完整请求体与模型返回体；前端控制台打印接口请求与响应数据。
+7. **图像识别**：上传评论截图或商品图片，`Qwen/Qwen3-VL-32B-Instruct` 识别主体、场景、图中文字与评价原文，评价原文自动进入情感分类流程；识别结果与分类结果一起展示并入库。
+8. **语音识别**：上传语音评论，`FunAudioLLM/SenseVoiceSmall` 转写为文字（返回语种与时长），再送入情感分类模型，页面可直接播放原音频对照。
 
 ---
 
@@ -115,6 +125,8 @@ node server.js
 | GET | `/api/health` | 服务与数据库健康检查 |
 | POST | `/api/chat` | 通用对话代理（messages 数组） |
 | POST | `/api/comment/analyze` | 上传 Excel 并完成情感分类（multipart，字段名 `file`） |
+| POST | `/api/multimodal/image` | 上传图片，识别主体 / 场景 / 图中文字并分类评价（字段名 `file`） |
+| POST | `/api/multimodal/audio` | 上传语音，转写为文字并分类情感（字段名 `file`） |
 
 统一响应格式：`{ "code": 0, "msg": "提示信息", "data": {} }`，`code = 0` 为成功。
 详细请求 / 响应示例见 `backend/xu_interface.md`。

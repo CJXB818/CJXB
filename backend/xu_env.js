@@ -39,7 +39,9 @@ xu_loadEnv(path.join(__dirname, '.env'));
 module.exports = {
     xu_port: Number(process.env.PORT) || 8011,
     xu_baseUrl: process.env.LLM_BASE_URL || 'https://api.qnaigc.com/v1',
-    xu_model: process.env.LLM_MODEL || 'qiniu/conatus-free',
+    xu_model: process.env.LLM_MODEL || 'deepseek-ai/DeepSeek-V4.1-Flash',
+    xu_visionModel: process.env.LLM_VISION_MODEL || 'Qwen/Qwen3-VL-32B-Instruct',
+    xu_asrModel: process.env.LLM_ASR_MODEL || 'FunAudioLLM/SenseVoiceSmall',
     xu_apiKey: process.env.LLM_API_KEY || '',
     xu_db: {
         host: process.env.DB_HOST || 'localhost',

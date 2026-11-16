@@ -19,6 +19,7 @@ const path = require('path');
 const xu_config = require('./xu_env');
 const xu_llm = require('./xu_llm');
 const xu_comment = require('./xu_comment');
+const xu_multimodal = require('./xu_multimodal');
 const xu_pool = require('./xu_db');
 
 const xu_app = express();
@@ -42,6 +43,35 @@ const xu_upload = multer({
         const xu_ok = /\.(xlsx|xls)$/i.test(file.originalname || '');
         if (!xu_ok) {
             const xu_err = new Error('只支持 .xlsx / .xls 格式的 Excel 文件');
+            xu_err.status = 400;
+            return cb(xu_err);
+        }
+        cb(null, true);
+    }
+});
+
+// 多模态上传配置：图片 5MB、音频 10MB
+const xu_uploadImage = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+    fileFilter: function (req, file, cb) {
+        const xu_ok = /\.(png|jpe?g|webp|bmp|gif)$/i.test(file.originalname || '');
+        if (!xu_ok) {
+            const xu_err = new Error('只支持 .png / .jpg / .jpeg / .webp / .bmp / .gif 格式的图片');
+            xu_err.status = 400;
+            return cb(xu_err);
+        }
+        cb(null, true);
+    }
+});
+
+const xu_uploadAudio = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+    fileFilter: function (req, file, cb) {
+        const xu_ok = /\.(wav|mp3|m4a|webm|ogg|flac|amr|aac)$/i.test(file.originalname || '');
+        if (!xu_ok) {
+            const xu_err = new Error('只支持 .wav / .mp3 / .m4a / .webm / .ogg / .flac / .amr / .aac 格式的音频');
             xu_err.status = 400;
             return cb(xu_err);
         }
@@ -170,6 +200,70 @@ xu_app.post('/api/comment/analyze', xu_upload.single('file'), async function (re
     }
 });
 
+/* ---------------- 多模态：图像识别 ---------------- */
+xu_app.post('/api/multimodal/image', xu_uploadImage.single('file'), async function (req, res) {
+    if (!req.file) {
+        return res.status(400).json({
+            code: 400,
+            msg: '请通过 multipart/form-data 上传图片，字段名为 file',
+            data: null
+        });
+    }
+
+    try {
+        const xu_data = await xu_multimodal.xu_analyzeImage(
+            req.file.buffer,
+            req.file.mimetype,
+            req.file.originalname
+        );
+
+        return res.json({
+            code: 0,
+            msg: '图像识别完成，解析出 ' + xu_data.total + ' 条评价',
+            data: xu_data
+        });
+    } catch (xu_err) {
+        console.error('[图像识别失败]', xu_err.message);
+        return res.status(xu_err.status || 500).json({
+            code: xu_err.status || 500,
+            msg: xu_err.message,
+            data: { detail: xu_err.detail || null }
+        });
+    }
+});
+
+/* ---------------- 多模态：语音识别 ---------------- */
+xu_app.post('/api/multimodal/audio', xu_uploadAudio.single('file'), async function (req, res) {
+    if (!req.file) {
+        return res.status(400).json({
+            code: 400,
+            msg: '请通过 multipart/form-data 上传音频，字段名为 file',
+            data: null
+        });
+    }
+
+    try {
+        const xu_data = await xu_multimodal.xu_analyzeAudio(
+            req.file.buffer,
+            req.file.mimetype,
+            req.file.originalname
+        );
+
+        return res.json({
+            code: 0,
+            msg: '语音识别完成，已转写并完成情感分类',
+            data: xu_data
+        });
+    } catch (xu_err) {
+        console.error('[语音识别失败]', xu_err.message);
+        return res.status(xu_err.status || 500).json({
+            code: xu_err.status || 500,
+            msg: xu_err.message,
+            data: { detail: xu_err.detail || null }
+        });
+    }
+});
+
 /* ---------------- 404 ---------------- */
 xu_app.use(function (req, res) {
     res.status(404).json({
@@ -203,7 +297,11 @@ xu_app.listen(xu_config.xu_port, '0.0.0.0', function () {
     console.log('  服务地址     : http://localhost:' + xu_config.xu_port);
     console.log('  聊天接口     : POST /api/chat');
     console.log('  评论分析接口 : POST /api/comment/analyze');
+    console.log('  图像识别接口 : POST /api/multimodal/image');
+    console.log('  语音识别接口 : POST /api/multimodal/audio');
     console.log('  模型         : ' + xu_config.xu_model);
+    console.log('  视觉模型     : ' + xu_config.xu_visionModel);
+    console.log('  语音模型     : ' + xu_config.xu_asrModel);
     console.log('  数据库       : ' + xu_config.xu_db.database + ' @ ' + xu_config.xu_db.host);
     console.log('==================================================');
 });

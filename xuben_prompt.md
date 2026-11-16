@@ -68,3 +68,21 @@ OpenAI BaseURL: https://api.qnaigc.com/v1, 在控制台里输出发送给大模�
 5. 测试：curl 覆盖正常上传、空内容行、超长评论、特殊字符、无评论列、非 Excel、缺少文件字段、404 共 9 个用例，全部通过并留存截图。
 6. 报告：生成 `_reports/24001011011-徐奔-LLM应用设计项目报告.docx`（11 页），含架构图、应用截图、提示词与模型返回截图、控制台截图、测试用例表与项目总结。
 
+---
+
+## 2026-11-16 17:05 | DeepSeek-V4.1-Flash
+
+**提示词全文：**
+
+```
+需要 并且完善功能 要求图像识别和语音识别功能 在硅基流动网站中帮我寻找合适的大模型
+```
+
+**处理结果：** 查询硅基流动 `/v1/models`（共 91 个模型）后试跑选型，新增图像识别与语音识别两条链路，并同步文档与报告。
+1. 模型选型：视觉 `Qwen/Qwen3-VL-32B-Instruct`（对比 Qwen3-VL-8B/30B-A3B、PaddleOCR-VL-1.5）；语音 `FunAudioLLM/SenseVoiceSmall`（对比 Qwen3-ASR-1.7B、XingChenASR 系列），实测视觉约 15～35 秒、语音约 0.8 秒。
+2. 后端：新增 `xu_multimodal.js`（图像识别 + 语音识别 → 文本 → 复用 `xu_classifyList` 分类）与两个接口 `POST /api/multimodal/image`、`POST /api/multimodal/audio`；`xu_llm.js` 支持指定模型、多模态 content 与 `/audio/transcriptions`，并对 base64 图片日志脱敏；`xu_comment.js` 抽取可复用的 `xu_classifyList`。
+3. 数据库：新建 `xu_multimodal` 表并插入 8 条测试数据（图片/语音各 4 条），记录已写入 `backend/xu_database.md`。
+4. 前端：新增 `multimodal.html` + `css/xu_multimodal.css` + `js/xu_multimodal.js`（图片预览、音频播放、主体/场景/图中文字/标签、转写文本与情感分类展示），三页导航互相打通，示例素材放入 `frontend/images` 与 `frontend/downloads`。
+5. 测试：图片识别正确抽出 3 条评价（好评/中评/差评各 1，平均置信度 0.89），语音转写一字不差并判定中评；静音音频返回 422 提示重录。
+6. 文档与报告：README、接口文档同步；报告扩充为 14 页，新增「多模态扩展」章节、多模态页面截图、接口表与数据表行、2 条测试用例及多模态心得。
+

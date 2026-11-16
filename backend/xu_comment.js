@@ -380,22 +380,8 @@ async function xu_saveToDB(xu_fileName, xu_comments, xu_source) {
 }
 
 /* ---------------- 主流程 ---------------- */
-async function xu_analyzeComments(xu_buffer, xu_originalName) {
-    const xu_fileName = xu_fixFileName(xu_originalName || '未命名.xlsx');
-
-    let xu_comments = xu_parseExcel(xu_buffer);
-
-    if (!xu_comments.length) {
-        const xu_err = new Error('未在文件中解析到评论内容，请确认存在「评论内容」列且内容非空');
-        xu_err.status = 400;
-        throw xu_err;
-    }
-
-    const xu_truncated = xu_comments.length > XU_MAX_COMMENTS;
-    if (xu_truncated) {
-        xu_comments = xu_comments.slice(0, XU_MAX_COMMENTS);
-    }
-
+async function xu_classifyList(xu_comments, xu_tagPrefix) {
+    const xu_tag = xu_tagPrefix || '评论情感分类';
     const xu_systemPrompt = '你是电商评论情感分析专家。你的唯一任务是按约定字段输出结构化 JSON，' +
         '字段名、字段类型、枚举取值必须与约定完全一致，不输出任何解释、注释或 markdown 代码块标记。';
 
@@ -412,7 +398,7 @@ async function xu_analyzeComments(xu_buffer, xu_originalName) {
             { role: 'user', content: xu_prompt }
         ], {
             temperature: xu_attempt > 0 ? 0.1 : 0.2,
-            tag: xu_attempt > 0 ? '评论情感分类-重试' : '评论情感分类'
+            tag: xu_attempt > 0 ? xu_tag + '-重试' : xu_tag
         });
 
         if (!xu_response.ok) {
@@ -494,7 +480,39 @@ async function xu_analyzeComments(xu_buffer, xu_originalName) {
         };
     }
 
-    const xu_results = xu_checked.list;
+
+    return {
+        list: xu_checked.list,
+        invalid: xu_checked.invalid,
+        errors: xu_checked.errors,
+        retried: xu_retried,
+        fallback: xu_fallback,
+        response: xu_response
+    };
+}
+
+async function xu_analyzeComments(xu_buffer, xu_originalName) {
+    const xu_fileName = xu_fixFileName(xu_originalName || '未命名.xlsx');
+
+    let xu_comments = xu_parseExcel(xu_buffer);
+
+    if (!xu_comments.length) {
+        const xu_err = new Error('未在文件中解析到评论内容，请确认存在「评论内容」列且内容非空');
+        xu_err.status = 400;
+        throw xu_err;
+    }
+
+    const xu_truncated = xu_comments.length > XU_MAX_COMMENTS;
+    if (xu_truncated) {
+        xu_comments = xu_comments.slice(0, XU_MAX_COMMENTS);
+    }
+
+    const xu_cls = await xu_classifyList(xu_comments);
+    const xu_retried = xu_cls.retried;
+    const xu_fallback = xu_cls.fallback;
+    const xu_checked = xu_cls;
+    const xu_response = xu_cls.response;
+    const xu_results = xu_cls.list;
 
     const xu_summary = { '好评': 0, '中评': 0, '差评': 0 };
     const xu_aspectCount = new Map();
@@ -542,8 +560,8 @@ async function xu_analyzeComments(xu_buffer, xu_originalName) {
         invalid: xu_checked.invalid,
         retried: xu_retried,
         fallback: xu_fallback,
-        model: (xu_response.json && xu_response.json.model) || '',
-        usage: (xu_response.json && xu_response.json.usage) || null,
+        model: (xu_cls.response && xu_cls.response.json && xu_cls.response.json.model) || '',
+        usage: (xu_cls.response && xu_cls.response.json && xu_cls.response.json.usage) || null,
         comments: xu_results,
         featured: xu_featured
     };
@@ -552,5 +570,6 @@ async function xu_analyzeComments(xu_buffer, xu_originalName) {
 module.exports = {
     xu_analyzeComments: xu_analyzeComments,
     xu_parseExcel: xu_parseExcel,
-    xu_fixFileName: xu_fixFileName
+    xu_fixFileName: xu_fixFileName,
+    xu_classifyList: xu_classifyList
 };

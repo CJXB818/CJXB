@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+  姓名：【徐奔】 | 学号：【24001011011】 |
+  时间：2026-11-16 | 大模型：Qwen3-VL-32B-Instruct / SenseVoiceSmall
+  说明：多模态识别页面，上传图片或语音评论 → 大模型识别与转写 → 情感分类
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多模态识别 - 徐奔</title>
+    <link rel="stylesheet" href="css/xu_multimodal.css">
+</head>
+<body>
+<div class="xu_page">
+
+    <header class="xu_header">
+        <div class="xu_brand">
+            <span class="xu_logo">识</span>
+            <div class="xu_brand_text">
+                <h1>多模态评论识别</h1>
+                <p>图片识别（Qwen3-VL-32B） + 语音识别（SenseVoiceSmall） → 文本 → 情感分类</p>
+            </div>
+        </div>
+        <nav class="xu_nav">
+            <a href="index.html">AI 聊天</a>
+            <a href="comment.html">评论分析</a>
+            <a href="multimodal.html" class="xu_nav_on">多模态识别</a>
+        </nav>
+    </header>
+
+    <main class="xu_main">
+
+        <!-- ============ 图片识别 ============ -->
+        <section class="xu_card">
+            <h2 class="xu_card_title">1. 图像识别 · Qwen3-VL-32B-Instruct</h2>
+
+            <div class="xu_drop" id="xuImgDrop">
+                <input type="file" id="xuImgFile" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif" hidden>
+                <div class="xu_drop_icon">IMG</div>
+                <p class="xu_drop_main">点击选择，或把评论截图 / 商品图片拖到这里</p>
+                <p class="xu_drop_sub">支持 .png / .jpg / .webp / .bmp / .gif，单文件不超过 5MB</p>
+                <p class="xu_file_name" id="xuImgName">尚未选择图片</p>
+            </div>
+
+            <div class="xu_preview" id="xuImgPreview">
+                <img id="xuImgView" alt="待识别的图片">
+            </div>
+
+            <div class="xu_actions">
+                <button type="button" class="xu_btn_primary" id="xuImgRun" disabled>开始识别</button>
+                <button type="button" class="xu_btn_ghost" id="xuImgDemo">使用示例图片</button>
+            </div>
+
+            <p class="xu_hint">识别结果包含主体、场景、图中文字与评价原文，评价原文会被逐条送到大模型做情感分类。</p>
+
+            <div class="xu_alert" id="xuImgAlert"></div>
+
+            <div class="xu_result" id="xuImgResult">
+                <h3 class="xu_sub_title">识别结果</h3>
+                <dl class="xu_kv" id="xuImgKv"></dl>
+
+                <h3 class="xu_sub_title">图中文字</h3>
+                <div class="xu_ocr" id="xuImgOcr"></div>
+
+                <h3 class="xu_sub_title">评价情感分类</h3>
+                <div class="xu_chips" id="xuImgChips"></div>
+                <div id="xuImgItems"></div>
+            </div>
+        </section>
+
+        <!-- ============ 语音识别 ============ -->
+        <section class="xu_card">
+            <h2 class="xu_card_title">2. 语音识别 · FunAudioLLM/SenseVoiceSmall</h2>
+
+            <div class="xu_drop" id="xuAudioDrop">
+                <input type="file" id="xuAudioFile" accept="audio/wav,audio/mpeg,audio/mp4,audio/webm,audio/ogg,audio/flac" hidden>
+                <div class="xu_drop_icon">WAV</div>
+                <p class="xu_drop_main">点击选择，或把语音评论拖到这里</p>
+                <p class="xu_drop_sub">支持 .wav / .mp3 / .m4a / .webm / .ogg / .flac，单文件不超过 10MB</p>
+                <p class="xu_file_name" id="xuAudioName">尚未选择音频</p>
+            </div>
+
+            <div class="xu_preview" id="xuAudioPreview">
+                <audio id="xuAudioPlayer" controls></audio>
+            </div>
+
+            <div class="xu_actions">
+                <button type="button" class="xu_btn_primary" id="xuAudioRun" disabled>开始识别</button>
+                <button type="button" class="xu_btn_ghost" id="xuAudioDemo">使用示例音频</button>
+            </div>
+
+            <p class="xu_hint">语音会先转写为文字，再交给大模型判断好评 / 中评 / 差评，并给出摘要与关注维度。</p>
+
+            <div class="xu_alert" id="xuAudioAlert"></div>
+
+            <div class="xu_result" id="xuAudioResult">
+                <h3 class="xu_sub_title">转写结果</h3>
+                <div class="xu_ocr" id="xuAudioText"></div>
+                <dl class="xu_kv" id="xuAudioKv"></dl>
+
+                <h3 class="xu_sub_title">情感分类</h3>
+                <div class="xu_chips" id="xuAudioChips"></div>
+                <div id="xuAudioItems"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="xu_footer">
+        <span>徐奔 · 24001011011 · 多模态识别</span>
+        <span>接口：POST /api/multimodal/image ｜ POST /api/multimodal/audio</span>
+    </footer>
+</div>
+
+<script src="js/xu_multimodal.js"></script>
+</body>
+</html>
