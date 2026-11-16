@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  姓名：【徐奔】 | 学号：【24001011011】 |
+  时间：2026-11-16 | 大模型：DeepSeek-V4.1-Flash
+  说明：商业评论情感分类页面，上传 Excel → 后端调用大模型分类 → 饼图与精选评论
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商业评论情感分析 - 徐奔</title>
+    <link rel="stylesheet" href="css/xu_comment.css">
+</head>
+<body>
+<div class="xu_page">
+
+    <header class="xu_header">
+        <div class="xu_brand">
+            <span class="xu_logo">评</span>
+            <div class="xu_brand_text">
+                <h1>商业评论情感分析</h1>
+                <p>上传 Excel → 大模型逐条分类 → 好评 / 中评 / 差评 分布与精选评论</p>
+            </div>
+        </div>
+        <nav class="xu_nav">
+            <a href="index.html">AI 聊天</a>
+            <a href="comment.html" class="xu_nav_on">评论分析</a>
+        </nav>
+    </header>
+
+    <main class="xu_main">
+
+        <!-- ============ 上传区 ============ -->
+        <section class="xu_card xu_upload_card">
+            <h2 class="xu_card_title">1. 上传评论文件</h2>
+
+            <div class="xu_drop" id="xuDrop">
+                <input type="file" id="xuFile" accept=".xlsx,.xls" hidden>
+                <div class="xu_drop_icon">XLSX</div>
+                <p class="xu_drop_main">点击选择，或把 Excel 拖到这里</p>
+                <p class="xu_drop_sub">支持 .xlsx / .xls，单文件不超过 5MB，需包含「评论内容」列</p>
+                <p class="xu_file_name" id="xuFileName">尚未选择文件</p>
+            </div>
+
+            <div class="xu_upload_actions">
+                <button type="button" class="xu_btn_primary" id="xuAnalyze" disabled>开始分析</button>
+                <a class="xu_btn_ghost" href="downloads/%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE1-%E7%94%9F%E9%B2%9C%E7%94%B5%E5%95%86.xlsx" download>示例数据1 · 生鲜电商</a>
+                <a class="xu_btn_ghost" href="downloads/%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE2-%E6%95%B0%E7%A0%81%E5%AE%B6%E7%94%B5.xlsx" download>示例数据2 · 数码家电</a>
+                <a class="xu_btn_ghost" href="downloads/%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE3-%E9%A4%90%E9%A5%AE%E5%A4%96%E5%8D%96.xlsx" download>示例数据3 · 餐饮外卖</a>
+            </div>
+
+            <p class="xu_hint" id="xuHint">发送给大模型的数据与模型返回结果都会打印在控制台（F12 → Console）</p>
+        </section>
+
+        <!-- ============ 状态提示 ============ -->
+        <div class="xu_alert" id="xuAlert"></div>
+
+        <!-- ============ 结果区 ============ -->
+        <section class="xu_result" id="xuResult" hidden>
+
+            <div class="xu_stats">
+                <div class="xu_stat">
+                    <span class="xu_stat_label">评论总数</span>
+                    <b class="xu_stat_value" id="xuTotal">0</b>
+                </div>
+                <div class="xu_stat xu_stat_good">
+                    <span class="xu_stat_label">好评</span>
+                    <b class="xu_stat_value" id="xuGood">0</b>
+                </div>
+                <div class="xu_stat xu_stat_mid">
+                    <span class="xu_stat_label">中评</span>
+                    <b class="xu_stat_value" id="xuMid">0</b>
+                </div>
+                <div class="xu_stat xu_stat_bad">
+                    <span class="xu_stat_label">差评</span>
+                    <b class="xu_stat_value" id="xuBad">0</b>
+                </div>
+            </div>
+
+            <div class="xu_result_grid">
+                <div class="xu_card">
+                    <h2 class="xu_card_title">2. 情感分布</h2>
+                    <div class="xu_pie_wrap">
+                        <canvas id="xuPie" width="440" height="440"></canvas>
+                        <ul class="xu_legend" id="xuLegend"></ul>
+                    </div>
+                </div>
+
+                <div class="xu_card">
+                    <h2 class="xu_card_title">3. 精选评论</h2>
+                    <div class="xu_featured" id="xuFeatured"></div>
+                </div>
+            </div>
+
+            <div class="xu_card">
+                <h2 class="xu_card_title">4. 全部评论分类结果</h2>
+                <div class="xu_table_wrap">
+                    <table class="xu_table">
+                        <thead>
+                        <tr>
+                            <th style="width:56px">序号</th>
+                            <th>评论内容</th>
+                            <th style="width:86px">分类</th>
+                            <th style="width:70px">得分</th>
+                            <th style="width:210px">分类理由</th>
+                            <th style="width:64px">精选</th>
+                        </tr>
+                        </thead>
+                        <tbody id="xuTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="xu_footer">
+        <span>徐奔 · 24001011011 · 商业评论情感分类</span>
+        <span>接口：POST /api/comment/analyze</span>
+    </footer>
+</div>
+
+<script src="js/xu_comment.js"></script>
+</body>
+</html>

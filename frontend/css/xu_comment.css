@@ -1,0 +1,540 @@
+/*
+ * 姓名：【徐奔】 | 学号：【24001011011】 |
+ * 时间：2026-11-16 | 大模型：DeepSeek-V4.1-Flash
+ * 说明：商业评论情感分析页面样式，类名统一 xu_ 前缀
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    background:
+        radial-gradient(900px 460px at 10% -6%, rgba(56, 189, 248, .14), transparent 62%),
+        radial-gradient(760px 420px at 90% 2%, rgba(129, 140, 248, .14), transparent 62%),
+        #05070d;
+    color: #e2e8f0;
+    min-height: 100vh;
+}
+
+.xu_page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+}
+
+/* ================= 顶部 ================= */
+.xu_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 0 18px;
+    border-bottom: 1px solid rgba(56, 189, 248, .14);
+    flex-wrap: wrap;
+}
+
+.xu_brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.xu_logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: #04121f;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+    box-shadow: 0 0 22px rgba(56, 189, 248, .4);
+}
+
+.xu_brand_text h1 {
+    font-size: 17px;
+    letter-spacing: .4px;
+}
+
+.xu_brand_text p {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+.xu_nav {
+    display: flex;
+    gap: 6px;
+}
+
+.xu_nav a {
+    font-size: 12.5px;
+    color: #9fb3c8;
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 9px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    background: rgba(15, 23, 42, .55);
+    transition: .2s;
+}
+
+.xu_nav a:hover {
+    color: #e2e8f0;
+    border-color: rgba(125, 211, 252, .55);
+}
+
+.xu_nav a.xu_nav_on {
+    color: #04121f;
+    font-weight: 700;
+    border-color: transparent;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+}
+
+/* ================= 通用卡片 ================= */
+.xu_main {
+    padding-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.xu_card {
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: linear-gradient(180deg, rgba(18, 29, 48, .82), rgba(9, 15, 27, .86));
+    padding: 18px 20px;
+    box-shadow: 0 18px 44px rgba(2, 8, 20, .5);
+}
+
+.xu_card_title {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #cfe6ff;
+    letter-spacing: .4px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 16px;
+}
+
+.xu_card_title::before {
+    content: '';
+    width: 3px;
+    height: 15px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #7dd3fc, #818cf8);
+}
+
+/* ================= 上传区 ================= */
+.xu_drop {
+    border: 1.5px dashed rgba(125, 211, 252, .35);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: .22s;
+    background: rgba(56, 189, 248, .045);
+}
+
+.xu_drop:hover,
+.xu_drop.xu_drop_active {
+    border-color: #7dd3fc;
+    background: rgba(56, 189, 248, .1);
+}
+
+.xu_drop_icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 12px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    color: #7dd3fc;
+    border: 1px solid rgba(125, 211, 252, .35);
+    background: rgba(56, 189, 248, .1);
+}
+
+.xu_drop_main {
+    font-size: 14px;
+    color: #dbe7f5;
+    margin-bottom: 7px;
+}
+
+.xu_drop_sub {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.8;
+}
+
+.xu_file_name {
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: #6ee7b7;
+    font-family: Consolas, monospace;
+    word-break: break-all;
+}
+
+.xu_upload_actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.xu_btn_primary {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #04121f;
+    padding: 11px 26px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7dd3fc, #818cf8);
+    transition: filter .2s, transform .1s;
+}
+
+.xu_btn_primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.xu_btn_primary:active:not(:disabled) {
+    transform: scale(.98);
+}
+
+.xu_btn_primary:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    filter: grayscale(.5);
+}
+
+.xu_btn_ghost {
+    font-size: 12.5px;
+    color: #9fb3c8;
+    text-decoration: none;
+    padding: 9px 14px;
+    border-radius: 9px;
+    border: 1px solid rgba(148, 163, 184, .22);
+    background: rgba(15, 23, 42, .5);
+    transition: .2s;
+}
+
+.xu_btn_ghost:hover {
+    color: #7dd3fc;
+    border-color: rgba(125, 211, 252, .55);
+}
+
+.xu_hint {
+    margin-top: 12px;
+    font-size: 11.8px;
+    color: #4d5e75;
+    line-height: 1.8;
+}
+
+/* ================= 提示条 ================= */
+.xu_alert {
+    display: none;
+    padding: 13px 16px;
+    border-radius: 11px;
+    font-size: 13px;
+    line-height: 1.8;
+    border: 1px solid rgba(148, 163, 184, .22);
+    background: rgba(15, 23, 42, .7);
+    color: #cbd5e1;
+}
+
+.xu_alert.xu_alert_show {
+    display: block;
+}
+
+.xu_alert.xu_alert_error {
+    border-color: rgba(248, 113, 113, .5);
+    background: rgba(69, 20, 20, .5);
+    color: #fecaca;
+}
+
+.xu_alert.xu_alert_info {
+    border-color: rgba(56, 189, 248, .4);
+    background: rgba(12, 40, 66, .5);
+    color: #bae6fd;
+}
+
+/* ================= 统计卡 ================= */
+.xu_stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.xu_stat {
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: linear-gradient(135deg, rgba(22, 38, 62, .8), rgba(10, 18, 32, .8));
+    padding: 14px 16px;
+}
+
+.xu_stat_label {
+    display: block;
+    font-size: 12px;
+    color: #7d93b0;
+    margin-bottom: 6px;
+}
+
+.xu_stat_value {
+    font-size: 26px;
+    font-weight: 800;
+    font-family: Consolas, monospace;
+    color: #e0f2fe;
+}
+
+.xu_stat_good .xu_stat_value { color: #34d399; }
+.xu_stat_mid .xu_stat_value { color: #fbbf24; }
+.xu_stat_bad .xu_stat_value { color: #f87171; }
+
+/* ================= 饼图与精选 ================= */
+.xu_result_grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.86fr) 1.14fr;
+    gap: 18px;
+}
+
+.xu_pie_wrap {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+#xuPie {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.xu_legend {
+    list-style: none;
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.xu_legend li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    color: #b6cbe2;
+}
+
+.xu_legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex: none;
+}
+
+.xu_legend .xu_legend_pct {
+    margin-left: auto;
+    font-family: Consolas, monospace;
+    color: #e0f2fe;
+}
+
+.xu_featured {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.xu_featured::-webkit-scrollbar {
+    width: 7px;
+}
+
+.xu_featured::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, .25);
+    border-radius: 4px;
+}
+
+.xu_feature_item {
+    border-radius: 11px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    background: rgba(15, 26, 44, .7);
+    padding: 13px 15px;
+}
+
+.xu_feature_top {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.xu_feature_no {
+    font-family: Consolas, monospace;
+    font-size: 11.5px;
+    color: #64748b;
+}
+
+.xu_badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    letter-spacing: .3px;
+}
+
+.xu_badge_good {
+    color: #6ee7b7;
+    background: rgba(52, 211, 153, .14);
+    border: 1px solid rgba(52, 211, 153, .4);
+}
+
+.xu_badge_mid {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, .14);
+    border: 1px solid rgba(251, 191, 36, .4);
+}
+
+.xu_badge_bad {
+    color: #fca5a5;
+    background: rgba(248, 113, 113, .14);
+    border: 1px solid rgba(248, 113, 113, .4);
+}
+
+.xu_badge_none {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, .12);
+    border: 1px solid rgba(148, 163, 184, .3);
+}
+
+.xu_feature_score {
+    margin-left: auto;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    color: #7dd3fc;
+}
+
+.xu_feature_text {
+    font-size: 13px;
+    line-height: 1.85;
+    color: #dbe7f5;
+}
+
+.xu_feature_reason {
+    margin-top: 7px;
+    font-size: 11.5px;
+    color: #64748b;
+    line-height: 1.7;
+}
+
+/* ================= 表格 ================= */
+.xu_table_wrap {
+    max-height: 520px;
+    overflow: auto;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, .14);
+}
+
+.xu_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.xu_table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    padding: 11px 12px;
+    color: #8fa3bd;
+    font-weight: 600;
+    background: #0d1729;
+    border-bottom: 1px solid rgba(148, 163, 184, .18);
+    white-space: nowrap;
+}
+
+.xu_table tbody td {
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+    color: #c3d4e6;
+    line-height: 1.75;
+    vertical-align: top;
+}
+
+.xu_table tbody tr:hover td {
+    background: rgba(56, 189, 248, .05);
+}
+
+.xu_table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.xu_table .xu_cell_no {
+    font-family: Consolas, monospace;
+    color: #64748b;
+}
+
+.xu_table .xu_cell_score {
+    font-family: Consolas, monospace;
+    color: #7dd3fc;
+}
+
+.xu_table .xu_cell_reason {
+    color: #8497ad;
+    font-size: 11.8px;
+}
+
+.xu_star {
+    color: #fbbf24;
+    font-size: 13px;
+}
+
+/* ================= 页脚 ================= */
+.xu_footer {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(148, 163, 184, .12);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 11.8px;
+    color: #4d5e75;
+}
+
+/* ================= 响应式 ================= */
+@media (max-width: 900px) {
+    .xu_result_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .xu_stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    .xu_upload_actions .xu_btn_ghost {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .xu_pie_wrap {
+        justify-content: center;
+    }
+}

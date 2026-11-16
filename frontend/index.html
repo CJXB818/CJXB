@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+  姓名：【徐奔】 | 学号：【24001011011】 |
+  时间：2026-11-12 | 大模型：DeepSeek-V4.1-Flash
+  说明：AI 聊天页面，通过后端 /api/chat 转发到大模型
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 聊天助手 - 徐奔</title>
+    <link rel="stylesheet" href="css/xu_chat.css">
+</head>
+<body>
+<div class="xu_app">
+
+    <header class="xu_header">
+        <div class="xu_brand">
+            <span class="xu_logo">AI</span>
+            <div class="xu_brand_text">
+                <h1>AI 聊天助手</h1>
+                <p>qiniu/conatus-free · 后端 /api/chat 转发</p>
+            </div>
+        </div>
+        <div class="xu_header_actions">
+            <nav class="xu_nav_links">
+                <a href="index.html" class="xu_nav_on">AI 聊天</a>
+                <a href="comment.html">评论分析</a>
+            </nav>
+            <span class="xu_status" id="xuStatus"><i class="xu_status_dot"></i><span id="xuStatusText">已就绪</span></span>
+            <button type="button" class="xu_btn_ghost" id="xuClear">清空对话</button>
+        </div>
+    </header>
+
+    <main class="xu_main" id="xuMain">
+        <div class="xu_messages" id="xuMessages"></div>
+    </main>
+
+    <footer class="xu_footer">
+        <div class="xu_composer">
+            <textarea id="xuInput" class="xu_input" rows="1"
+                      placeholder="输入消息，Enter 发送，Shift + Enter 换行"></textarea>
+            <button type="button" class="xu_btn_send" id="xuSend">发送</button>
+        </div>
+        <p class="xu_tip">
+            请求链路：浏览器 → 后端 <code>/api/chat</code> → 大模型；发送与接收的完整数据会打印在控制台（F12）
+        </p>
+    </footer>
+
+</div>
+
+<script src="js/xu_chat.js"></script>
+</body>
+</html>

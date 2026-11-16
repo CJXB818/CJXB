@@ -7,3 +7,12 @@ img/
 .DS_Store
 Thumbs.db
 *.tmp
+
+# 环境变量与依赖
+backend/.env
+node_modules/
+backend/node_modules/
+
+# 运行日志与临时文件
+backend/*.log
+backend/req.json
