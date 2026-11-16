@@ -271,8 +271,20 @@ body {
 /* ================= 统计卡 ================= */
 .xu_stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 12px;
+}
+
+@media (max-width: 1080px) {
+    .xu_stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 620px) {
+    .xu_stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .xu_stat {
@@ -299,6 +311,93 @@ body {
 .xu_stat_good .xu_stat_value { color: #34d399; }
 .xu_stat_mid .xu_stat_value { color: #fbbf24; }
 .xu_stat_bad .xu_stat_value { color: #f87171; }
+.xu_stat_conf .xu_stat_value { color: #7dd3fc; }
+.xu_stat_review .xu_stat_value { color: #c4b5fd; }
+
+/* ================= 维度热度 ================= */
+.xu_aspects {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(148, 163, 184, .16);
+}
+
+.xu_sub_title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7d93b0;
+    margin-bottom: 10px;
+    letter-spacing: .4px;
+}
+
+.xu_aspect_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.xu_aspect_bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #b6cbe2;
+}
+
+.xu_aspect_name {
+    width: 52px;
+    flex: none;
+    color: #dbe7f5;
+}
+
+.xu_aspect_track {
+    flex: 1;
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, .14);
+    overflow: hidden;
+}
+
+.xu_aspect_track i {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    transition: width .6s ease;
+}
+
+.xu_aspect_count {
+    width: 26px;
+    text-align: right;
+    font-family: Consolas, monospace;
+    color: #7dd3fc;
+}
+
+.xu_aspect_tags,
+.xu_entity_tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.xu_aspect_tag {
+    font-style: normal;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, .12);
+    border: 1px solid rgba(56, 189, 248, .28);
+}
+
+.xu_entity_tag {
+    font-style: normal;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 6px;
+    color: #c4b5fd;
+    background: rgba(139, 92, 246, .12);
+    border: 1px solid rgba(139, 92, 246, .28);
+}
 
 /* ================= 饼图与精选 ================= */
 .xu_result_grid {
@@ -421,6 +520,13 @@ body {
     border: 1px solid rgba(148, 163, 184, .3);
 }
 
+.xu_badge_review {
+    color: #c4b5fd;
+    background: rgba(139, 92, 246, .14);
+    border: 1px solid rgba(139, 92, 246, .38);
+    margin-left: 6px;
+}
+
 .xu_feature_score {
     margin-left: auto;
     font-family: Consolas, monospace;
@@ -439,6 +545,13 @@ body {
     font-size: 11.5px;
     color: #64748b;
     line-height: 1.7;
+}
+
+.xu_feature_meta {
+    margin-top: 9px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 /* ================= 表格 ================= */

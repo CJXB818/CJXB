@@ -75,6 +75,14 @@
                     <span class="xu_stat_label">差评</span>
                     <b class="xu_stat_value" id="xuBad">0</b>
                 </div>
+                <div class="xu_stat xu_stat_conf">
+                    <span class="xu_stat_label">平均置信度</span>
+                    <b class="xu_stat_value" id="xuConf">0.00</b>
+                </div>
+                <div class="xu_stat xu_stat_review">
+                    <span class="xu_stat_label">待人工复核</span>
+                    <b class="xu_stat_value" id="xuReview">0</b>
+                </div>
             </div>
 
             <div class="xu_result_grid">
@@ -83,6 +91,10 @@
                     <div class="xu_pie_wrap">
                         <canvas id="xuPie" width="440" height="440"></canvas>
                         <ul class="xu_legend" id="xuLegend"></ul>
+                    </div>
+                    <div class="xu_aspects">
+                        <h3 class="xu_sub_title">评论关注维度（Top5）</h3>
+                        <div class="xu_aspect_list" id="xuAspects"></div>
                     </div>
                 </div>
 
@@ -101,8 +113,9 @@
                             <th style="width:56px">序号</th>
                             <th>评论内容</th>
                             <th style="width:86px">分类</th>
-                            <th style="width:70px">得分</th>
-                            <th style="width:210px">分类理由</th>
+                            <th style="width:76px">置信度</th>
+                            <th style="width:160px">维度</th>
+                            <th style="width:220px">摘要 / 复核</th>
                             <th style="width:64px">精选</th>
                         </tr>
                         </thead>

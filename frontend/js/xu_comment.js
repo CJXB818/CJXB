@@ -27,8 +27,11 @@
         good: document.getElementById('xuGood'),
         mid: document.getElementById('xuMid'),
         bad: document.getElementById('xuBad'),
+        conf: document.getElementById('xuConf'),
+        review: document.getElementById('xuReview'),
         pie: document.getElementById('xuPie'),
         legend: document.getElementById('xuLegend'),
+        aspects: document.getElementById('xuAspects'),
         featured: document.getElementById('xuFeatured'),
         tbody: document.getElementById('xuTbody')
     };
@@ -217,6 +220,33 @@
         }).join('');
     }
 
+    function xu_aspectHtml(xu_list, xu_cls) {
+        if (!xu_list || !xu_list.length) return '';
+        return '<span class="xu_aspect_tags">' + xu_list.map(function (xu_a) {
+            return '<i class="xu_aspect_tag ' + (xu_cls || '') + '">' + xu_escape(xu_a) + '</i>';
+        }).join('') + '</span>';
+    }
+
+    function xu_renderAspects() {
+        var xu_list = xu_state.result.topAspects || [];
+
+        if (!xu_list.length) {
+            xu_el.aspects.innerHTML = '<p class="xu_hint">本次结果未包含维度信息。</p>';
+            return;
+        }
+
+        var xu_max = xu_list[0].count || 1;
+
+        xu_el.aspects.innerHTML = xu_list.map(function (xu_item) {
+            var xu_pct = Math.round(xu_item.count / xu_max * 100);
+            return '<div class="xu_aspect_bar">' +
+                '<span class="xu_aspect_name">' + xu_escape(xu_item.name) + '</span>' +
+                '<span class="xu_aspect_track"><i style="width:' + xu_pct + '%"></i></span>' +
+                '<span class="xu_aspect_count">' + xu_item.count + '</span>' +
+                '</div>';
+        }).join('');
+    }
+
     function xu_renderFeatured() {
         var xu_list = xu_state.result.featured || [];
 
@@ -228,16 +258,25 @@
         xu_el.featured.innerHTML = xu_list.map(function (xu_item) {
             var xu_cls = xu_badgeClass[xu_item.sentiment] || 'xu_badge_none';
             var xu_label = xu_item.sentiment || '未分类';
-            var xu_score = typeof xu_item.score === 'number' ? xu_item.score.toFixed(2) : '—';
+            var xu_conf = typeof xu_item.confidence === 'number' ? xu_item.confidence.toFixed(2) : '—';
+            var xu_review = xu_item.need_review ? '<span class="xu_badge xu_badge_review">待复核</span>' : '';
 
             return '<div class="xu_feature_item">' +
                 '<div class="xu_feature_top">' +
                 '<span class="xu_feature_no">#' + xu_item.no + '</span>' +
                 '<span class="xu_badge ' + xu_cls + '">' + xu_label + '</span>' +
-                '<span class="xu_feature_score">' + xu_score + '</span>' +
+                xu_review +
+                '<span class="xu_feature_score">置信度 ' + xu_conf + '</span>' +
                 '</div>' +
                 '<p class="xu_feature_text">' + xu_escape(xu_item.content) + '</p>' +
-                '<p class="xu_feature_reason">判定理由：' + xu_escape(xu_item.reason || '—') + '</p>' +
+                '<p class="xu_feature_reason">摘要：' + xu_escape(xu_item.summary || xu_item.reason || '—') + '</p>' +
+                '<div class="xu_feature_meta">' + xu_aspectHtml(xu_item.aspects) +
+                ((xu_item.entities && xu_item.entities.length)
+                    ? '<span class="xu_entity_tags">' + xu_item.entities.map(function (xu_e) {
+                        return '<i class="xu_entity_tag">' + xu_escape(xu_e.name) + ' · ' + xu_escape(xu_e.type) + '</i>';
+                    }).join('') + '</span>'
+                    : '') +
+                '</div>' +
                 '</div>';
         }).join('');
     }
@@ -254,14 +293,16 @@
         xu_el.tbody.innerHTML = xu_state.result.comments.map(function (xu_item) {
             var xu_cls = xu_badgeClass[xu_item.sentiment] || 'xu_badge_none';
             var xu_label = xu_item.sentiment || '未分类';
-            var xu_score = typeof xu_item.score === 'number' ? xu_item.score.toFixed(2) : '—';
+            var xu_conf = typeof xu_item.confidence === 'number' ? xu_item.confidence.toFixed(2) : '—';
+            var xu_review = xu_item.need_review ? '<span class="xu_badge xu_badge_review">待复核</span>' : '';
 
             return '<tr>' +
                 '<td class="xu_cell_no">' + xu_item.no + '</td>' +
                 '<td>' + xu_escape(xu_item.content) + '</td>' +
                 '<td><span class="xu_badge ' + xu_cls + '">' + xu_label + '</span></td>' +
-                '<td class="xu_cell_score">' + xu_score + '</td>' +
-                '<td class="xu_cell_reason">' + xu_escape(xu_item.reason || '—') + '</td>' +
+                '<td class="xu_cell_score">' + xu_conf + '</td>' +
+                '<td>' + xu_aspectHtml(xu_item.aspects) + '</td>' +
+                '<td class="xu_cell_reason">' + xu_escape(xu_item.summary || xu_item.reason || '—') + xu_review + '</td>' +
                 '<td>' + (xu_item.featured ? '<span class="xu_star">★</span>' : '') + '</td>' +
                 '</tr>';
         }).join('');
@@ -274,9 +315,12 @@
         xu_el.good.textContent = xu_data.summary['好评'] || 0;
         xu_el.mid.textContent = xu_data.summary['中评'] || 0;
         xu_el.bad.textContent = xu_data.summary['差评'] || 0;
+        xu_el.conf.textContent = (typeof xu_data.avgConfidence === 'number' ? xu_data.avgConfidence : 0).toFixed(2);
+        xu_el.review.textContent = xu_data.needReview || 0;
 
         xu_el.result.hidden = false;
         xu_renderLegend();
+        xu_renderAspects();
         xu_renderFeatured();
         xu_renderTable();
         xu_animatePie();
@@ -330,10 +374,21 @@
             xu_hideAlert();
             xu_renderResult();
 
+            if (xu_result.data.fallback) {
+                xu_showAlert('模型输出未通过 JSON 校验且重试失败，已返回兜底结果，全部评论标记为待人工复核', 'error');
+            } else if (xu_result.data.retried) {
+                xu_showAlert('首次输出未通过字段校验，已自动重试一次并完成分析', 'info');
+            }
+
             console.log('[分析完成] ' + xu_now(), {
                 文件: xu_result.data.fileName,
                 总数: xu_result.data.total,
                 统计: xu_result.data.summary,
+                平均置信度: xu_result.data.avgConfidence,
+                待复核: xu_result.data.needReview,
+                维度热度: xu_result.data.topAspects,
+                是否重试: xu_result.data.retried,
+                是否兜底: xu_result.data.fallback,
                 精选数: xu_result.data.featured.length,
                 usage: xu_result.data.usage
             });

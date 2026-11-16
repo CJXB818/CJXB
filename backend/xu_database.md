@@ -75,3 +75,80 @@ INSERT INTO xu_comment (xu_file_id, xu_no, xu_content, xu_sentiment, xu_score, x
 (4, 7, '抢购页面一直卡，付了三次才成功', '差评', -0.70, '系统卡顿导致重复支付', 1),
 (4, 8, '价格合适，质量也就一般，属于正常发挥', '中评', 0.00, '价格与质量基本匹配，无明显情绪', 0);
 ```
+
+---
+
+## 2026/11/16 16:14:10 · xu_comment 表新增结构化输出字段
+
+> 背景：评论情感分类由「情感 + 得分 + 理由」升级为完整 JSON 结构化输出，
+> 需要持久化置信度、评论维度、实体、摘要与人工复核标记。
+
+```sql
+-- 1. 新增 5 个字段（已有数据保持原值，后续由分析流程写入）
+ALTER TABLE xu_comment
+  ADD COLUMN xu_summary     VARCHAR(255) DEFAULT NULL COMMENT '一句话摘要',
+  ADD COLUMN xu_confidence  DECIMAL(3,2) DEFAULT NULL COMMENT '模型置信度 0.00~1.00',
+  ADD COLUMN xu_aspects     VARCHAR(120) DEFAULT NULL COMMENT '评论维度 JSON 数组',
+  ADD COLUMN xu_entities    VARCHAR(255) DEFAULT NULL COMMENT '实体 JSON 数组',
+  ADD COLUMN xu_need_review TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否需人工复核：1 是 0 否';
+```
+
+```sql
+-- 2. 历史 16 条评论的结构化字段回填（与初始测试数据一一对应）
+UPDATE xu_comment SET xu_summary='包装保鲜到位，口感甜，复购意愿强', xu_confidence=0.90,
+  xu_aspects='["包装","口味"]', xu_entities='[{"name":"车厘子","type":"product"},{"name":"冰袋","type":"logistics"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=1;
+UPDATE xu_comment SET xu_summary='物流极快，虾很新鲜', xu_confidence=0.85,
+  xu_aspects='["物流"]', xu_entities='[{"name":"虾","type":"product"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=2;
+UPDATE xu_comment SET xu_summary='坏果补发及时，服务体验好', xu_confidence=0.88,
+  xu_aspects='["客服","售后"]', xu_entities='[{"name":"客服","type":"service"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=3;
+UPDATE xu_comment SET xu_summary='味道认可，价格略高于超市', xu_confidence=0.62,
+  xu_aspects='["价格"]', xu_entities='[{"name":"楼下超市","type":"brand"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=4;
+UPDATE xu_comment SET xu_summary='商品无误，配送晚了一天', xu_confidence=0.72,
+  xu_aspects='["物流"]', xu_entities='[{"name":"配送","type":"logistics"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=5;
+UPDATE xu_comment SET xu_summary='分量与图片有落差，其余无异议', xu_confidence=0.58,
+  xu_aspects='["质量"]', xu_entities='[]', xu_need_review=1
+  WHERE xu_file_id=1 AND xu_no=6;
+UPDATE xu_comment SET xu_summary='到货腐烂，退款审核缓慢', xu_confidence=0.90,
+  xu_aspects='["质量","售后"]', xu_entities='[{"name":"退款","type":"service"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=7;
+UPDATE xu_comment SET xu_summary='客服失联，问题三天未解决', xu_confidence=0.88,
+  xu_aspects='["客服","售后"]', xu_entities='[{"name":"客服","type":"service"}]', xu_need_review=0
+  WHERE xu_file_id=1 AND xu_no=8;
+UPDATE xu_comment SET xu_summary='大促价格优惠，重复购买', xu_confidence=0.88,
+  xu_aspects='["价格"]', xu_entities='[]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=1;
+UPDATE xu_comment SET xu_summary='凑单规则复杂，影响下单', xu_confidence=0.78,
+  xu_aspects='["价格","活动"]', xu_entities='[]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=2;
+UPDATE xu_comment SET xu_summary='发货快，包装完好无磕碰', xu_confidence=0.80,
+  xu_aspects='["物流","包装"]', xu_entities='[{"name":"快递","type":"logistics"}]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=3;
+UPDATE xu_comment SET xu_summary='优惠券不可叠加，与宣传不符', xu_confidence=0.82,
+  xu_aspects='["价格","活动"]', xu_entities='[{"name":"优惠券","type":"service"}]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=4;
+UPDATE xu_comment SET xu_summary='整体满意，赠品比上次少', xu_confidence=0.56,
+  xu_aspects='["活动"]', xu_entities='[{"name":"赠品","type":"product"}]', xu_need_review=1
+  WHERE xu_file_id=4 AND xu_no=5;
+UPDATE xu_comment SET xu_summary='客服快速协助修改地址', xu_confidence=0.84,
+  xu_aspects='["客服"]', xu_entities='[{"name":"客服","type":"service"}]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=6;
+UPDATE xu_comment SET xu_summary='页面卡顿导致重复支付', xu_confidence=0.86,
+  xu_aspects='["功能","支付"]', xu_entities='[]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=7;
+UPDATE xu_comment SET xu_summary='价格合适，质量一般', xu_confidence=0.60,
+  xu_aspects='["价格","质量"]', xu_entities='[]', xu_need_review=0
+  WHERE xu_file_id=4 AND xu_no=8;
+```
+
+```sql
+-- 3. 校验：查看新增字段的落库情况
+SELECT xu_id, xu_sentiment, xu_confidence, xu_summary, xu_aspects, xu_entities, xu_need_review
+FROM xu_comment
+ORDER BY xu_id
+LIMIT 16;
+```
